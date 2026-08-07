@@ -6,6 +6,8 @@ vi.mock('@antv/g6', () => ({
   Graph: class {
     on() {}
     setData() {}
+    setLayout() {}
+    layout() {}
     render() {}
     destroy() {}
   },
@@ -38,6 +40,13 @@ describe('SPEC-018 ui/graph', () => {
     rerender(<Graph {...base} loading={false} streamState="open" />);
     expect(screen.getByTestId('coop-graph-canvas').getAttribute('data-loading')).toBe('false');
     expect(screen.getByTestId('coop-graph-canvas').getAttribute('data-state')).toBe('open');
+  });
+
+  // AC-1: layout selector (user-facing layout control)
+  it('exposes a layout selector', () => {
+    render(<Graph {...base} />);
+    expect(screen.getByTestId('layout-select')).toBeTruthy();
+    expect(screen.getByLabelText('Graph layout type')).toBeTruthy();
   });
 
   // AC-1: entity count selector for E2E assertions

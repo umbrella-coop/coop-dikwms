@@ -1,0 +1,8 @@
+{
+  "ignore_vcs": [
+    ".git",
+    ".hg",
+    ".svn",
+    ".bit"
+  ]
+}
