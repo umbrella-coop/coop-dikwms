@@ -1,14 +1,23 @@
 // Tests for SPEC-002: Moderation & Promotion Workflow
 // Derived from: docs/specs/SPEC-002-moderation-promotion.md (Approved 2026-08-06)
-// TDD: RED phase — these tests target the new public API of `knowledge-domain`.
 // AC Coverage: AC-1..AC-6 (1:1 mapping)
 
 use std::collections::HashMap;
 
 use knowledge_domain::{
-    ApplyOutcome, ChangeRequestStatus, EntityKind, Graph, ModerationLedger, PropertySet, Scope,
+    ApplyOutcome, COMMON_INSTANCE, ChangeRequestStatus, EntityKind, Graph, ModerationLedger,
+    PropertySet, Scope,
 };
 use serde_json::json;
+use uuid::Uuid;
+
+fn org_chain(org: Uuid) -> Vec<Uuid> {
+    vec![org, COMMON_INSTANCE]
+}
+
+fn ws_chain(ws: Uuid, org: Uuid) -> Vec<Uuid> {
+    vec![ws, org, COMMON_INSTANCE]
+}
 
 // ------------------------------------------------------------------
 // AC-1: Submission creates a request without changing current truth
@@ -19,9 +28,11 @@ fn submitting_change_request_does_not_change_current_truth() {
     let mut graph = Graph::new();
     let mut ledger = ModerationLedger::new();
     let entity = graph.create_entity(EntityKind::Node);
+    let org = Uuid::now_v7();
     graph
         .set_property_set(
             entity.id,
+            org,
             PropertySet::current(Scope::Org, 1, props(&[("name", "acme-org")])),
         )
         .unwrap();
@@ -31,16 +42,20 @@ fn submitting_change_request_does_not_change_current_truth() {
         .submit_change_request(
             &graph,
             entity.id,
-            Scope::Org,
+            org,
             PropertySet::current(Scope::Org, 2, props(&[("name", "acme-org-v2")])),
             "alice",
+            &org_chain(org),
         )
         .unwrap();
 
     // Assert: request created as submitted, current truth unchanged
     let request = ledger.get_change_request(request_id).unwrap();
     assert_eq!(request.status, ChangeRequestStatus::Submitted);
-    assert_eq!(graph.resolve(entity.id, Scope::Org).unwrap().version, 1);
+    assert_eq!(
+        graph.resolve(entity.id, &org_chain(org)).unwrap().version,
+        1
+    );
 }
 
 // ------------------------------------------------------------------
@@ -52,9 +67,11 @@ fn applying_approved_request_makes_proposal_current_and_retains_history() {
     let mut graph = Graph::new();
     let mut ledger = ModerationLedger::new();
     let entity = graph.create_entity(EntityKind::Node);
+    let org = Uuid::now_v7();
     graph
         .set_property_set(
             entity.id,
+            org,
             PropertySet::current(Scope::Org, 1, props(&[("name", "acme-org")])),
         )
         .unwrap();
@@ -62,9 +79,10 @@ fn applying_approved_request_makes_proposal_current_and_retains_history() {
         .submit_change_request(
             &graph,
             entity.id,
-            Scope::Org,
+            org,
             PropertySet::current(Scope::Org, 2, props(&[("name", "acme-org-v2")])),
             "alice",
+            &org_chain(org),
         )
         .unwrap();
     ledger.decide_request(request_id, true, "reviewer").unwrap();
@@ -74,11 +92,11 @@ fn applying_approved_request_makes_proposal_current_and_retains_history() {
 
     // Assert: applied, new version current, v1 in history
     assert_eq!(outcome, ApplyOutcome::Applied);
-    let current = graph.resolve(entity.id, Scope::Org).unwrap();
+    let current = graph.resolve(entity.id, &org_chain(org)).unwrap();
     assert_eq!(current.version, 2);
     assert_eq!(current.properties.get("name"), Some(&json!("acme-org-v2")));
-    assert_eq!(ledger.history(entity.id, Scope::Org).len(), 1);
-    assert_eq!(ledger.history(entity.id, Scope::Org)[0].version, 1);
+    assert_eq!(ledger.history(entity.id, org).len(), 1);
+    assert_eq!(ledger.history(entity.id, org)[0].version, 1);
 }
 
 // ------------------------------------------------------------------
@@ -90,9 +108,12 @@ fn rejection_changes_nothing() {
     let mut graph = Graph::new();
     let mut ledger = ModerationLedger::new();
     let entity = graph.create_entity(EntityKind::Node);
+    let org = Uuid::now_v7();
+    let ws = Uuid::now_v7();
     graph
         .set_property_set(
             entity.id,
+            ws,
             PropertySet::current(Scope::Workspace, 1, props(&[("name", "acme-ws")])),
         )
         .unwrap();
@@ -100,9 +121,10 @@ fn rejection_changes_nothing() {
         .submit_change_request(
             &graph,
             entity.id,
-            Scope::Workspace,
+            ws,
             PropertySet::current(Scope::Workspace, 2, props(&[("name", "acme-ws-v2")])),
             "alice",
+            &ws_chain(ws, org),
         )
         .unwrap();
 
@@ -113,7 +135,10 @@ fn rejection_changes_nothing() {
 
     // Assert
     assert_eq!(
-        graph.resolve(entity.id, Scope::Workspace).unwrap().version,
+        graph
+            .resolve(entity.id, &ws_chain(ws, org))
+            .unwrap()
+            .version,
         1
     );
     assert_eq!(
@@ -131,9 +156,11 @@ fn double_apply_is_noop() {
     let mut graph = Graph::new();
     let mut ledger = ModerationLedger::new();
     let entity = graph.create_entity(EntityKind::Node);
+    let org = Uuid::now_v7();
     graph
         .set_property_set(
             entity.id,
+            org,
             PropertySet::current(Scope::Org, 1, props(&[("name", "acme-org")])),
         )
         .unwrap();
@@ -141,9 +168,10 @@ fn double_apply_is_noop() {
         .submit_change_request(
             &graph,
             entity.id,
-            Scope::Org,
+            org,
             PropertySet::current(Scope::Org, 2, props(&[("name", "acme-org-v2")])),
             "alice",
+            &org_chain(org),
         )
         .unwrap();
     ledger.decide_request(request_id, true, "reviewer").unwrap();
@@ -154,8 +182,11 @@ fn double_apply_is_noop() {
 
     // Assert
     assert_eq!(second, ApplyOutcome::AlreadyApplied);
-    assert_eq!(graph.resolve(entity.id, Scope::Org).unwrap().version, 2);
-    assert_eq!(ledger.history(entity.id, Scope::Org).len(), 1);
+    assert_eq!(
+        graph.resolve(entity.id, &org_chain(org)).unwrap().version,
+        2
+    );
+    assert_eq!(ledger.history(entity.id, org).len(), 1);
 }
 
 // ------------------------------------------------------------------
@@ -167,28 +198,38 @@ fn workspace_version_promotes_to_org_with_provenance() {
     let mut graph = Graph::new();
     let mut ledger = ModerationLedger::new();
     let entity = graph.create_entity(EntityKind::Node);
+    let org = Uuid::now_v7();
+    let ws = Uuid::now_v7();
     graph
         .set_property_set(
             entity.id,
+            ws,
             PropertySet::current(Scope::Workspace, 3, props(&[("name", "promoted-name")])),
         )
         .unwrap();
 
     // Act
     let request_id = ledger
-        .submit_promotion(&graph, entity.id, Scope::Org, Scope::Workspace, "alice")
+        .submit_promotion(
+            &graph,
+            entity.id,
+            org,
+            "alice",
+            &org_chain(org),
+            &ws_chain(ws, org),
+        )
         .unwrap();
     ledger.decide_request(request_id, true, "reviewer").unwrap();
     let outcome = ledger.apply_approved(&mut graph, request_id);
 
     // Assert: org set holds the promoted properties, provenance recorded
     assert_eq!(outcome, ApplyOutcome::Applied);
-    let org_set = graph.resolve(entity.id, Scope::Org).unwrap();
+    let org_set = graph.resolve(entity.id, &org_chain(org)).unwrap();
     assert_eq!(
         org_set.properties.get("name"),
         Some(&json!("promoted-name"))
     );
-    let provenance = ledger.provenance(entity.id, Scope::Org).unwrap();
+    let provenance = ledger.provenance(entity.id, org).unwrap();
     assert_eq!(provenance.from_scope, Some(Scope::Workspace));
     assert_eq!(provenance.from_version, Some(3));
     assert_eq!(provenance.request_id, request_id);
@@ -203,20 +244,30 @@ fn provenance_query_returns_full_record() {
     let mut graph = Graph::new();
     let mut ledger = ModerationLedger::new();
     let entity = graph.create_entity(EntityKind::Node);
+    let org = Uuid::now_v7();
+    let ws = Uuid::now_v7();
     graph
         .set_property_set(
             entity.id,
+            ws,
             PropertySet::current(Scope::Workspace, 3, props(&[("name", "promoted-name")])),
         )
         .unwrap();
     let request_id = ledger
-        .submit_promotion(&graph, entity.id, Scope::Org, Scope::Workspace, "alice")
+        .submit_promotion(
+            &graph,
+            entity.id,
+            org,
+            "alice",
+            &org_chain(org),
+            &ws_chain(ws, org),
+        )
         .unwrap();
     ledger.decide_request(request_id, true, "bob").unwrap();
     ledger.apply_approved(&mut graph, request_id);
 
     // Assert: full record
-    let provenance = ledger.provenance(entity.id, Scope::Org).unwrap();
+    let provenance = ledger.provenance(entity.id, org).unwrap();
     assert_eq!(provenance.request_id, request_id);
     assert_eq!(provenance.reviewed_by, "bob");
     assert!(provenance.applied_at.is_some());

@@ -1,12 +1,14 @@
 // Tests for SPEC-001: Core Graph Model — Identity & Scoped Knowledge
 // Derived from: docs/specs/SPEC-001-core-graph-model.md (Approved 2026-08-06)
-// TDD: RED phase — these tests target the public API of `knowledge-domain`.
 // AC Coverage: AC-1..AC-6 (1:1 mapping)
+// Property sets are keyed by scope instance; chains are nearest-first
+// [workspace, org, COMMON_INSTANCE].
 
 use std::collections::HashMap;
 
-use knowledge_domain::{EntityKind, Graph, PropertySet, Scope};
+use knowledge_domain::{COMMON_INSTANCE, EntityKind, Graph, PropertySet, Scope};
 use serde_json::json;
+use uuid::Uuid;
 
 // ------------------------------------------------------------------
 // AC-1: Entity creation yields a stable global identity without content
@@ -20,10 +22,14 @@ fn entity_creation_yields_stable_uuidv7_without_property_set() {
     // Assert: UUIDv7 (version nibble = 7)
     assert_eq!(entity.id.get_version(), Some(uuid::Version::SortRand));
 
-    // Assert: no property set at any scope
-    for scope in [Scope::Common, Scope::Org, Scope::Workspace, Scope::Project] {
-        assert!(graph.resolve(entity.id, scope).is_none());
-    }
+    // Assert: no property set on any chain position (project..common)
+    let chain = [
+        Uuid::now_v7(),
+        Uuid::now_v7(),
+        Uuid::now_v7(),
+        COMMON_INSTANCE,
+    ];
+    assert!(graph.resolve(entity.id, &chain).is_none());
 
     // Assert: identity is stable on re-read
     assert_eq!(graph.get_entity(entity.id), Some(&entity));
@@ -37,24 +43,29 @@ fn resolve_returns_org_set_when_workspace_has_no_set() {
     // Arrange
     let mut graph = Graph::new();
     let entity = graph.create_entity(EntityKind::Node);
-
+    let org = Uuid::now_v7();
+    let ws = Uuid::now_v7();
     graph
         .set_property_set(
             entity.id,
+            COMMON_INSTANCE,
             PropertySet::current(Scope::Common, 1, props(&[("name", "acme")])),
         )
         .unwrap();
     graph
         .set_property_set(
             entity.id,
+            org,
             PropertySet::current(Scope::Org, 1, props(&[("name", "acme-org")])),
         )
         .unwrap();
 
     // Act
-    let resolved = graph.resolve(entity.id, Scope::Workspace).unwrap();
+    let resolved = graph
+        .resolve(entity.id, &[ws, org, COMMON_INSTANCE])
+        .unwrap();
 
-    // Assert: nearest scope above the query that has a current set
+    // Assert: nearest ancestor with a current set
     assert_eq!(resolved.scope, Scope::Org);
     assert_eq!(resolved.properties.get("name"), Some(&json!("acme-org")));
 }
@@ -67,22 +78,27 @@ fn resolve_returns_workspace_set_when_present_over_org() {
     // Arrange
     let mut graph = Graph::new();
     let entity = graph.create_entity(EntityKind::Node);
-
+    let org = Uuid::now_v7();
+    let ws = Uuid::now_v7();
     graph
         .set_property_set(
             entity.id,
+            org,
             PropertySet::current(Scope::Org, 1, props(&[("name", "acme-org")])),
         )
         .unwrap();
     graph
         .set_property_set(
             entity.id,
+            ws,
             PropertySet::current(Scope::Workspace, 1, props(&[("name", "acme-ws")])),
         )
         .unwrap();
 
     // Act
-    let resolved = graph.resolve(entity.id, Scope::Workspace).unwrap();
+    let resolved = graph
+        .resolve(entity.id, &[ws, org, COMMON_INSTANCE])
+        .unwrap();
 
     // Assert: nearest-wins
     assert_eq!(resolved.scope, Scope::Workspace);
@@ -97,23 +113,28 @@ fn resolve_skips_soft_deleted_workspace_set_and_returns_org() {
     // Arrange
     let mut graph = Graph::new();
     let entity = graph.create_entity(EntityKind::Node);
-
+    let org = Uuid::now_v7();
+    let ws = Uuid::now_v7();
     graph
         .set_property_set(
             entity.id,
+            org,
             PropertySet::current(Scope::Org, 1, props(&[("name", "acme-org")])),
         )
         .unwrap();
     graph
         .set_property_set(
             entity.id,
+            ws,
             PropertySet::current(Scope::Workspace, 1, props(&[("name", "acme-ws")])),
         )
         .unwrap();
-    graph.soft_delete(entity.id, Scope::Workspace);
+    graph.soft_delete(entity.id, ws);
 
     // Act
-    let resolved = graph.resolve(entity.id, Scope::Workspace).unwrap();
+    let resolved = graph
+        .resolve(entity.id, &[ws, org, COMMON_INSTANCE])
+        .unwrap();
 
     // Assert: soft-deleted set skipped, parent returned
     assert_eq!(resolved.scope, Scope::Org);
@@ -123,22 +144,18 @@ fn resolve_skips_soft_deleted_workspace_set_and_returns_org() {
 // ------------------------------------------------------------------
 // AC-5: Schema change regenerates storage schema and DTO artifacts
 // ------------------------------------------------------------------
-// [TODO] Gated on schema pipeline (Open Risk R-2) — schema.org source + codegen toolchain.
+// [TODO] Gated on schema pipeline (Open Risk R-2); persistence (R-1).
 #[test]
 #[ignore = "R-2: schema pipeline not chosen yet; R-1: TerminusDB unverified"]
-fn generated_dtos_compile_and_reflect_source_schema() {
-    // [TODO] Build with modified source schema; assert regeneration compiles
-}
+fn generated_dtos_compile_and_reflect_source_schema() {}
 
 // ------------------------------------------------------------------
 // AC-6: Node storage round-trips all scope layers without data loss
 // ------------------------------------------------------------------
-// [TODO] Gated on persistence layer (Open Risk R-1) — TerminusDB single store unverified.
+// [TODO] Gated on persistence layer (Open Risk R-1).
 #[test]
 #[ignore = "R-1: TerminusDB single store unverified (terminusdb.com HTTP 522)"]
-fn stored_node_round_trips_four_scope_layers() {
-    // [TODO] Persist via repository; assert all four scope layers round-trip
-}
+fn stored_node_round_trips_four_scope_layers() {}
 
 // ------------------------------------------------------------------
 // Helpers

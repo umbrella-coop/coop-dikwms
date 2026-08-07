@@ -1,11 +1,15 @@
-// SPEC-001: Core Graph Model — Identity & Scoped Knowledge
-// Implements the resolve(scope) semantics per docs/specs/SPEC-001-core-graph-model.md
+// SPEC-001/002/003: Core Graph Model — Identity, Scoped Knowledge, Moderation, Scope Hierarchy
+// Property sets are keyed by (entity, scope-instance); resolution walks an instance's
+// ancestor chain (nearest-wins). COMMON_INSTANCE is the global shared truth root.
 
 use std::collections::HashMap;
 
 use chrono::{DateTime, Utc};
 use serde_json::Value;
 use uuid::Uuid;
+
+/// Sentinel instance id for the global `common` truth layer.
+pub const COMMON_INSTANCE: Uuid = Uuid::nil();
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
 pub enum Scope {
@@ -14,20 +18,6 @@ pub enum Scope {
     Workspace,
     Project,
 }
-
-impl Scope {
-    /// Ladder position: 0 = closest to the edge (project), 3 = root (common).
-    fn ladder_index(self) -> usize {
-        match self {
-            Scope::Project => 0,
-            Scope::Workspace => 1,
-            Scope::Org => 2,
-            Scope::Common => 3,
-        }
-    }
-}
-
-const LADDER: [Scope; 4] = [Scope::Project, Scope::Workspace, Scope::Org, Scope::Common];
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum EntityKind {
@@ -77,7 +67,7 @@ pub enum SetError {
 #[derive(Debug, Default)]
 pub struct Graph {
     entities: HashMap<Uuid, Entity>,
-    property_sets: HashMap<(Uuid, Scope), PropertySet>,
+    property_sets: HashMap<(Uuid, Uuid), PropertySet>,
 }
 
 impl Graph {
@@ -98,11 +88,16 @@ impl Graph {
         self.entities.get(&id)
     }
 
-    pub fn set_property_set(&mut self, entity_id: Uuid, set: PropertySet) -> Result<(), SetError> {
+    pub fn set_property_set(
+        &mut self,
+        entity_id: Uuid,
+        instance_id: Uuid,
+        set: PropertySet,
+    ) -> Result<(), SetError> {
         if !self.entities.contains_key(&entity_id) {
             return Err(SetError::UnknownEntity);
         }
-        if let Some(existing) = self.property_sets.get(&(entity_id, set.scope))
+        if let Some(existing) = self.property_sets.get(&(entity_id, instance_id))
             && set.version <= existing.version
         {
             return Err(SetError::VersionOutOfOrder {
@@ -110,26 +105,30 @@ impl Graph {
                 attempted: set.version,
             });
         }
-        self.property_sets.insert((entity_id, set.scope), set);
+        self.property_sets.insert((entity_id, instance_id), set);
         Ok(())
     }
 
-    pub fn soft_delete(&mut self, entity_id: Uuid, scope: Scope) {
-        if let Some(set) = self.property_sets.get_mut(&(entity_id, scope)) {
+    pub fn soft_delete(&mut self, entity_id: Uuid, instance_id: Uuid) {
+        if let Some(set) = self.property_sets.get_mut(&(entity_id, instance_id)) {
             set.status = Status::Retired;
         }
     }
 
-    /// Resolve the effective property set for a scope: walk the ladder
-    /// project → workspace → org → common, returning the nearest current set.
-    pub fn resolve(&self, entity_id: Uuid, scope: Scope) -> Option<&PropertySet> {
-        let start = scope.ladder_index();
-        LADDER[start..]
+    /// Resolve the effective property set for an entity within a scope context.
+    /// `chain` is ordered nearest-first (e.g. [workspace, org, COMMON_INSTANCE]);
+    /// the nearest instance holding a current set wins.
+    pub fn resolve(&self, entity_id: Uuid, chain: &[Uuid]) -> Option<&PropertySet> {
+        chain
             .iter()
-            .filter_map(|s| self.property_sets.get(&(entity_id, *s)))
+            .filter_map(|instance| self.property_sets.get(&(entity_id, *instance)))
             .find(|set| set.status == Status::Current)
     }
 }
+
+// ---------------------------------------------------------------------------
+// SPEC-002: Moderation & Promotion
+// ---------------------------------------------------------------------------
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum ChangeRequestStatus {
@@ -150,7 +149,8 @@ pub struct PromotionSource {
 pub struct ChangeRequest {
     pub id: Uuid,
     pub entity_id: Uuid,
-    pub scope: Scope,
+    pub instance: Uuid,
+    pub chain: Vec<Uuid>,
     pub proposed: PropertySet,
     pub status: ChangeRequestStatus,
     pub created_by: String,
@@ -187,8 +187,8 @@ pub enum ModerationError {
 #[derive(Debug, Default)]
 pub struct ModerationLedger {
     change_requests: HashMap<Uuid, ChangeRequest>,
-    history: HashMap<(Uuid, Scope), Vec<PropertySet>>,
-    provenance: HashMap<(Uuid, Scope), Provenance>,
+    history: HashMap<(Uuid, Uuid), Vec<PropertySet>>,
+    provenance: HashMap<(Uuid, Uuid), Provenance>,
 }
 
 impl ModerationLedger {
@@ -200,14 +200,15 @@ impl ModerationLedger {
         &mut self,
         graph: &Graph,
         entity_id: Uuid,
-        scope: Scope,
+        instance: Uuid,
         proposed: PropertySet,
         created_by: &str,
+        chain: &[Uuid],
     ) -> Result<Uuid, SetError> {
         if !graph.entities.contains_key(&entity_id) {
             return Err(SetError::UnknownEntity);
         }
-        if let Some(current) = graph.resolve(entity_id, scope)
+        if let Some(current) = graph.resolve(entity_id, chain)
             && proposed.version <= current.version
         {
             return Err(SetError::VersionOutOfOrder {
@@ -218,7 +219,8 @@ impl ModerationLedger {
         let request = ChangeRequest {
             id: Uuid::now_v7(),
             entity_id,
-            scope,
+            instance,
+            chain: chain.to_vec(),
             proposed,
             status: ChangeRequestStatus::Submitted,
             created_by: created_by.to_string(),
@@ -236,21 +238,19 @@ impl ModerationLedger {
         &mut self,
         graph: &Graph,
         entity_id: Uuid,
-        target: Scope,
-        from: Scope,
+        target: Uuid,
         created_by: &str,
+        target_chain: &[Uuid],
+        from_chain: &[Uuid],
     ) -> Result<Uuid, ModerationError> {
-        if from.ladder_index() >= target.ladder_index() {
-            return Err(ModerationError::NotParentScope);
-        }
         let source = graph
-            .resolve(entity_id, from)
+            .resolve(entity_id, from_chain)
             .ok_or(ModerationError::MissingSourceSet)?;
         let parent_version = graph
-            .resolve(entity_id, target)
+            .resolve(entity_id, target_chain)
             .map_or(0, |set| set.version);
         let proposed = PropertySet {
-            scope: target,
+            scope: source.scope,
             version: parent_version + 1,
             status: Status::Current,
             properties: source.properties.clone(),
@@ -258,7 +258,8 @@ impl ModerationLedger {
         let request = ChangeRequest {
             id: Uuid::now_v7(),
             entity_id,
-            scope: target,
+            instance: target,
+            chain: target_chain.to_vec(),
             proposed,
             status: ChangeRequestStatus::Submitted,
             created_by: created_by.to_string(),
@@ -266,7 +267,7 @@ impl ModerationLedger {
             decided_at: None,
             applied_at: None,
             from: Some(PromotionSource {
-                scope: from,
+                scope: source.scope,
                 version: source.version,
             }),
         };
@@ -315,8 +316,8 @@ impl ModerationLedger {
         if request.status != ChangeRequestStatus::Approved {
             return ApplyOutcome::NotApproved;
         }
-        let key = (request.entity_id, request.scope);
-        if let Some(current) = graph.resolve(request.entity_id, request.scope) {
+        let key = (request.entity_id, request.instance);
+        if let Some(current) = graph.resolve(request.entity_id, &request.chain) {
             if current.version >= request.proposed.version {
                 return ApplyOutcome::AlreadyApplied;
             }
@@ -340,13 +341,183 @@ impl ModerationLedger {
         ApplyOutcome::Applied
     }
 
-    pub fn history(&self, entity_id: Uuid, scope: Scope) -> &[PropertySet] {
+    pub fn history(&self, entity_id: Uuid, instance: Uuid) -> &[PropertySet] {
         self.history
-            .get(&(entity_id, scope))
+            .get(&(entity_id, instance))
             .map_or(&[], |sets| sets.as_slice())
     }
 
-    pub fn provenance(&self, entity_id: Uuid, scope: Scope) -> Option<&Provenance> {
-        self.provenance.get(&(entity_id, scope))
+    pub fn provenance(&self, entity_id: Uuid, instance: Uuid) -> Option<&Provenance> {
+        self.provenance.get(&(entity_id, instance))
+    }
+}
+
+// ---------------------------------------------------------------------------
+// SPEC-003: Scope Hierarchy & Access Control
+// ---------------------------------------------------------------------------
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum Level {
+    Org,
+    Workspace,
+    Project,
+}
+
+#[derive(Debug, Clone, PartialEq)]
+pub struct ScopeNode {
+    pub id: Uuid,
+    pub level: Level,
+    pub name: String,
+    pub parent: Option<Uuid>,
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
+pub enum Permission {
+    SubmitChangeRequest,
+    DecideChangeRequest,
+    Read,
+    Write,
+    ManageScope,
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum Authorization {
+    Allow,
+    Deny,
+}
+
+#[derive(Debug, PartialEq, Eq)]
+pub enum PolicyError {
+    ScopeNotFound,
+    InvalidParentLevel,
+    CycleDetected,
+}
+
+#[derive(Debug, Default)]
+pub struct Policy {
+    scopes: HashMap<Uuid, ScopeNode>,
+    memberships: HashMap<Uuid, Vec<Uuid>>,
+    grants: HashMap<(Uuid, Uuid, Permission), bool>,
+    attachments: HashMap<Uuid, Vec<Uuid>>,
+}
+
+impl Policy {
+    pub fn new() -> Self {
+        Self::default()
+    }
+
+    pub fn create_scope(
+        &mut self,
+        level: Level,
+        name: &str,
+        parent: Option<Uuid>,
+    ) -> Result<Uuid, PolicyError> {
+        let parent_level = match parent {
+            Some(parent_id) => Some(
+                self.scopes
+                    .get(&parent_id)
+                    .ok_or(PolicyError::ScopeNotFound)?
+                    .level,
+            ),
+            None => None,
+        };
+        let valid = match (level, parent_level) {
+            (Level::Org, None) => true,
+            (Level::Org, Some(_)) => false,
+            (Level::Workspace, Some(Level::Org)) => true,
+            (Level::Workspace, _) => false,
+            (Level::Project, Some(Level::Workspace)) => true,
+            (Level::Project, _) => false,
+        };
+        if !valid {
+            return Err(PolicyError::InvalidParentLevel);
+        }
+        let scope = ScopeNode {
+            id: Uuid::now_v7(),
+            level,
+            name: name.to_string(),
+            parent,
+        };
+        let id = scope.id;
+        self.scopes.insert(id, scope);
+        Ok(id)
+    }
+
+    pub fn scope(&self, id: Uuid) -> Option<&ScopeNode> {
+        self.scopes.get(&id)
+    }
+
+    /// Ancestor chain, nearest-first: [self, parent, ..., root].
+    pub fn chain(&self, instance_id: Uuid) -> Vec<Uuid> {
+        let mut chain = Vec::new();
+        let mut current = Some(instance_id);
+        while let Some(id) = current {
+            let Some(node) = self.scopes.get(&id) else {
+                break;
+            };
+            chain.push(id);
+            current = node.parent;
+        }
+        chain
+    }
+
+    pub fn add_membership(&mut self, principal: Uuid, scope_id: Uuid) {
+        self.memberships
+            .entry(principal)
+            .or_default()
+            .push(scope_id);
+    }
+
+    /// Own membership or membership of any ancestor scope.
+    pub fn is_member(&self, principal: Uuid, scope_id: Uuid) -> bool {
+        let chain = self.chain(scope_id);
+        self.memberships
+            .get(&principal)
+            .is_some_and(|scopes| scopes.iter().any(|s| chain.contains(s)))
+    }
+
+    pub fn set_grant(
+        &mut self,
+        scope_id: Uuid,
+        principal: Uuid,
+        permission: Permission,
+        allow: bool,
+    ) -> Result<(), PolicyError> {
+        if !self.scopes.contains_key(&scope_id) {
+            return Err(PolicyError::ScopeNotFound);
+        }
+        self.grants.insert((scope_id, principal, permission), allow);
+        Ok(())
+    }
+
+    /// Nearest-wins authorization: walk scope + ancestors; first matching grant
+    /// for (principal, permission) decides; no match -> Deny.
+    pub fn authorize(
+        &self,
+        principal: Uuid,
+        scope_id: Uuid,
+        permission: Permission,
+    ) -> Authorization {
+        for id in self.chain(scope_id) {
+            if let Some(allow) = self.grants.get(&(id, principal, permission)) {
+                return if *allow {
+                    Authorization::Allow
+                } else {
+                    Authorization::Deny
+                };
+            }
+        }
+        Authorization::Deny
+    }
+
+    pub fn attach_entity(&mut self, entity_id: Uuid, scope_id: Uuid) {
+        let attached = self.attachments.entry(scope_id).or_default();
+        if !attached.contains(&entity_id) {
+            attached.push(entity_id);
+        }
+    }
+
+    pub fn entities_in_scope(&self, scope_id: Uuid) -> Vec<Uuid> {
+        self.attachments.get(&scope_id).cloned().unwrap_or_default()
     }
 }
