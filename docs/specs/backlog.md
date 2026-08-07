@@ -33,6 +33,8 @@ Planned specs not yet created. Add requirements captured during development here
 
 **Dependencies:** SPEC-007 (drift checks in CI), existing BDD derivations (features/SPEC-*.feature), crate layout
 
+## SPEC-016 (planned): Programmatic API Docs & OpenAPI Generation (mdBook)
+
 **Requirement (captured 2026-08-07):** Programmatic API documentation and **OpenAPI spec generation**, integrated with **mdBook** as the documentation site.
 
 **Design elements to resolve in the spec:**
@@ -87,6 +89,8 @@ Planned specs not yet created. Add requirements captured during development here
 
 **Dependencies:** SPEC-001/002/003/004/006/009/012 (all implemented) — the API is a thin composition layer
 
+## SPEC-012 (planned): Audit & Traceability (platform-wide)
+
 **Requirement (captured 2026-08-07):** Auditability is a **platform-wide** concern, not pipeline-only: every mutation — manual edits, moderation decisions, promotions, pipeline batches — must be traceable (who/what/when/why) and queryable. Follow-up to the Graph Conductor roadmap fit (RFC #133), where the RFC's event-store auditability was compared to our commit log.
 
 **What exists already:**
@@ -127,6 +131,8 @@ Planned specs not yet created. Add requirements captured during development here
 - Technology surface: HTTP batch API (future API layer), Airflow plugin, MCP server
 
 **Dependencies:** SPEC-002 (moderation/fast-track), SPEC-003 (principals), SPEC-006 (commits/batching), SPEC-004 (streaming progress events), future API layer
+
+## SPEC-005 (planned): Graph Primitive Merge
 
 **Requirement (captured 2026-08-06):** Nodes, edges, and combos can be **merged** — two or more graph primitives collapse into one entity.
 
