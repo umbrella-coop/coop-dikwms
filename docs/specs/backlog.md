@@ -16,7 +16,22 @@ Planned specs not yet created. Add requirements captured during development here
 - Client reconciliation via cursor (no redraw storms — G6 consumes domain events, not raw deltas)
 - PostgreSQL events for moderation actions (PG19 SQL/PGQ — verify) vs TerminusDB commit stream for knowledge changes — boundary decision for the spec
 
-## SPEC-016 (planned): Programmatic API Docs & OpenAPI Generation (mdBook)
+## SPEC-017 (planned): BDD Drift Handling & DDD Bounded-Context Organization
+
+**Requirement (captured 2026-08-07):** Handle **BDD drift** and organize Gherkin features/tests by **DDD bounded context**.
+
+**Design elements to resolve in the spec:**
+- **BDD drift:** `.feature` files can drift from specs (ACs) and implementation — detection + discipline:
+  - Cross-artifact checks (`/sdd analyze` style): orphan scenarios (no AC), uncovered ACs, stale scenario language
+  - Regeneration/derivation rule: features derive from spec ACs (`/derive bdd`); changes flow spec → feature → step definitions → implementation (forward-derivation single spine)
+  - Feature files tagged `@SPEC-NNN @AC-N` (already the convention) + a drift check runnable in CI (SPEC-007 gauntlet)
+- **DDD bounded-context organization:** the flat `features/SPEC-*.feature` + per-crate tests organized by bounded context mirroring `backend/crates/*`:
+  - `features/knowledge-domain/`, `features/moderation/`, `features/access/`, `features/registry/`, `features/stream/`, `features/api/`
+  - Each bounded context owns its feature files, step definitions, and test slices; specs stay global (SPEC-NNN) with a Context mapping
+  - Cross-context scenarios (promotion → audit) explicitly marked or placed in the owning context with references
+- **Context map:** docs section mapping bounded contexts → crates → spec slices → feature dirs (AI-navigability)
+
+**Dependencies:** SPEC-007 (drift checks in CI), existing BDD derivations (features/SPEC-*.feature), crate layout
 
 **Requirement (captured 2026-08-07):** Programmatic API documentation and **OpenAPI spec generation**, integrated with **mdBook** as the documentation site.
 
