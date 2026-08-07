@@ -26,7 +26,7 @@ pub const COMMON_INSTANCE: Uuid = Uuid::nil();
 #[derive(Clone, Debug, PartialEq, TerminusDBModel, FromTDBInstance)]
 #[tdb(id_field = "id", key = "random")]
 pub struct EntityDoc {
-    id: EntityIDFor<Self>,
+    pub id: EntityIDFor<Self>,
     pub kind: String,
 }
 
@@ -82,6 +82,9 @@ pub struct CommitEntry {
     pub message: String,
 }
 
+pub mod stream;
+
+#[derive(Clone)]
 pub struct Repository {
     client: TerminusDBHttpClient,
     db: String,
@@ -115,9 +118,10 @@ impl Repository {
             id: EntityIDFor::new(&format!("E:{id}"))?,
             kind: format!("{kind:?}"),
         };
-        self.client
-            .insert(&doc, DocumentInsertArgs::from(self.spec.clone()))
-            .await?;
+        let mut args = DocumentInsertArgs::from(self.spec.clone());
+        args.author = "system".to_string();
+        args.message = format!("create-entity|ent:{id}:{:?}", kind);
+        self.client.insert(&doc, args).await?;
         Ok(id)
     }
 
@@ -138,14 +142,14 @@ impl Repository {
             id: EntityIDFor::new(bare_id.as_str())?,
             entity_id: entity_id.to_string(),
             instance_id: instance_id.to_string(),
-            scope,
+            scope: scope.clone(),
             version: version as i64,
             status,
             properties,
         };
         let mut args = DocumentInsertArgs::from(self.spec.clone());
         args.author = author.to_string();
-        args.message = format!("{message}|ps:{entity_id}:{instance_id}:v{version}");
+        args.message = format!("{message}|ps:{entity_id}:{instance_id}:{scope}:v{version}");
         self.client.insert(&doc, args).await?;
         Ok(())
     }
@@ -225,9 +229,17 @@ pub async fn resolve_at(
         }
         if let Some((_, ps)) = entry.message.rsplit_once("|ps:") {
             let parts: Vec<&str> = ps.split(':').collect();
-            if parts.len() >= 3 && parts[0] == entity_id.to_string() {
-                let instance = parts[1].parse::<Uuid>()?;
-                let version = parts[2].trim_start_matches('v').parse::<u64>()?;
+            let (instance_str, version_str) = if parts.len() >= 4 {
+                (parts[1], parts[3])
+            } else {
+                (
+                    parts.get(1).copied().unwrap_or(""),
+                    parts.get(2).copied().unwrap_or(""),
+                )
+            };
+            if parts[0] == entity_id.to_string() {
+                let instance = instance_str.parse::<Uuid>()?;
+                let version = version_str.trim_start_matches('v').parse::<u64>()?;
                 let bare_id = format!("PS:{entity_id}:{instance}:v{version}");
                 versions
                     .entry(instance)

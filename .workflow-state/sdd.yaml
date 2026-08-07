@@ -26,8 +26,14 @@ specs:
     status: Implemented
     ac: { AC-1: pass, AC-2: pass, AC-3: pass, AC-4: pass, AC-5: pass, AC-6: pass, AC-7: pass }
     started: 2026-08-06
+  - id: SPEC-004
+    file: docs/specs/SPEC-004-live-knowledge-stream.md
+    status: Implemented
+    ac: { AC-1: pass, AC-2: pass, AC-3: pass, AC-4: pass, AC-5: pass }
+    started: 2026-08-07
   - id: SPEC-009
     file: docs/specs/SPEC-009-schema-registry.md
-    status: Draft
+    status: Implemented
+    ac: { AC-1: pass, AC-2: pass, AC-3: pass, AC-4: pass, AC-5: pass, AC-6: pass, AC-7: pass }
     started: 2026-08-07
 updated: 2026-08-07

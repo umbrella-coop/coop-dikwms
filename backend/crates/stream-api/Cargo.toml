@@ -1,0 +1,23 @@
+[package]
+name = "stream-api"
+version = "0.1.0"
+edition.workspace = true
+rust-version.workspace = true
+
+[dependencies]
+terminusdb-repository = { path = "../terminusdb-repository" }
+terminusdb-client = { path = "../../../third_party/terminusdb-rs/crates/client" }
+axum = "0.8"
+tokio = { version = "1", features = ["time", "net", "sync", "macros", "rt-multi-thread"] }
+tokio-stream = "0.1"
+futures = "0.3"
+serde.workspace = true
+serde_json.workspace = true
+uuid.workspace = true
+anyhow = "1"
+tracing = "0.1"
+
+[dev-dependencies]
+terminusdb-bin = { path = "../../../third_party/terminusdb-rs/crates/bin" }
+knowledge-domain = { path = "../knowledge-domain" }
+reqwest = { version = "0.12", features = ["stream"] }

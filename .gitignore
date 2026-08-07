@@ -1,5 +1,4 @@
 backend/target/
 *.rs.bk
 .DS_Store
-
 backend/crates/terminusdb-repository/logs/
