@@ -51,4 +51,8 @@ specs:
     status: Archived
     ac: 4/4
     evidence: ae24ce5
+  - id: SPEC-019
+    file: docs/specs/SPEC-019-naming-scope-correction.md
+    status: Approved
+    started: 2026-08-07
 updated: 2026-08-07
