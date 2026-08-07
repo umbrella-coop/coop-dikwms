@@ -1,0 +1,65 @@
+// Core namespace for the knowledge platform (SPEC-009).
+// Canonical definition — mirrored by schema-registry/src/core.rs
+// (constructed via prost_types at that single site).
+
+syntax = "proto3";
+
+package core.v1;
+
+// Thing base: schema.org minimal property set + the extension seam.
+// Tags 1-4 are reserved for the base; kinds add fields from 5.
+message Thing {
+  string name = 1;
+  string identifier = 2;
+  string url = 3;
+  // Namespace type references, e.g. "terminusdb://schema/org.schema.v1/Person".
+  repeated string additionalType = 4;
+}
+
+message Node {
+  string name = 1;
+  string identifier = 2;
+  string url = 3;
+  repeated string additionalType = 4;
+}
+
+message Edge {
+  string name = 1;
+  string identifier = 2;
+  string url = 3;
+  repeated string additionalType = 4;
+  string subject = 5;
+  string object = 6;
+  string relationship = 7;
+}
+
+message Combo {
+  string name = 1;
+  string identifier = 2;
+  string url = 3;
+  repeated string additionalType = 4;
+  repeated string members = 5;
+}
+
+message CreativeWork {
+  string name = 1;
+  string identifier = 2;
+  string url = 3;
+  repeated string additionalType = 4;
+}
+
+message MediaObject {
+  string name = 1;
+  string identifier = 2;
+  string url = 3;
+  repeated string additionalType = 4;
+}
+
+message Action {
+  string name = 1;
+  string identifier = 2;
+  string url = 3;
+  repeated string additionalType = 4;
+  string agent = 5;
+  string object = 6;
+}

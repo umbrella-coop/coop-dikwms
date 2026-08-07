@@ -97,3 +97,20 @@ Planned specs not yet created. Add requirements captured during development here
 **Deferred:** derived-artifact cache, structural conformance validation, namespace explorer console surface (later)
 
 **Dependencies:** SPEC-001 (schema model/codegen), SPEC-006 (TerminusDB storage), SPEC-003 (per-scope namespace selection), future API layer, Bit web console
+
+## SPEC-010 (planned): AWS Remote Build & Test Offload
+
+**Requirement (captured 2026-08-07):** Offload builds/tests that take **more than 5 seconds** to AWS, **copy the results back to the local machine** to save local time, and use **Pulumi as IaC** to **destroy the infrastructure after the workflow finishes** to save cost.
+
+**Design elements to resolve in the spec:**
+- **Trigger rule:** any build/test invocation whose estimated duration > 5s runs remotely (the fork's TerminusDB-from-source build is the prime candidate — minutes locally)
+- **Instance choice:** ARM64 (Graviton) spot instances for Apple Silicon parity (same target triple `aarch64-apple-darwin`? — needs cross-check: Linux ARM ≠ macOS binaries! Local build output is macOS-specific → remote builds must produce *artifacts* (test results, build logs, cargo-check status), NOT macOS binaries — or use `cargo-build` in the remote for *verification* only and copy back only results/reports)
+- **Round-trip:** S3 (or `aws s3 cp` / rclone) for transfer: source tarball up, results/artifacts down; local machine keeps final outputs
+- **IaC:** Pulumi program (TypeScript or Go): EC2 spot + security group + S3 bucket; `pulumi destroy` in a guaranteed teardown path (workflow finally-block / CI job cleanup step)
+- **Cost control:** spot instances, t2/t3g sizing, idle-timeout auto-termination, destroy-on-completion as a hard gate
+- **Cache:** remote sccache/cargo target reuse across runs (EBS snapshot or S3 cache) — otherwise cold-start cost dominates
+- **Security:** no secrets in workflow images; IAM-scoped creds; destroy even on failure
+
+**Open questions:** build verification vs artifact production on Linux (macOS targets), network transfer vs local build time break-even (~5s threshold implies very cheap fast-path), running remote tests against TerminusDB servers (Docker-in-remote)
+
+**Dependencies:** SPEC-007 (gauntlet gates can trigger remote runs), fork build times (current bottleneck)

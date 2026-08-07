@@ -1,6 +1,6 @@
 [workspace]
 resolver = "2"
-members = ["crates/knowledge-domain", "crates/terminusdb-repository"]
+members = ["crates/knowledge-domain", "crates/terminusdb-repository", "crates/schema-registry"]
 
 [workspace.package]
 edition = "2024"
@@ -12,3 +12,12 @@ serde = { version = "1", features = ["derive"] }
 serde_json = "1"
 chrono = { version = "0.4", features = ["serde"] }
 tokio = { version = "1", features = ["macros", "rt-multi-thread"] }
+
+# Fast dev builds / test binaries (mirrors third_party/terminusdb-rs)
+[profile.dev]
+opt-level = 0
+debug = 1
+codegen-units = 256
+
+[profile.dev.package."*"]
+opt-level = 2
