@@ -149,3 +149,10 @@ Two children promoting incompatible versions of the same property to the parent 
 - SPEC-001: consumes `PropertySet` version/status semantics; adds history
 - SPEC-003 (planned): scope hierarchy + ACL — reviewer authorization for `decide_request`
 - SPEC-004 (planned): live streaming — change-request events (submitted/approved/applied) become domain events
+
+---
+
+## MODIFIED Requirements (delta — 2026-08-07)
+
+- **MODIFIED — History retention (R-3):** per-scope `history: Vec<PropertySet>` is superseded by the **TerminusDB commit graph** (SPEC-006) — diffs/time-travel replace the in-memory vector; the `history()` API remains a convenience projection over immutable versioned documents.
+- **MODIFIED — Ledger persistence (deferred):** the `ModerationLedger` remains in-memory in v1; persisting change requests + decisions is **SPEC-012 (Audit & Traceability)** and also unblocks the activity stream.

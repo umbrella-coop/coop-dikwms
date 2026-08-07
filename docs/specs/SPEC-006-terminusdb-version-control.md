@@ -137,3 +137,10 @@ backend/crates/
 - SPEC-003: principals become commit `author`
 - SPEC-004 (planned): commit-log polling as the live-stream cursor
 - Backlog SPEC-005 (merge): TerminusDB diff/merge gives native conflict detection
+
+---
+
+## MODIFIED Requirements (delta — 2026-08-07)
+
+- **MODIFIED — Message token format:** commit-message tokens are `{user-message}|ps:{entity}:{instance}:{scope}:v{version}` (scope added by SPEC-004). `resolve_at` parses both the 3-part legacy and 4-part current forms.
+- **MODIFIED — Time-travel mechanics:** v1 as-of resolution is reconstructed from the commit log (fork client `ref_commit` reads not wired); an explicit `get_document_as_of` client feature is a candidate fork follow-up.

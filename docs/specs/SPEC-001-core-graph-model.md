@@ -114,3 +114,10 @@ The system SHALL model entities from a **single source schema** based on schema.
 
 - Brainstorm report: docs/brainstorm/knowledge-graph-platform.md (ideas #1 Identity/Content Separation, #12 Schema-First Codegen)
 - Bit docs (grounded, Aug 2026): https://bit.dev/docs/intro
+
+---
+
+## MODIFIED Requirements (delta — 2026-08-07)
+
+- **MODIFIED — Scoped Property Sets storage key:** implemented storage is keyed by **(entity, scope-instance)**, not ladder level — per-SPEC-003 refactor; `resolve` walks the instance's ancestor chain. The `Scope` enum remains the ladder-level marker on `PropertySet`.
+- **MODIFIED — Schema pipeline (R-2):** the codegen toolchain is **`#[derive(TerminusDBModel)]`** (Rust struct = single source schema; TerminusDB schema = generated artifact) — not "schema.org → @to → DTOs". Verified: schemas/proto registry namespace (SPEC-009) is the long-term schema source.

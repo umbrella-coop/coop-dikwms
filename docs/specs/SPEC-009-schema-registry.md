@@ -124,3 +124,10 @@ crates/schema-registry/
 - SPEC-006: TerminusDB storage pattern reused (immutable versioned docs)
 - SPEC-003: per-scope namespace selection deferred (v2)
 - SPEC-002: AssessAction types seeded via `org.schema.v1` (action records in PostgreSQL per brainstorm — future spec)
+
+---
+
+## MODIFIED Requirements (delta — 2026-08-07)
+
+- **MODIFIED — additionalType validation (R-14, philosophy):** per the **schemaless-by-default** core philosophy, `validate_additional_type` returns a **warning outcome and the write proceeds** — it SHALL NOT reject writes. Tag-immutability linting remains a hard gate (wire-compatibility guarantee, not data conformance). Enforcement may become opt-in per scope later.
+- **NOTE — AC-4/AC-5 test alignment:** integration tests currently assert hard failure (`TypeNotFound`); they SHALL be updated when the warn mode lands.
