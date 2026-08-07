@@ -29,7 +29,7 @@ Planned specs not yet created. Add requirements captured during development here
 - **JSON+RDF dual model:** scoped property sets as JSON documents; edges/combo topology as RDF triples — schema decisions for SPEC-001 R-2 and cross-org sharing queries (SPEC-003)
 - **Conflict detection:** TerminusDB merge conflict handling as the basis for competing-promotion resolution
 
-**Gate:** blocked on **R-1** — TerminusDB capabilities unverified (terminusdb.com returned HTTP 522 at fetch time, 2026-08-06). Verify before spec creation.
+**Gate:** ~~blocked on R-1~~ — **R-1 partially verified** (2026-08-06, github.com/terminusdb/terminusdb README): commits/diff/push-pull ✓, time-travel ✓, Allen-interval temporal reasoning ✓, JSON Git-for-Data ✓, WOQL/GraphQL/REST ✓, Rust client ✓; subscriptions ✗. Remaining unknowns: `@to` schema specifics, Rust client maturity, subscription availability — verify hands-on via local Docker server before spec creation.
 
 **Dependencies:** SPEC-001 (R-2 schema pipeline), SPEC-002 (R-3 history, promotion), SPEC-003 (scope queries)
 
@@ -51,3 +51,21 @@ Planned specs not yet created. Add requirements captured during development here
 **Tooling questions for the spec:** cargo-geiger / cargo-cyclomatic-complexity / rustfmt/clippy-as-gauntlet, cargo-mutants (mutation), tarpaulin/llvm-cov (coverage), cucumber-rs (Gherkin execution), CI wiring (UDS `test`/`lint`/`security` commands in `uds.project.yaml`).
 
 **Dependencies:** none blocking (independent of R-1/R-2); requires CI wiring
+
+## SPEC-008 (planned): terminusdb-rs Fork — JS-Client Feature Parity
+
+**Requirement (captured 2026-08-06):** Implement the missing TerminusDB Rust-client features that the TypeScript/JavaScript client already has, in a **fork at https://github.com/gustavorps/terminusdb-rs** (fork of ParapluOU/terminusdb-rs), added as a **git submodule**.
+
+**Features to port from the JS client (per ParapluOU repo README "Future Development"):**
+- Branch management operations
+- Push/pull/clone (remote database operations)
+- Streaming operations
+- Patch/diff operations
+- Schema migration tools
+- Advanced authentication methods
+
+**Also blocking/supporting:**
+- Unblocks SPEC-006 R-9 (branch-per-scope promotion mapping) and SPEC-004 (streaming)
+- Reduces SPEC-006 R-7 (Rust client maturity risk) — forked dependency, in-repo
+
+**Workflow:** add submodule (e.g. `third_party/terminusdb-rs`) → spec per feature (SDD) → TDD against the real server (Docker) or recorded fixtures

@@ -1,5 +1,5 @@
 workflow: sdd
-phase: verify
+phase: implement
 specs:
   - id: SPEC-001
     file: docs/specs/SPEC-001-core-graph-model.md
@@ -15,5 +15,13 @@ specs:
     file: docs/specs/SPEC-003-scope-hierarchy-acl.md
     status: Implemented
     ac: { AC-1: pass, AC-2: pass, AC-3: pass, AC-4: pass, AC-5: pass, AC-6: pass, AC-7: pass }
+    started: 2026-08-06
+  - id: SPEC-006
+    file: docs/specs/SPEC-006-terminusdb-version-control.md
+    status: Draft
+    started: 2026-08-06
+  - id: SPEC-008
+    file: docs/specs/SPEC-008-terminusdb-rs-parity.md
+    status: Approved
     started: 2026-08-06
 updated: 2026-08-06
