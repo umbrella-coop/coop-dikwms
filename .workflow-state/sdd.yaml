@@ -1,8 +1,14 @@
 workflow: sdd
-phase: implement
+phase: verify
 specs:
   - id: SPEC-001
     file: docs/specs/SPEC-001-core-graph-model.md
-    status: Draft
+    status: Implemented-partial
+    ac: { AC-1: pass, AC-2: pass, AC-3: pass, AC-4: pass, AC-5: blocked-r2, AC-6: blocked-r1 }
+    started: 2026-08-06
+  - id: SPEC-002
+    file: docs/specs/SPEC-002-moderation-promotion.md
+    status: Implemented
+    ac: { AC-1: pass, AC-2: pass, AC-3: pass, AC-4: pass, AC-5: pass, AC-6: pass }
     started: 2026-08-06
 updated: 2026-08-06
