@@ -1,6 +1,6 @@
 # SPEC-018 Feature: Frontend Platform — AI-Agent-Friendly E2E Testability
 
-<!-- status: Draft -->
+<!-- status: Implemented -->
 
 ## Overview
 
@@ -69,10 +69,12 @@ Consumers SHALL bootstrap state from the SSE genesis replay (`/events?cursor=`),
 
 ## Test Plan
 
-- [ ] Component specs: `data-testid` presence assertions on ui/graph + ui/entity-drawer (AC-1, AC-2)
+- [x] Component specs: `data-testid` presence + state reflection on ui/graph + ui/entity-drawer (AC-1, AC-2) — 6 tests green
 - [ ] E2E (Playwright, later): `__APP_READY__` wait, canvas render, drawer open, live-update lands (AC-3, AC-6)
-- [ ] Unit: `reportError` emits structured `app:error` (AC-4)
-- [ ] Structure check: component ids under network-graph/{apps,ui,hooks,services} (AC-5)
+- [x] Unit: `reportError` emits structured `app:error` (AC-4) — hooks spec green
+- [x] Structure check: `frontend/check-layout.mjs` — network-graph/{apps,ui,hooks,services} (AC-5)
+
+> Note (2026-08-07): drawer save-failure error UI is exercised via Playwright E2E (SPEC-017), not jsdom — antd v6 form submission is unreliable under jsdom. The `app:error` dispatch contract is unit-covered in hooks/use-event-stream.
 
 ## Open Risks
 

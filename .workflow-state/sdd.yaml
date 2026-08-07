@@ -53,7 +53,8 @@ specs:
     evidence: ae24ce5
   - id: SPEC-018
     file: docs/specs/SPEC-018-frontend-e2e-testability.md
-    status: Draft
+    status: Implemented
+    ac: { AC-1: pass, AC-2: pass, AC-3: spike, AC-4: pass, AC-5: pass, AC-6: spike }
     started: 2026-08-07
   - id: SPEC-019
     file: docs/specs/SPEC-019-naming-scope-correction.md
