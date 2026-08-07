@@ -1,0 +1,13 @@
+bazel     8.4.1
+nodejs    24.14.0
+uv        0.9.5
+golang    1.23.12
+gcloud    529.0.0
+awscli    2.31.18
+deno      2.6.4
+opentofu  1.12.5
+pnpm      11.15.1
+infisical 0.43.114
+rust      1.97.1
+python    3.12.8
+minikube  latest

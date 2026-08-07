@@ -1,0 +1,8 @@
+workflow: sdd
+phase: implement
+specs:
+  - id: SPEC-001
+    file: docs/specs/SPEC-001-core-graph-model.md
+    status: Draft
+    started: 2026-08-06
+updated: 2026-08-06

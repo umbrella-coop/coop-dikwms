@@ -1,0 +1,7 @@
+version: "1"
+
+commands:
+  test: test
+  lint: lint
+  build: build
+  security: security

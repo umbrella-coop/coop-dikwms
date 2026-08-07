@@ -1,0 +1,12 @@
+[workspace]
+resolver = "2"
+members = ["crates/knowledge-domain"]
+
+[workspace.package]
+edition = "2024"
+rust-version = "1.97.1"
+
+[workspace.dependencies]
+uuid = { version = "1", features = ["v4", "v7"] }
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
