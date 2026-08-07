@@ -51,6 +51,10 @@ specs:
     status: Archived
     ac: 4/4
     evidence: ae24ce5
+  - id: SPEC-018
+    file: docs/specs/SPEC-018-frontend-e2e-testability.md
+    status: Draft
+    started: 2026-08-07
   - id: SPEC-019
     file: docs/specs/SPEC-019-naming-scope-correction.md
     status: Approved

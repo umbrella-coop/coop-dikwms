@@ -48,6 +48,8 @@ Planned specs not yet created. Add requirements captured during development here
 
 ## SPEC-018 (planned): Frontend Platform — AI-Agent-Friendly E2E Testability
 
+> **PROMOTED (2026-08-07):** created as docs/specs/SPEC-018-frontend-e2e-testability.md — entry kept for provenance.
+
 **Requirement (captured 2026-08-07, source: user request + .wip/todo-friently-e2e-to-code-agents.md):** the frontend (G6 + antd + Bit microfrontends) SHALL be built AI-agent/E2E-friendly per the conventions in `.wip/todo-friently-e2e-to-code-agents.md`:
 - Standardized `data-testid` on interactive components (never volatile class names/UI copy)
 - DOM state reflection: `data-loading`, `data-state`, `data-error` attributes for async/lifecycle states
