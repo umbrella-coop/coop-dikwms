@@ -35,6 +35,10 @@ specs:
     file: docs/specs/SPEC-012-audit-traceability.md
     status: Draft
     started: 2026-08-07
+  - id: SPEC-013
+    file: docs/specs/SPEC-013-api-layer.md
+    status: Draft
+    started: 2026-08-07
   - id: SPEC-009
     file: docs/specs/SPEC-009-schema-registry.md
     status: Implemented

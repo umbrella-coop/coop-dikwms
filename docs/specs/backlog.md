@@ -16,7 +16,15 @@ Planned specs not yet created. Add requirements captured during development here
 - Client reconciliation via cursor (no redraw storms — G6 consumes domain events, not raw deltas)
 - PostgreSQL events for moderation actions (PG19 SQL/PGQ — verify) vs TerminusDB commit stream for knowledge changes — boundary decision for the spec
 
-## SPEC-012 (planned): Audit & Traceability (platform-wide)
+## SPEC-013 (planned): API Layer (axum REST)
+
+**Requirement (captured 2026-08-07):** the missing HTTP surface — referenced as "future: axum application layer" in SPEC-006's crate structure. 8 specs are implemented with **no REST API** (only the SPEC-004 SSE stream). Unblocks: G6/Bit frontend, SPEC-011 pipeline batch API, SPEC-012 audit queries, SPEC-009 namespace console.
+
+**v1 scope (DISCUSS):** core CRUD (entities, property sets, resolve), moderation (submit/decide/apply, promotion), audit queries, SSE stream mount, registry namespace listing + additionalType warn-mode; principals via simple auth header (SPEC-003 wiring documented); philosophy enforcement (schemaless warn-not-fail) applied at the boundary.
+
+**Design questions:** framework (axum ✓), auth (v1 simple principal header; verified authors risk), error contract (JSON-LD-ish), validation warnings payload shape.
+
+**Dependencies:** SPEC-001/002/003/004/006/009/012 (all implemented) — the API is a thin composition layer
 
 **Requirement (captured 2026-08-07):** Auditability is a **platform-wide** concern, not pipeline-only: every mutation — manual edits, moderation decisions, promotions, pipeline batches — must be traceable (who/what/when/why) and queryable. Follow-up to the Graph Conductor roadmap fit (RFC #133), where the RFC's event-store auditability was compared to our commit log.
 
