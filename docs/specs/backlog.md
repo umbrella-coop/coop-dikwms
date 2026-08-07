@@ -69,3 +69,31 @@ Planned specs not yet created. Add requirements captured during development here
 - Reduces SPEC-006 R-7 (Rust client maturity risk) — forked dependency, in-repo
 
 **Workflow:** add submodule (e.g. `third_party/terminusdb-rs`) → spec per feature (SDD) → TDD against the real server (Docker) or recorded fixtures
+
+## SPEC-009 (planned): Multi-Namespace Versioned Schema Registry
+
+**Brainstorm complete (docs/brainstorm/schema-registry-core-set.md, 2026-08-07) — decisions locked:**
+
+**Core schema set (ships in knowledge-domain, protobuf):**
+- 5 kinds via discriminated field + Thing-minimal properties: Node, Edge, Combo, CreativeWork, MediaObject, Action
+- Edge = Thing + `subject`/`object`/`relationship`; Combo = Thing + members
+- Everything IS a schema.org `Thing`; `additionalType` (registry-validated) is the extension seam
+- schema.org `Action`/`AssessAction` tree records moderation **user intent** (ChooseAction→VoteAction, IgnoreAction, ReactAction→Like/Disagree/Endorse, ReviewAction); SPEC-002 ledger remains workflow state
+
+**Scope decisions:**
+- v1 = two namespaces only: `core` + `org.schema.v1` (curated pinned schema.org subset); multi-namespace console/tooling deferred
+- **RISK (explicit): multi-schema-namespace complexity** — schema.org first
+- Cross-domain mapping (OCSF, healthcare, FiBO) = long-term goal; schema.org is the seed/alignment standard
+
+**Registry design elements:**
+- Protobuf: `package` directive = namespace; immutable field tags (never changed/reused) = wire compat without runtime registry
+- Stored in TerminusDB: FileDescriptorSets + derived schemas
+- **Metadata property on entities: native domain datastructure + schema versioning pointer**
+- **Registry UX: orgs define supported namespaces; selectable per workspace and project** (SPEC-003 scope instances)
+- **Moderation action records: PostgreSQL; PG19 native SQL/PGQ for graph queries over AssessAction→moderation graphs** `[user-provided; verify PG19 SQL/PGQ support]`
+- Tag budget 1–15 for core; tag-immutability lint; properties as resolvable IRIs
+- Registry drives antd drawer form generation (property metadata → generic form renderer)
+
+**Deferred:** derived-artifact cache, structural conformance validation, namespace explorer console surface (later)
+
+**Dependencies:** SPEC-001 (schema model/codegen), SPEC-006 (TerminusDB storage), SPEC-003 (per-scope namespace selection), future API layer, Bit web console
