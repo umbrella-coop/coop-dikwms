@@ -5,8 +5,11 @@ Frontend conventions for AI agents and E2E testing. Derived from
 
 ## Commands
 
-- `bit start` — dev server (component preview + app)
+- `bit start` — workspace UI (component previews, http://localhost:3000)
 - `bit build <component>` — build pipeline (tsc + vite)
+- **Run an app:** `cd network-graph/apps/<name> && npx vite --port 3002`
+  (`bit run <app>` is unreliable — serves 404s; R-28)
+- `bit test` — component specs (vitest)
 - `bit create react-app <name>` — new app component
 - `bit install <pkg>` — add dependencies
 - `bit tag` / `bit export` — release to `@coop-codes`
