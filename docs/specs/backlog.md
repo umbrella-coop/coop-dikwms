@@ -33,6 +33,33 @@ Planned specs not yet created. Add requirements captured during development here
 
 **Dependencies:** SPEC-007 (drift checks in CI), existing BDD derivations (features/SPEC-*.feature), crate layout
 
+## SPEC-019 (planned): Naming & Bit Scope Correction — coop-codes.network-graph
+
+**Requirement (captured 2026-08-07, source: user request):** replace the placeholder `grps.coop-graph` Bit scope with the real organization scope **`coop-codes.network-graph`** (Bit dev org `@coop-codes`), and correct the "graph-network" naming drift to `network-graph` across the project.
+
+**Scope of the fix:**
+- `frontend/workspace.jsonc`: `defaultScope` + workspace-config key → `coop-codes.network-graph` (done in the spike)
+- Component namespaces: `frontend/coop-graph/` → `frontend/network-graph/` (Bit `bit rename` / dir restructure)
+- References in docs/AGENTS/specs that use `grps.coop-graph` or "graph-network" for the Bit scope
+- Repo directory name `coop-graph-network` stays (it is the repo), only Bit-scope naming is corrected
+- Verify: `bit status` clean, component ids resolve to `@coop-codes/network-graph.*`
+
+**Dependencies:** frontend spike (Bit workspace), SPEC-018 (frontend platform)
+
+## SPEC-018 (planned): Frontend Platform — AI-Agent-Friendly E2E Testability
+
+**Requirement (captured 2026-08-07, source: user request + .wip/todo-friently-e2e-to-code-agents.md):** the frontend (G6 + antd + Bit microfrontends) SHALL be built AI-agent/E2E-friendly per the conventions in `.wip/todo-friently-e2e-to-code-agents.md`:
+- Standardized `data-testid` on interactive components (never volatile class names/UI copy)
+- DOM state reflection: `data-loading`, `data-state`, `data-error` attributes for async/lifecycle states
+- Semantic HTML + explicit ARIA (`role="dialog"`, `aria-expanded`, `aria-label`)
+- Machine-readable hooks: `window.__APP_READY__` / `__REACT_HYDRATED__` readiness flags in dev/test builds
+- Structured JSON error output from error boundaries + network failures
+- Frontend `AGENTS.md`: E2E framework conventions (Playwright), selector scheme, test scripts; Page Object Models as reusable abstractions
+
+**Status:** the frontend spike (G6 graph + antd registry-driven drawer + SSE live updates, Bit workspace) implements these conventions first; this spec formalizes them when the spike stabilizes.
+
+**Dependencies:** SPEC-013 (API), SPEC-016 (OpenAPI contract), SPEC-009 (registry-driven forms), SPEC-004 (live stream), SPEC-017 (BDD/E2E org)
+
 ## SPEC-016 (planned): Programmatic API Docs & OpenAPI Generation (mdBook)
 
 **Requirement (captured 2026-08-07):** Programmatic API documentation and **OpenAPI spec generation**, integrated with **mdBook** as the documentation site.
