@@ -2,6 +2,20 @@
 
 Planned specs not yet created. Add requirements captured during development here so they are not lost.
 
+> **Intake rule (added 2026-08-07):** every spec source feeds this queue — brainstorm outcomes, user requests, dependency findings, and spec-relationship references. A spec is created from the queue, not on demand.
+
+## SPEC-004 (planned): Live Streaming via the Commit Stream
+
+**Source:** original problem statement ("live stream data") + brainstorm idea #5 (CDC + cursor, Agg 4.1) — referenced as "planned" in SPEC-001/002/006/008 relationships but never created (gap).
+
+**Status:** **fully de-risked by SPEC-008** — SSE plugin endpoint is dead on v12 (404); the **native commit stream is verified working** (commit advances + `commit_added_entities_ids` diff).
+
+**Design sketch:**
+- Live updates = commit-log cursor over `terminusdb-repository` (poll/`log_iter` diff per cursor position)
+- Domain events: node created, property promoted, combo regrouped, change-request lifecycle (feeds SPEC-002 activity stream)
+- Client reconciliation via cursor (no redraw storms — G6 consumes domain events, not raw deltas)
+- PostgreSQL events for moderation actions (PG19 SQL/PGQ — verify) vs TerminusDB commit stream for knowledge changes — boundary decision for the spec
+
 ## SPEC-005 (planned): Graph Primitive Merge
 
 **Requirement (captured 2026-08-06):** Nodes, edges, and combos can be **merged** — two or more graph primitives collapse into one entity.

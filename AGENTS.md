@@ -4,6 +4,12 @@
 
 You are an expert software engineer assistant. Follow these project standards.
 
+## Spec Intake Rule (SDD governance)
+> Specs are created by **promoting backlog items** — never on demand.
+1. **Single intake queue:** `docs/specs/backlog.md` is the only source of planned specs. Every brainstorm outcome, user request, dependency finding, and spec-relationship reference ("SPEC-NNN (planned)") MUST be recorded there before any spec creation.
+2. **Promotion gate:** the SDD DISCUSS phase SHALL reference the backlog item being promoted. If a requested spec is not in the backlog, add it to the backlog first, then create the spec from it.
+3. **Relationship hygiene:** any "planned" spec named in a spec's Relationship section MUST exist as a backlog entry (this is how SPEC-004 was lost).
+
 ## Conversation Language
 All responses should be in **English**.
 
