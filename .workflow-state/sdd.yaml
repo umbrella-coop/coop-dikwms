@@ -18,7 +18,8 @@ specs:
     started: 2026-08-06
   - id: SPEC-006
     file: docs/specs/SPEC-006-terminusdb-version-control.md
-    status: Draft
+    status: Implemented
+    ac: { AC-1: pass, AC-2: pass, AC-3: pass, AC-4: pass-via-fork, AC-5: pass-via-fork, AC-6: pass }
     started: 2026-08-06
   - id: SPEC-008
     file: docs/specs/SPEC-008-terminusdb-rs-parity.md

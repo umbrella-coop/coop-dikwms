@@ -1,6 +1,6 @@
 # SPEC-006 Feature: TerminusDB Git-Like Version Control & Temporal Architecture
 
-<!-- status: Draft -->
+<!-- status: Implemented -->
 
 ## Overview
 
@@ -61,12 +61,14 @@ The system SHALL store scoped property sets as JSON documents (via `terminusdb-s
 
 ## Acceptance Criteria
 
-- AC-1: Given persisted entities, when the process restarts and re-reads, then entities and scoped property sets are present with versions intact.
-- AC-2: Given an approved change request, when applied, then a TerminusDB commit exists with author = reviewer and message = request id.
-- AC-3: Given an entity whose org set changed at commit N, when resolved as of N-1, then the pre-change set is returned.
-- AC-4: Given a workspace branch with a promoted version, when approved and merged, then the parent branch contains the merged version.
-- AC-5: Given Rust `TerminusDBModel` models, when schema is inserted, then data validates and graph links resolve.
-- AC-6: Given domain state, when persisted and re-loaded into the domain API, then invariants (versions, ladder resolution) hold.
+- AC-1: Given persisted entities, when the process restarts and re-reads, then entities and scoped property sets are present with versions intact. ✅
+- AC-2: Given an approved change request, when applied, then a TerminusDB commit exists with author = reviewer and message = request id. ✅
+- AC-3: Given an entity whose org set changed at commit N, when resolved as of N-1, then the pre-change set is returned. ✅
+- AC-4: Given a workspace branch with a promoted version, when approved and merged, then the parent branch contains the merged version. ✅ (fork merge Rebase/Apply verified; v2 branch-per-scope mapping)
+- AC-5: Given Rust `TerminusDBModel` models, when schema is inserted, then data validates and graph links resolve. ✅ (fork `with_db_schema` pattern)
+- AC-6: Given domain state, when persisted and re-loaded into the domain API, then invariants (versions, ladder resolution) hold. ✅
+
+**Implementation note (2026-08-06):** property sets are stored as immutable versioned documents (`PS:{entity}:{instance}:v{version}`); each save is a commit with author + `{message}|ps:...` token; `resolve_at` reconstructs as-of state from the commit log (the fork client's `ref_commit` time-travel read is not wired). sys:JSON fields require `unfold: true` to materialize (content-addressed refs otherwise).
 
 ## Technical Design
 
@@ -93,6 +95,8 @@ backend/crates/
 | JSON Git-for-Data (JSON/JSON-LD/XML/Turtle) + schema control | GitHub README | Scoped property sets as versioned JSON |
 | WOQL datalog, GraphQL, REST with deep-link discovery | GitHub README | Graph queries for topology |
 | Rust client: derive-macro schema, ORM, WOQL2, commit-id tracking, BranchSpec | ParapluOU repo README | AC-5 codegen story (R-2); `insert_instance_with_commit_id` |
+| **Client now verified end-to-end (SPEC-008, Aug 2026):** clone/push/pull convergence, merge Rebase/Apply, schema migration, commit-stream live updates, bearer/api-key auth — all green against real v12.1 servers | Fork commits 3bd396d..11d525b | R-7 substantially retired; collaboration flow documented (remote registration + fetch-before-push) |
+| SSE plugin endpoint dead on v12 (`/changesets/stream` → 404) | SPEC-008 verification | Live updates = commit stream, not SSE |
 | Rust client 8 stars / 1 fork; missing branch mgmt, streaming, diff/patch (JS-client parity pending) | ParapluOU repo README ("Future Development") | ⚠️ coupling risk — abstract repository port so client gaps don't block domain |
 | Server runs in Docker, Basic auth, JSON-LD API errors | Local run 2026-08-06 | Dev-loop viability |
 | Raw WOQL JSON via REST is finicky; GraphQL/REST simpler | Local run 2026-08-06 | Prefer Rust client WOQL2 builder / ORM over raw WOQL JSON |
