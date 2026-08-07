@@ -16,6 +16,20 @@ Planned specs not yet created. Add requirements captured during development here
 - Client reconciliation via cursor (no redraw storms — G6 consumes domain events, not raw deltas)
 - PostgreSQL events for moderation actions (PG19 SQL/PGQ — verify) vs TerminusDB commit stream for knowledge changes — boundary decision for the spec
 
+## SPEC-016 (planned): Programmatic API Docs & OpenAPI Generation (mdBook)
+
+**Requirement (captured 2026-08-07):** Programmatic API documentation and **OpenAPI spec generation**, integrated with **mdBook** as the documentation site.
+
+**Design elements to resolve in the spec:**
+- **OpenAPI generation:** `utoipa` derive macros on the SPEC-013 axum handlers (path/response schemas) — or alternative generators; spec emitted as a build artifact (`openapi.json`)
+- **Serving:** swagger-ui (utoipa-swagger-ui) mounted in the API + the same spec embedded in the mdBook docs site (interactive reference)
+- **mdBook integration:** docs/ book with: platform overview, spec index (AC traceability), API reference (generated), schema registry reference (SPEC-009 namespaces + types), stream/event reference (SPEC-004), governance (AGENTS/specs links)
+- **Generation pipeline:** `cargo xtask` or build script regenerates docs from code + specs — docs never drift from handlers (spec-vs-code convergence check)
+- **Schema registry in docs:** list registered namespaces/types in the book (from SPEC-009)
+- **Traceability:** each endpoint maps to spec/ACs in the docs
+
+**Dependencies:** SPEC-013 (API to document), SPEC-009 (registry content), future Bit console (docs for component library)
+
 ## SPEC-015 (planned): Event-Driven Ecosystem Integration (EIP)
 
 **Requirement (captured 2026-08-07):** Extend platform capabilities with **Enterprise Integration Patterns** (messaging) for ecosystem integration:
