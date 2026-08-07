@@ -1,0 +1,7 @@
+[book]
+title = "Knowledge Graph Platform"
+authors = ["grps"]
+language = "en"
+
+[build]
+create-missing = false

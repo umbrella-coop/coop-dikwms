@@ -18,6 +18,8 @@ uuid.workspace = true
 anyhow = "1"
 tracing = "0.1"
 chrono.workspace = true
+utoipa = { version = "5", features = ["uuid"] }
+utoipa-swagger-ui = { version = "9", features = ["axum"] }
 
 [dev-dependencies]
 terminusdb-bin = { path = "../../../third_party/terminusdb-rs/crates/bin" }

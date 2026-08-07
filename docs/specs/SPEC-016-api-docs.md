@@ -1,6 +1,6 @@
 # SPEC-016 Feature: Programmatic API Docs & OpenAPI Generation (mdBook)
 
-<!-- status: Draft -->
+<!-- status: Implemented -->
 
 ## Overview
 
@@ -52,10 +52,12 @@ The system SHALL regenerate docs from code + specs via a docgen command; a handl
 
 ## Acceptance Criteria
 
-- AC-1: Given the running API, when `GET /openapi.json` is requested, then a valid OpenAPI 3.1 document covering all routes is returned.
-- AC-2: Given the running API, when the swagger UI is requested, then the interactive explorer is served.
-- AC-3: Given docgen has run, when mdBook builds, then the site includes API reference, spec index, and registry namespaces.
-- AC-4: Given a handler change, when docgen runs, then the OpenAPI document reflects the change (no drift).
+- AC-1: Given the running API, when `GET /openapi.json` is requested, then a valid OpenAPI 3.1 document covering all routes is returned. ✅
+- AC-2: Given the running API, when the swagger UI is requested, then the interactive explorer is served. ✅
+- AC-3: Given docgen has run, when mdBook builds, then the site includes API reference, spec index, and registry namespaces. ✅
+- AC-4: Given a handler change, when docgen runs, then the OpenAPI document reflects the change (no drift). ✅
+
+**Implementation notes (2026-08-07):** utoipa annotations on all 11 handlers; `ApiDoc` served at `/openapi.json` + swagger-ui at `/swagger`; `cargo run -p api --example docgen` regenerates `docs/openapi/openapi.json` + book chapters (api-reference, specs index with AC counts, registry snapshot fallback). Book at `docs/book/` (mdBook).
 
 ## Technical Design
 

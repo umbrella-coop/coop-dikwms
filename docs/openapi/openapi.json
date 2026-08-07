@@ -1,0 +1,221 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "api",
+    "description": "",
+    "license": {
+      "name": ""
+    },
+    "version": "0.1.0"
+  },
+  "paths": {
+    "/audit/actors/{actor}": {
+      "get": {
+        "tags": [
+          "routes"
+        ],
+        "operationId": "audit_actor",
+        "responses": {}
+      }
+    },
+    "/audit/entities/{id}": {
+      "get": {
+        "tags": [
+          "routes"
+        ],
+        "operationId": "audit_entity",
+        "responses": {}
+      }
+    },
+    "/entities": {
+      "post": {
+        "tags": [
+          "routes"
+        ],
+        "operationId": "create_entity",
+        "responses": {}
+      }
+    },
+    "/entities/{id}/property-sets": {
+      "get": {
+        "tags": [
+          "routes"
+        ],
+        "operationId": "list_property_sets",
+        "responses": {}
+      },
+      "post": {
+        "tags": [
+          "routes"
+        ],
+        "operationId": "save_property_set",
+        "responses": {}
+      }
+    },
+    "/entities/{id}/resolve": {
+      "get": {
+        "tags": [
+          "routes"
+        ],
+        "operationId": "resolve_chain",
+        "responses": {}
+      }
+    },
+    "/namespaces": {
+      "get": {
+        "tags": [
+          "routes"
+        ],
+        "operationId": "list_namespaces",
+        "responses": {}
+      }
+    },
+    "/requests": {
+      "post": {
+        "tags": [
+          "routes"
+        ],
+        "operationId": "submit_request",
+        "responses": {}
+      }
+    },
+    "/requests/{id}/apply": {
+      "post": {
+        "tags": [
+          "routes"
+        ],
+        "operationId": "apply_request",
+        "responses": {}
+      }
+    },
+    "/requests/{id}/decide": {
+      "post": {
+        "tags": [
+          "routes"
+        ],
+        "operationId": "decide_request",
+        "responses": {}
+      }
+    },
+    "/validate-additional-type": {
+      "post": {
+        "tags": [
+          "routes"
+        ],
+        "operationId": "validate_additional_type",
+        "responses": {}
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "CreateEntityBody": {
+        "type": "object",
+        "required": [
+          "kind"
+        ],
+        "properties": {
+          "kind": {
+            "type": "string"
+          }
+        }
+      },
+      "DecideBody": {
+        "type": "object",
+        "required": [
+          "approve"
+        ],
+        "properties": {
+          "approve": {
+            "type": "boolean"
+          }
+        }
+      },
+      "ResolveQuery": {
+        "type": "object",
+        "required": [
+          "instances"
+        ],
+        "properties": {
+          "instances": {
+            "type": "string"
+          }
+        }
+      },
+      "SavePropertySetBody": {
+        "type": "object",
+        "required": [
+          "instance_id",
+          "scope",
+          "version",
+          "properties"
+        ],
+        "properties": {
+          "correlation_id": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "instance_id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "properties": {},
+          "scope": {
+            "type": "string"
+          },
+          "version": {
+            "type": "integer",
+            "format": "int64",
+            "minimum": 0
+          }
+        }
+      },
+      "SubmitRequestBody": {
+        "type": "object",
+        "required": [
+          "entity_id",
+          "instance_id",
+          "scope",
+          "proposed_version"
+        ],
+        "properties": {
+          "correlation_id": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "entity_id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "instance_id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "proposed_version": {
+            "type": "integer",
+            "format": "int64",
+            "minimum": 0
+          },
+          "scope": {
+            "type": "string"
+          }
+        }
+      },
+      "ValidateBody": {
+        "type": "object",
+        "required": [
+          "additional_type"
+        ],
+        "properties": {
+          "additional_type": {
+            "type": "string"
+          }
+        }
+      }
+    }
+  }
+}

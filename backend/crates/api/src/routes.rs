@@ -31,12 +31,13 @@ pub fn router() -> Router<AppState> {
 // Entities & property sets
 // ------------------------------------------------------------------
 
-#[derive(Deserialize)]
-struct CreateEntityBody {
+#[derive(Deserialize, utoipa::ToSchema)]
+pub struct CreateEntityBody {
     kind: String,
 }
 
-async fn create_entity(
+#[utoipa::path(post, path = "/entities")]
+pub async fn create_entity(
     State(state): State<AppState>,
     Principal(principal): Principal,
     Json(body): Json<CreateEntityBody>,
@@ -52,8 +53,8 @@ async fn create_entity(
     Ok(Json(json!({ "@type": "api:Entity", "id": id })))
 }
 
-#[derive(Deserialize)]
-struct SavePropertySetBody {
+#[derive(Deserialize, utoipa::ToSchema)]
+pub struct SavePropertySetBody {
     instance_id: Uuid,
     scope: String,
     version: u64,
@@ -61,7 +62,8 @@ struct SavePropertySetBody {
     correlation_id: Option<String>,
 }
 
-async fn save_property_set(
+#[utoipa::path(post, path = "/entities/{id}/property-sets")]
+pub async fn save_property_set(
     State(state): State<AppState>,
     Principal(principal): Principal,
     Path(id): Path<Uuid>,
@@ -101,7 +103,8 @@ async fn save_property_set(
     ))
 }
 
-async fn list_property_sets(
+#[utoipa::path(get, path = "/entities/{id}/property-sets")]
+pub async fn list_property_sets(
     State(state): State<AppState>,
     Path(id): Path<Uuid>,
 ) -> Result<Json<Value>, ApiError> {
@@ -121,12 +124,13 @@ async fn list_property_sets(
     Ok(Json(json!({ "@type": "api:PropertySets", "items": out })))
 }
 
-#[derive(Deserialize)]
-struct ResolveQuery {
+#[derive(Deserialize, utoipa::ToSchema)]
+pub struct ResolveQuery {
     instances: String,
 }
 
-async fn resolve_chain(
+#[utoipa::path(get, path = "/entities/{id}/resolve")]
+pub async fn resolve_chain(
     State(state): State<AppState>,
     Path(id): Path<Uuid>,
     Query(q): Query<ResolveQuery>,
@@ -157,8 +161,8 @@ async fn resolve_chain(
 // Moderation (thin wrapper over ledger docs + repository)
 // ------------------------------------------------------------------
 
-#[derive(Deserialize)]
-struct SubmitRequestBody {
+#[derive(Deserialize, utoipa::ToSchema)]
+pub struct SubmitRequestBody {
     entity_id: Uuid,
     instance_id: Uuid,
     scope: String,
@@ -166,7 +170,8 @@ struct SubmitRequestBody {
     correlation_id: Option<String>,
 }
 
-async fn submit_request(
+#[utoipa::path(post, path = "/requests")]
+pub async fn submit_request(
     State(state): State<AppState>,
     Principal(principal): Principal,
     Json(body): Json<SubmitRequestBody>,
@@ -187,12 +192,13 @@ async fn submit_request(
     ))
 }
 
-#[derive(Deserialize)]
-struct DecideBody {
+#[derive(Deserialize, utoipa::ToSchema)]
+pub struct DecideBody {
     approve: bool,
 }
 
-async fn decide_request(
+#[utoipa::path(post, path = "/requests/{id}/decide")]
+pub async fn decide_request(
     State(state): State<AppState>,
     Principal(principal): Principal,
     Path(request_id): Path<Uuid>,
@@ -217,7 +223,8 @@ async fn decide_request(
     ))
 }
 
-async fn apply_request(
+#[utoipa::path(post, path = "/requests/{id}/apply")]
+pub async fn apply_request(
     State(state): State<AppState>,
     Principal(principal): Principal,
     Path(request_id): Path<Uuid>,
@@ -271,7 +278,8 @@ async fn apply_request(
 // Audit
 // ------------------------------------------------------------------
 
-async fn audit_entity(
+#[utoipa::path(get, path = "/audit/entities/{id}")]
+pub async fn audit_entity(
     State(state): State<AppState>,
     Path(id): Path<Uuid>,
 ) -> Result<Json<Value>, ApiError> {
@@ -292,7 +300,8 @@ async fn audit_entity(
     Ok(Json(json!({ "@type": "api:AuditEntries", "items": out })))
 }
 
-async fn audit_actor(
+#[utoipa::path(get, path = "/audit/actors/{actor}")]
+pub async fn audit_actor(
     State(state): State<AppState>,
     Path(actor): Path<String>,
 ) -> Result<Json<Value>, ApiError> {
@@ -316,7 +325,8 @@ async fn audit_actor(
 // Registry (schemaless philosophy: warnings, never rejections)
 // ------------------------------------------------------------------
 
-async fn list_namespaces(State(state): State<AppState>) -> Result<Json<Value>, ApiError> {
+#[utoipa::path(get, path = "/namespaces")]
+pub async fn list_namespaces(State(state): State<AppState>) -> Result<Json<Value>, ApiError> {
     let docs = state.registry.list_namespaces().await?;
     let out: Vec<Value> = docs
         .iter()
@@ -331,12 +341,13 @@ async fn list_namespaces(State(state): State<AppState>) -> Result<Json<Value>, A
     Ok(Json(json!({ "@type": "api:Namespaces", "items": out })))
 }
 
-#[derive(Deserialize)]
-struct ValidateBody {
+#[derive(Deserialize, utoipa::ToSchema)]
+pub struct ValidateBody {
     additional_type: String,
 }
 
-async fn validate_additional_type(
+#[utoipa::path(post, path = "/validate-additional-type")]
+pub async fn validate_additional_type(
     State(state): State<AppState>,
     Json(body): Json<ValidateBody>,
 ) -> Result<Json<Value>, ApiError> {
