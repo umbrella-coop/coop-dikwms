@@ -17,6 +17,13 @@ You are an expert software engineer assistant. Follow these project standards.
 2. **Promotion gate:** the SDD DISCUSS phase SHALL reference the backlog item being promoted. If a requested spec is not in the backlog, add it to the backlog first, then create the spec from it.
 3. **Relationship hygiene:** any "planned" spec named in a spec's Relationship section MUST exist as a backlog entry (this is how SPEC-004 was lost).
 
+## Roadmap Protection Rule (user-input pipeline)
+> User inputs can disrupt the roadmap and create avoidable technical debt. Process every input through this simple-but-not-simpler pipeline:
+1. **Record first:** add the input to the backlog (source: user request) — never implement directly.
+2. **Roadmap-fit brainstorm:** mirror the SPEC-011 pattern (docs/brainstorm/graph-conductor-roadmap-fit.md) — map the input onto existing specs/mechanisms; the verdict is *reuse vs build*. Most requests resolve to existing machinery with a thin surface.
+3. **If a new capability survives:** `/sdd` DISCUSS → spec with **P1–P3 priority** (requirement-engineering) and **explicit dependencies** on existing specs.
+4. **If it touches existing specs:** use **delta operations** (`## ADDED/MODIFIED/REMOVED Requirements`) instead of rewrites — prevents spec drift and keeps implemented specs stable.
+
 ## Conversation Language
 All responses should be in **English**.
 
