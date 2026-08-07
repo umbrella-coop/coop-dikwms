@@ -1,6 +1,6 @@
 # SPEC-001 Feature: Core Graph Model — Identity & Scoped Knowledge
 
-<!-- status: Approved -->
+<!-- status: Implemented -->
 
 ## Overview
 
@@ -60,12 +60,12 @@ The system SHALL model entities from a **single source schema** based on schema.
 
 ## Acceptance Criteria
 
-- AC-1: Given entity creation, when persisted, then the entity has a stable global UUIDv7 and no property set yet.
-- AC-2: Given entity with sets at `common` and `org`, when `resolve(entity, workspace)` runs, then the org set is returned.
-- AC-3: Given entity with sets at `org` and `workspace`, when `resolve(entity, workspace)` runs, then the workspace set is returned.
-- AC-4: Given a soft-deleted workspace set, when resolving at workspace scope, then the parent scope's set is returned.
-- AC-5: Given a changed source schema, when the build runs, then generated artifacts compile.
-- AC-6: Given the generated storage schema, when a node is stored, then all scope layers round-trip without data loss.
+- AC-1: Given entity creation, when persisted, then the entity has a stable global UUIDv7 and no property set yet. ✅
+- AC-2: Given entity with sets at `common` and `org`, when `resolve(entity, workspace)` runs, then the org set is returned. ✅
+- AC-3: Given entity with sets at `org` and `workspace`, when `resolve(entity, workspace)` runs, then the workspace set is returned. ✅
+- AC-4: Given a soft-deleted workspace set, when resolving at workspace scope, then the parent scope's set is returned. ✅
+- AC-5: Given a changed source schema, when the build runs, then generated artifacts compile. ✅ (R-2 closed via derive-macro codegen: Rust model is the source, TerminusDB schema is generated; schema evolution + server validation tested in `terminusdb-repository/tests/spec_001_persistence.rs`)
+- AC-6: Given the generated storage schema, when a node is stored, then all scope layers round-trip without data loss. ✅ (four-layer round-trip + nearest-wins-after-reload tested in `terminusdb-repository/tests/spec_001_persistence.rs`)
 
 ## Technical Design
 
@@ -101,7 +101,7 @@ The system SHALL model entities from a **single source schema** based on schema.
 | ID | Risk | Impact | Mitigation |
 |----|------|--------|------------|
 | R-1 | TerminusDB capabilities — **partially verified** (github.com/terminusdb/terminusdb README, Aug 2026): commits/diff/push-pull ✓, time-travel queries ✓, Allen-interval temporal reasoning (v12) ✓, JSON Git-for-Data ✓, WOQL/GraphQL/REST ✓, Rust client (ParaplouOU/terminusdb-rs) ✓; live subscriptions ✗ (unconfirmed). Site terminusdb.com still HTTP 522 | High — gates persistence layer | Verify remaining unknowns (@to schema specifics, Rust client maturity, subscription availability) hands-on via local Docker server; fallback: PostgreSQL-first with graph projection later |
-| R-2 | Codegen toolchain (schema.org → @to → Rust DTOs) not chosen | Medium | Spike 2 candidate toolchains during IMPLEMENTATION |
+| R-2 | ~~Codegen toolchain not chosen~~ **Closed (2026-08-06):** `#[derive(TerminusDBModel)]` is the codegen — Rust struct is the single source schema, TerminusDB schema is the generated artifact | ~~Medium~~ | None — derive-macro pipeline in `terminusdb-repository` |
 | R-3 | schema.org coverage for edge/combo semantics incomplete | Medium | Define custom extension types in source schema |
 
 ## Relationship to Other Specs
