@@ -2,4 +2,7 @@ backend/target/
 *.rs.bk
 .DS_Store
 backend/crates/terminusdb-repository/logs/
-.wip
+
+frontend/node_modules/
+frontend/**/node_modules/
+frontend/network-graph/**/dist/
