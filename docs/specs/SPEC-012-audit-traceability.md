@@ -1,6 +1,6 @@
 # SPEC-012 Feature: Audit & Traceability (platform-wide)
 
-<!-- status: Draft -->
+<!-- status: Implemented -->
 
 ## Overview
 
@@ -52,11 +52,13 @@ The system SHALL expose audit projections (Rust functions, API later): per entit
 
 ## Acceptance Criteria
 
-- AC-1: Given a change request and decision, when persisted and reloaded, then request and decision history are retrievable.
-- AC-2: Given decisions, when persisted, then they are append-only (a decision is never mutated) and retrievable.
-- AC-3: Given writes with a correlation id, when the entity audit is queried, then entries carry the correlation id.
-- AC-4: Given a revert, when audited, then a Reverted entry references the target commit.
-- AC-5: Given a history of actions on an entity, when audited, then entries are commit-ordered with actor/action/commit.
+- AC-1: Given a change request and decision, when persisted and reloaded, then request and decision history are retrievable. ✅
+- AC-2: Given decisions, when persisted, then they are append-only (a decision is never mutated) and retrievable. ✅
+- AC-3: Given writes with a correlation id, when the entity audit is queried, then entries carry the correlation id. ✅
+- AC-4: Given a revert, when audited, then a Reverted entry references the target commit. ✅
+- AC-5: Given a history of actions on an entity, when audited, then entries are commit-ordered with actor/action/commit. ✅
+
+**Implementation notes (2026-08-07):** ledger docs registered in `Repository::new`; decision tokens `decision|req:{request_id}:{entity}:{approve}`; revert = compensating save with `|rev:{target}` (version continues upward). Audit projections merge commit-stream events + ledger docs, commit-ordered. `Repository::log` made public.
 
 ## Technical Design
 

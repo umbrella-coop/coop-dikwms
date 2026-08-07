@@ -82,6 +82,7 @@ pub struct CommitEntry {
     pub message: String,
 }
 
+pub mod audit;
 pub mod stream;
 
 #[derive(Clone)]
@@ -96,7 +97,11 @@ impl Repository {
         client.ensure_database(&db).await?;
         let args = DocumentInsertArgs::from(BranchSpec::from(db.as_str()));
         client.schema::<EntityDoc>(args.clone()).await?;
-        client.schema::<PropertySetDoc>(args).await?;
+        client.schema::<PropertySetDoc>(args.clone()).await?;
+        client
+            .schema::<crate::audit::ChangeRequestDoc>(args.clone())
+            .await?;
+        client.schema::<crate::audit::DecisionDoc>(args).await?;
         Ok(Self {
             client,
             spec: BranchSpec::from(db.as_str()),
@@ -202,7 +207,7 @@ impl Repository {
             .collect())
     }
 
-    pub(crate) async fn log(&self) -> anyhow::Result<Vec<terminusdb_client::LogEntry>> {
+    pub async fn log(&self) -> anyhow::Result<Vec<terminusdb_client::LogEntry>> {
         self.client.log(&self.spec, LogOpts::default()).await
     }
 }
