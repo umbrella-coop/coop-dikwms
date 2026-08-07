@@ -3,7 +3,7 @@
 use base64::{Engine as _, engine::general_purpose::STANDARD as B64};
 use prost::Message;
 use prost_types::FileDescriptorSet;
-use terminusdb_client::{BranchSpec, DocumentInsertArgs, TerminusDBHttpClient, TerminusDBModel};
+use terminusdb_client::{BranchSpec, DocumentInsertArgs, TerminusDBHttpClient};
 use terminusdb_schema::{EntityIDFor, ToTDBInstance};
 use terminusdb_schema_derive::{FromTDBInstance, TerminusDBModel};
 
@@ -142,6 +142,11 @@ impl SchemaRegistry {
         Ok(docs
             .into_iter()
             .find(|d| d.package == package && d.version == version))
+    }
+
+    /// List all registered namespace docs (for the API surface).
+    pub async fn list_namespaces(&self) -> anyhow::Result<Vec<NamespaceDoc>> {
+        self.all().await
     }
 
     pub async fn latest_for_package(&self, package: &str) -> anyhow::Result<Option<NamespaceDoc>> {

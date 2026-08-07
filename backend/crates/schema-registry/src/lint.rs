@@ -44,14 +44,14 @@ pub fn lint_tags(prev: &FileDescriptorSet, next: &FileDescriptorSet) -> Result<(
 
         // Fields must keep their tags.
         for (name, prev_tag) in &prev_by_name {
-            if let Some(next_tag) = next_by_name.get(name) {
-                if next_tag != prev_tag {
-                    return Err(TagViolation::TagChanged {
-                        field: name.clone(),
-                        prev_tag: *prev_tag,
-                        next_tag: *next_tag,
-                    });
-                }
+            if let Some(next_tag) = next_by_name.get(name)
+                && next_tag != prev_tag
+            {
+                return Err(TagViolation::TagChanged {
+                    field: name.clone(),
+                    prev_tag: *prev_tag,
+                    next_tag: *next_tag,
+                });
             }
         }
         // Tags must keep their fields (no reuse for a different field).
@@ -60,14 +60,14 @@ pub fn lint_tags(prev: &FileDescriptorSet, next: &FileDescriptorSet) -> Result<(
             .map(|(n, t)| (t, n))
             .collect();
         for (tag, prev_field) in &prev_by_tag {
-            if let Some(next_field) = next_by_tag.get(tag) {
-                if next_field != prev_field {
-                    return Err(TagViolation::TagReusedForDifferentField {
-                        tag: *tag,
-                        prev_field: prev_field.clone(),
-                        next_field: next_field.clone(),
-                    });
-                }
+            if let Some(next_field) = next_by_tag.get(tag)
+                && next_field != prev_field
+            {
+                return Err(TagViolation::TagReusedForDifferentField {
+                    tag: *tag,
+                    prev_field: prev_field.clone(),
+                    next_field: next_field.clone(),
+                });
             }
         }
     }

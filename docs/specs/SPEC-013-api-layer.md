@@ -1,6 +1,6 @@
 # SPEC-013 Feature: API Layer (axum REST)
 
-<!-- status: Draft -->
+<!-- status: Implemented -->
 
 ## Overview
 
@@ -70,12 +70,14 @@ The system SHALL accept a principal identifier on each request (header in v1) an
 
 ## Acceptance Criteria
 
-- AC-1: Given an entity + property set created via HTTP, when the chain is resolved, then the effective set is returned.
-- AC-2: Given a change request submitted via HTTP, when decided + applied, then the property set updates and the decision appears in the audit.
-- AC-3: Given entity activity, when the audit endpoint is queried, then commit-ordered entries are returned.
-- AC-4: Given an unregistered `additionalType`, when validated via the API, then a warning is returned (no rejection).
-- AC-5: Given a running API, when a client connects to `/events`, then live events are streamed.
-- AC-6: Given a request with a principal header, when a write happens, then commit author + audit actor equal the principal.
+- AC-1: Given an entity + property set created via HTTP, when the chain is resolved, then the effective set is returned. ✅
+- AC-2: Given a change request submitted via HTTP, when decided + applied, then the property set updates and the decision appears in the audit. ✅
+- AC-3: Given entity activity, when the audit endpoint is queried, then commit-ordered entries are returned. ✅
+- AC-4: Given an unregistered `additionalType`, when validated via the API, then a warning is returned (no rejection). ✅
+- AC-5: Given a running API, when a client connects to `/events`, then live events are streamed. ✅
+- AC-6: Given a request with a principal header, when a write happens, then commit author + audit actor equal the principal. ✅
+
+**Implementation notes (2026-08-07):** `create_entity_as(kind, author)` added (principal → commit author); registry gains `list_namespaces`; `validate-additional-type` converts `TypeNotFound` into an `api:Warning` (schemaless philosophy at the boundary); stream mounted via `FromRef` state plumbing; tests serialize against the shared server (2-worker contention).
 
 ## Technical Design
 

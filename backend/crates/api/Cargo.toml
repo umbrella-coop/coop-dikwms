@@ -1,0 +1,25 @@
+[package]
+name = "api"
+version = "0.1.0"
+edition.workspace = true
+rust-version.workspace = true
+
+[dependencies]
+knowledge-domain = { path = "../knowledge-domain" }
+terminusdb-repository = { path = "../terminusdb-repository" }
+schema-registry = { path = "../schema-registry" }
+stream-api = { path = "../stream-api" }
+terminusdb-client = { path = "../../../third_party/terminusdb-rs/crates/client" }
+axum = { version = "0.8", features = ["query", "json", "macros"] }
+tokio = { version = "1", features = ["full"] }
+serde.workspace = true
+serde_json.workspace = true
+uuid.workspace = true
+anyhow = "1"
+tracing = "0.1"
+chrono.workspace = true
+
+[dev-dependencies]
+terminusdb-bin = { path = "../../../third_party/terminusdb-rs/crates/bin" }
+tower = { version = "0.5", features = ["util"] }
+http-body-util = "0.1"

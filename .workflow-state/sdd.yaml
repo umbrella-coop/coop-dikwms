@@ -37,7 +37,7 @@ specs:
     started: 2026-08-07
   - id: SPEC-013
     file: docs/specs/SPEC-013-api-layer.md
-    status: Draft
+    status: Implemented
     started: 2026-08-07
   - id: SPEC-009
     file: docs/specs/SPEC-009-schema-registry.md

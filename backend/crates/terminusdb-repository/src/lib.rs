@@ -118,13 +118,18 @@ impl Repository {
     }
 
     pub async fn create_entity(&self, kind: EntityKind) -> anyhow::Result<Uuid> {
+        self.create_entity_as(kind, "system").await
+    }
+
+    /// Create an entity recording the acting principal as commit author.
+    pub async fn create_entity_as(&self, kind: EntityKind, author: &str) -> anyhow::Result<Uuid> {
         let id = Uuid::now_v7();
         let doc = EntityDoc {
             id: EntityIDFor::new(&format!("E:{id}"))?,
             kind: format!("{kind:?}"),
         };
         let mut args = DocumentInsertArgs::from(self.spec.clone());
-        args.author = "system".to_string();
+        args.author = author.to_string();
         args.message = format!("create-entity|ent:{id}:{:?}", kind);
         self.client.insert(&doc, args).await?;
         Ok(id)

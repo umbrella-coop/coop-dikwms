@@ -122,6 +122,54 @@ impl Repository {
         Ok(())
     }
 
+    /// All change requests with their decisions (any entity) — API surface.
+    pub async fn requests_for_entity_any(
+        &self,
+    ) -> anyhow::Result<Vec<(ChangeRequestDoc, Vec<DecisionDoc>)>> {
+        let docs = self
+            .client
+            .get_documents(
+                vec![],
+                &self.spec,
+                terminusdb_client::GetOpts {
+                    unfold: true,
+                    type_filter: Some("ChangeRequestDoc".to_string()),
+                    ..Default::default()
+                },
+            )
+            .await?;
+        let mut requests: Vec<ChangeRequestDoc> = Vec::new();
+        for d in docs {
+            requests.push(serde_json::from_value(d)?);
+        }
+        let decisions = self
+            .client
+            .get_documents(
+                vec![],
+                &self.spec,
+                terminusdb_client::GetOpts {
+                    unfold: true,
+                    type_filter: Some("DecisionDoc".to_string()),
+                    ..Default::default()
+                },
+            )
+            .await?;
+        let mut parsed: Vec<DecisionDoc> = Vec::new();
+        for d in decisions {
+            parsed.push(serde_json::from_value(d)?);
+        }
+        let mut out = Vec::new();
+        for req in requests {
+            let req_decisions = parsed
+                .iter()
+                .filter(|d| d.request_id == req.request_id)
+                .cloned()
+                .collect();
+            out.push((req, req_decisions));
+        }
+        Ok(out)
+    }
+
     pub async fn requests_for_entity(
         &self,
         entity_id: Uuid,

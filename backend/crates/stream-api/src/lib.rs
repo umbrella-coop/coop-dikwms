@@ -19,8 +19,8 @@ use terminusdb_repository::stream::{CommitCursor, DomainEvent, poll_events};
 
 #[derive(Clone)]
 pub struct StreamState {
-    repo: Arc<Repository>,
-    poll_interval: Duration,
+    pub repo: Arc<Repository>,
+    pub poll_interval: Duration,
 }
 
 #[derive(Debug, Deserialize)]
@@ -38,7 +38,7 @@ pub fn router(repo: Repository, poll_interval: Duration) -> Router {
         })
 }
 
-async fn events_handler(
+pub async fn events_handler(
     State(state): State<StreamState>,
     Query(q): Query<EventsQuery>,
 ) -> Sse<impl Stream<Item = Result<Event, Infallible>>> {
