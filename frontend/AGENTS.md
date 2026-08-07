@@ -15,7 +15,12 @@ Frontend conventions for AI agents and E2E testing. Derived from
 
 - Default scope: `coop-codes.network-graph` (SPEC-019)
 - Component ids: `@coop-codes/network-graph.<namespace>.<name>`
-- Namespaces under `frontend/network-graph/`
+- Layout (Bit standard, no SSR — client-only apps):
+  - `network-graph/apps/<name>` — app shells composing components
+  - `network-graph/ui/<name>` — visual components (graph, entity-drawer)
+  - `network-graph/hooks/<name>` — logic hooks (use-event-stream)
+  - `network-graph/services/<name>` — future backend/service components
+- Per-component `vite.config.js`/`index.html` are Bit structural — do not collapse
 
 ## E2E Conventions (mandatory for new components)
 

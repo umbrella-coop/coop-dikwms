@@ -9,13 +9,55 @@
  */
 
 {
-    "coop-graph-app": {
-        "name": "coop-graph-app",
+    "apps/coop-graph-app": {
+        "name": "apps/coop-graph-app",
         "scope": "",
         "version": "",
         "defaultScope": "coop-codes.network-graph",
         "mainFile": "index.ts",
-        "rootDir": "network-graph/coop-graph-app",
+        "rootDir": "network-graph/apps/coop-graph-app",
+        "config": {
+            "bitdev.react/react-env@6.0.28": {},
+            "teambit.envs/envs": {
+                "env": "bitdev.react/react-env"
+            }
+        }
+    },
+    "hooks/use-event-stream": {
+        "name": "hooks/use-event-stream",
+        "scope": "",
+        "version": "",
+        "defaultScope": "coop-codes.network-graph",
+        "mainFile": "index.ts",
+        "rootDir": "network-graph/hooks/use-event-stream",
+        "config": {
+            "bitdev.react/react-env@6.0.28": {},
+            "teambit.envs/envs": {
+                "env": "bitdev.react/react-env"
+            }
+        }
+    },
+    "ui/entity-drawer": {
+        "name": "ui/entity-drawer",
+        "scope": "",
+        "version": "",
+        "defaultScope": "coop-codes.network-graph",
+        "mainFile": "index.ts",
+        "rootDir": "network-graph/ui/entity-drawer",
+        "config": {
+            "bitdev.react/react-env@6.0.28": {},
+            "teambit.envs/envs": {
+                "env": "bitdev.react/react-env"
+            }
+        }
+    },
+    "ui/graph": {
+        "name": "ui/graph",
+        "scope": "",
+        "version": "",
+        "defaultScope": "coop-codes.network-graph",
+        "mainFile": "index.ts",
+        "rootDir": "network-graph/ui/graph",
         "config": {
             "bitdev.react/react-env@6.0.28": {},
             "teambit.envs/envs": {

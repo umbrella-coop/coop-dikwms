@@ -1,0 +1,16 @@
+.app {
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  font-family: system-ui, -apple-system, sans-serif;
+}
+
+.header {
+  padding: 8px 16px;
+  border-bottom: 1px solid #eee;
+}
+
+.header h1 {
+  font-size: 18px;
+  margin: 0;
+}
