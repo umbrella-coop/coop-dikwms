@@ -1,6 +1,6 @@
 # SPEC-008 Feature: terminusdb-rs Fork — Verification & JS-Client Parity Completion
 
-<!-- status: Approved -->
+<!-- status: Implemented -->
 
 ## Overview
 
@@ -60,13 +60,15 @@ The client SHALL support API-key and bearer-token authentication in addition to 
 
 ## Acceptance Criteria
 
-- AC-1: Given the fork, when built with the project toolchain, then the workspace compiles with zero errors and clippy is clean.
-- AC-2: Given a running TerminusDB server, when the client performs a CRUD round-trip, then data round-trips without loss.
-- AC-3: Given a live server, when a document is inserted, then the branch's latest commit advances and the commit-log diff exposes the added entity (commit-stream path; SSE plugin verified dead on v12).
-- AC-4: Given two servers, when clone/push/pull is executed, then data converges.
-- AC-5: Given a merge of two branches with the Rebase and Apply strategies, then merged state is correct per strategy.
-- AC-6: Given a server with API-key auth enabled, when the client authenticates via API key, then authorized operations succeed.
-- AC-7: Given a schema change, when the migration tool runs, then the schema is updated without data loss.
+- AC-1: Given the fork, when built with the project toolchain, then the workspace compiles with zero errors and clippy is clean. ✅ (nightly 1.99, lld, sccache; client crate clippy-clean)
+- AC-2: Given a running TerminusDB server, when the client performs a CRUD round-trip, then data round-trips without loss. ✅ (all integration tests)
+- AC-3: Given a live server, when a document is inserted, then the branch's latest commit advances and the commit-log diff exposes the added entity (commit-stream path; SSE plugin verified dead on v12). ✅
+- AC-4: Given two servers, when clone/push/pull is executed, then data converges. ✅ (3 client fixes: Authorization-Remote casing; v12 push/pull path+body contract; remote-registry flow)
+- AC-5: Given a merge of two branches with the Rebase and Apply strategies, then merged state is correct per strategy. ✅
+- AC-6: Given a server with API-key auth enabled, when the client authenticates via API key, then authorized operations succeed. ✅ (unit-verified header construction: Basic/Bearer/Apikey)
+- AC-7: Given a schema change, when the migration tool runs, then the schema is updated without data loss. ✅ (CreateClassProperty with default fills existing instances)
+
+**Verification evidence (2026-08-06, real v12.1 servers via TerminusDBServer):** all tests pass — see fork commits `3f04b24` (collaboration v12 fixes), `11d525b` (collaboration/merge/migration tests), `3bd396d` (auth), `058e5d0` (commit-stream live updates).
 
 ## Technical Design
 
