@@ -16,6 +16,38 @@ Planned specs not yet created. Add requirements captured during development here
 - Client reconciliation via cursor (no redraw storms — G6 consumes domain events, not raw deltas)
 - PostgreSQL events for moderation actions (PG19 SQL/PGQ — verify) vs TerminusDB commit stream for knowledge changes — boundary decision for the spec
 
+## SPEC-015 (planned): Event-Driven Ecosystem Integration (EIP)
+
+**Requirement (captured 2026-08-07):** Extend platform capabilities with **Enterprise Integration Patterns** (messaging) for ecosystem integration:
+- When a new **CRUD event** happens, **users are suggested possible actions**
+- **Integrated applications receive event metadata** to take action (exec pipelines, update internal data, etc.)
+- **AI agents autonomously execute actions** from events
+- Reference: https://www.enterpriseintegrationpatterns.com/patterns/messaging/
+
+**Roadmap fit (reuse-first):** the SPEC-004 commit stream IS the event backbone; EIP patterns map onto existing machinery:
+| EIP pattern | Our mechanism |
+|-------------|---------------|
+| Event Message / Publish-Subscribe | SPEC-004 stream + typed DomainEvents |
+| Message Channel | topic filters (entity / moderation / scope) |
+| Message Router | subscription filters (content-based) |
+| Channel Adapter / Envelope Wrapper | **webhook delivery + metadata envelope** (new) |
+| Command Message | SPEC-011 pipeline commands / change requests |
+| Event-Driven Consumer | agents/apps subscribing |
+| Idempotent Receiver | SPEC-012 correlation ids (retry-safe delivery) |
+| Message Expiration | batch TTL (SPEC-011) |
+
+**Genuinely new surface:**
+- **Subscription registry** (API/console): integrated apps register webhook endpoints + filters; events delivered as metadata envelopes with **suggested actions** per event type
+- **Suggestion metadata**: event envelope carries possible next actions (e.g. PropertySetSaved → suggest Review/Promote/Approve) — feeds user suggestion UI and agent autonomy
+- **Agent action channel**: AI agents subscribe and execute actions (change requests) — ride SPEC-011/SPEC-002 machinery
+- Webhook delivery guarantees: at-least-once + idempotent receiver (corr ids), retries/backoff, webhook secrets (SPEC-014 auth), rate limiting
+
+**Dependencies:** SPEC-004 (stream), SPEC-011 (pipelines), SPEC-012 (correlation), SPEC-013 (API surface for subscription registry), SPEC-014 (auth)
+
+## SPEC-014 (planned): Authentication & Verified Principals
+
+**Requirement (captured 2026-08-07, referenced by SPEC-013 R-18):** replace the v1 `X-Principal` header with verified principals — sessions/roles from SPEC-003, verified commit authors, webhook secrets. Mandatory before production (audit integrity). Detailed design deferred; noted here per relationship hygiene.
+
 ## SPEC-013 (planned): API Layer (axum REST)
 
 **Requirement (captured 2026-08-07):** the missing HTTP surface — referenced as "future: axum application layer" in SPEC-006's crate structure. 8 specs are implemented with **no REST API** (only the SPEC-004 SSE stream). Unblocks: G6/Bit frontend, SPEC-011 pipeline batch API, SPEC-012 audit queries, SPEC-009 namespace console.
