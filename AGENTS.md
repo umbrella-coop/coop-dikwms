@@ -24,6 +24,20 @@ You are an expert software engineer assistant. Follow these project standards.
 3. **If a new capability survives:** `/sdd` DISCUSS → spec with **P1–P3 priority** (requirement-engineering) and **explicit dependencies** on existing specs.
 4. **If it touches existing specs:** use **delta operations** (`## ADDED/MODIFIED/REMOVED Requirements`) instead of rewrites — prevents spec drift and keeps implemented specs stable.
 
+## Rust Development Workflow (backend/)
+> Fast feedback loop for the Rust workspace. All commands need the nightly toolchain:
+> `env RUSTUP_TOOLCHAIN=nightly cargo ...` (the fork dependency requires nightly — mise/rustup defaults to stable and silently breaks builds).
+
+1. **`cargo check` before `cargo test`** — catches compile errors in seconds without the full codegen/link pass. Run `cargo check -p <crate> --tests` before any test run.
+2. **Target only the crate being changed** — `-p <crate>`, never the whole workspace (the `terminusdb-bin` dev-dep compiles TerminusDB from source; full builds are slow).
+3. **TDD order:** write the failing test first, run it (red), implement, run again (green).
+4. **Integration tests use `TerminusDBServer::test_instance()`** (real per-process v12.1 server) — never mocks for persistence. Heavy concurrent tests against the shared server may hit transaction contention: serialize with a global mutex (see `api/tests/spec_013_api.rs`) or `RUST_TEST_THREADS=1`.
+5. **Clean up after aborted test runs:** orphaned servers (`pkill -f "serve --memory root"`) pile up and hang subsequent builds.
+6. **Quality gates before commit:** `cargo fmt` (via nightly) + `cargo clippy --all-targets` — fix warnings in your crates; pre-existing fork warnings are not yours.
+7. **Token discipline:** commit messages carry structured tokens (`ps:`, `ent:`, `corr:`, `rev:`) — never rename or reorder them without updating `stream::decode_entry` and `resolve_at`.
+8. **Specs govern:** every change maps to a spec/AC (see Spec Intake Rule); new behavior without a spec or delta is a violation.
+9. Respect `third_party/terminusdb-rs/CLAUDE.md` when touching the fork — it has its own test patterns (`with_db_schema`, `TerminusDBServer` idioms).
+
 ## Conversation Language
 All responses should be in **English**.
 
