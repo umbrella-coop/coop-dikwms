@@ -6,7 +6,7 @@ Planned specs not yet created. Add requirements captured during development here
 
 ## SPEC-004 (planned): Live Streaming via the Commit Stream
 
-**Source:** original problem statement ("live stream data") + brainstorm idea #5 (CDC + cursor, Agg 4.1) — referenced as "planned" in SPEC-001/002/006/008 relationships but never created (gap).
+**Requirement (captured 2026-08-06):** live stream data for nodes and combos — the original problem statement. **Source:** brainstorm idea #5 (CDC + cursor, Agg 4.1) — referenced as "planned" in SPEC-001/002/006/008 relationships but never created (gap).
 
 **Status:** **fully de-risked by SPEC-008** — SSE plugin endpoint is dead on v12 (404); the **native commit stream is verified working** (commit advances + `commit_added_entities_ids` diff).
 
@@ -201,6 +201,8 @@ Planned specs not yet created. Add requirements captured during development here
 **Workflow:** add submodule (e.g. `third_party/terminusdb-rs`) → spec per feature (SDD) → TDD against the real server (Docker) or recorded fixtures
 
 ## SPEC-009 (planned): Multi-Namespace Versioned Schema Registry
+
+**Requirement (captured 2026-08-06):** a multi-namespace, versioned schema registry managed by knowledge-domain, stored in TerminusDB; core schemas only in code; schema.org as the first namespace; namespaces added via API/web console using Protocol Buffers (package-directive namespaces, immutable field tags).
 
 **Brainstorm complete (docs/brainstorm/schema-registry-core-set.md, 2026-08-07) — decisions locked:**
 

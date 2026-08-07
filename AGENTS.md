@@ -16,6 +16,7 @@ You are an expert software engineer assistant. Follow these project standards.
 1. **Single intake queue:** `docs/specs/backlog.md` is the only source of planned specs. Every brainstorm outcome, user request, dependency finding, and spec-relationship reference ("SPEC-NNN (planned)") MUST be recorded there before any spec creation.
 2. **Promotion gate:** the SDD DISCUSS phase SHALL reference the backlog item being promoted. If a requested spec is not in the backlog, add it to the backlog first, then create the spec from it.
 3. **Relationship hygiene:** any "planned" spec named in a spec's Relationship section MUST exist as a backlog entry (this is how SPEC-004 was lost).
+4. **Backlog edit protocol:** APPEND new entries or insert at a fixed anchor — never splice by replacing an existing `## SPEC-NNN` header (this lost SPEC-012/005/016 headers). If inserting, the new content MUST preserve the anchor line. After EVERY backlog edit run `python3 scripts/check-backlog.py` (headers/requirements balance, no orphans, no duplicates) — a failing check blocks the edit.
 
 ## Roadmap Protection Rule (user-input pipeline)
 > User inputs can disrupt the roadmap and create avoidable technical debt. Process every input through this simple-but-not-simpler pipeline:
