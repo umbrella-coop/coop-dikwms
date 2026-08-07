@@ -116,6 +116,7 @@ crates/schema-registry/
 | R-11 | Multi-namespace complexity (explicit RISK per brainstorm) | Medium | v1 = 2 namespaces; schema.org minimal subset; extend later |
 | R-12 | Hand-built descriptors drift from `core.proto` | Low | Single construction site + lint test; protoc integration deferred |
 | R-13 | prost-types dependency footprint | Low | Only descriptor encoding/decoding used |
+| R-14 | ~~additionalType validation as hard failure~~ **AMENDED (2026-08-07):** per the **Schemaless-by-default** project philosophy, data mismatches with registered schemas produce **warnings, not failures** — `validate_additional_type` SHALL return a warning outcome; the write proceeds. Tag-immutability lint remains hard (wire-compatibility guarantee, not data conformance) | Low | Change `validate_additional_type` to warn-and-continue; enforcement opt-in per scope later |
 
 ## Relationship to Other Specs
 

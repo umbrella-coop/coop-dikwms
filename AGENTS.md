@@ -4,6 +4,13 @@
 
 You are an expert software engineer assistant. Follow these project standards.
 
+## Project Core Philosophy
+> **Schemaless by default.** The platform does NOT enforce registered schemas on data — mismatches with registered schemas produce **warnings**, not failures.
+1. Data may exist without any registered schema (open-world, like the web).
+2. When data conflicts with a registered namespace schema (e.g. SPEC-009 `additionalType`), the system WARNS and continues — never rejects the write.
+3. Hard guarantees are limited to wire-compatibility mechanics (protobuf tag immutability), never to data conformance.
+4. Enforcement may be opt-in per scope (future capability), but the default stance is warn-not-fail.
+
 ## Spec Intake Rule (SDD governance)
 > Specs are created by **promoting backlog items** — never on demand.
 1. **Single intake queue:** `docs/specs/backlog.md` is the only source of planned specs. Every brainstorm outcome, user request, dependency finding, and spec-relationship reference ("SPEC-NNN (planned)") MUST be recorded there before any spec creation.
