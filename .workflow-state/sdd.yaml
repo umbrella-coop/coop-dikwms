@@ -31,6 +31,10 @@ specs:
     status: Implemented
     ac: { AC-1: pass, AC-2: pass, AC-3: pass, AC-4: pass, AC-5: pass }
     started: 2026-08-07
+  - id: SPEC-012
+    file: docs/specs/SPEC-012-audit-traceability.md
+    status: Draft
+    started: 2026-08-07
   - id: SPEC-009
     file: docs/specs/SPEC-009-schema-registry.md
     status: Implemented
