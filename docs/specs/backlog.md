@@ -16,7 +16,24 @@ Planned specs not yet created. Add requirements captured during development here
 - Client reconciliation via cursor (no redraw storms — G6 consumes domain events, not raw deltas)
 - PostgreSQL events for moderation actions (PG19 SQL/PGQ — verify) vs TerminusDB commit stream for knowledge changes — boundary decision for the spec
 
-## SPEC-005 (planned): Graph Primitive Merge
+## SPEC-011 (planned): Batch Ingestion Pipelines & Workflows
+
+**Requirement (captured 2026-08-07):** Organizations and users build **pipelines/workflows** with different technologies — crawlers, Airflow, agents/MCP — to add **batches** of nodes, edges, combos, creative works, actions, etc. Comes with **race conditions, conflicts, and other design challenges/trade-offs**.
+
+**Reference proposal (fetched 2026-08-07):** gustavorps' RFC "Graph Conductor" — github.com/reconurge/flowsint/issues/133 — a coordination layer for multi-agent graph mutations: command queue, region locking, version-vector OCC, event sourcing + agnostic revert, idempotency registry, role-scoped permissions, DLQ, anti-corruption layer. Stack: Redis/Neo4j/PG/Celery.
+
+**Roadmap-fit brainstorm: done (docs/brainstorm/graph-conductor-roadmap-fit.md)** — conclusion: most mechanisms already exist in our stack (version guards = version vectors; commit log = event sourcing; SPEC-003 Policy = role permissions; TerminusDB branches = optimistic region isolation, replacing pessimistic locks). Genuinely new: batch API with idempotency keys, fast-track auto-approval for trusted pipelines, revert/undo surface (time-travel), DLQ, pipeline identity, MCP server integration (fork has mcp-server crate).
+
+**Design questions to resolve in the spec:**
+- Batch write semantics on top of the moderation ladder (SPEC-002): batch = many change requests? one request per batch? fast-track auto-approve for trusted pipelines
+- Idempotency: batch-level idempotency keys; retries must not duplicate entities/edges
+- Conflicts: version-guard (exists) vs merge (TerminusDB merge verified) vs branch-per-pipeline (optimistic)
+- Commit-per-write vs batched commits (SPEC-006 R-10)
+- Pipeline identity + audit: pipeline = agent acting on behalf of org (SPEC-003; commit `author` = pipeline id)
+- Revert: time-travel/reset via commit log (SPEC-006 resolve_at)
+- Technology surface: HTTP batch API (future API layer), Airflow plugin, MCP server
+
+**Dependencies:** SPEC-002 (moderation/fast-track), SPEC-003 (principals), SPEC-006 (commits/batching), SPEC-004 (streaming progress events), future API layer
 
 **Requirement (captured 2026-08-06):** Nodes, edges, and combos can be **merged** — two or more graph primitives collapse into one entity.
 
