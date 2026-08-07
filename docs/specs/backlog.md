@@ -16,13 +16,37 @@ Planned specs not yet created. Add requirements captured during development here
 - Client reconciliation via cursor (no redraw storms — G6 consumes domain events, not raw deltas)
 - PostgreSQL events for moderation actions (PG19 SQL/PGQ — verify) vs TerminusDB commit stream for knowledge changes — boundary decision for the spec
 
+## SPEC-012 (planned): Audit & Traceability (platform-wide)
+
+**Requirement (captured 2026-08-07):** Auditability is a **platform-wide** concern, not pipeline-only: every mutation — manual edits, moderation decisions, promotions, pipeline batches — must be traceable (who/what/when/why) and queryable. Follow-up to the Graph Conductor roadmap fit (RFC #133), where the RFC's event-store auditability was compared to our commit log.
+
+**What exists already:**
+- Commit log (SPEC-006): every write is a TerminusDB commit with author/message + diff — the audit backbone
+- Provenance records (SPEC-002) for promotions; time-travel via `resolve_at`
+- Structured message tokens (`ps:`/`ent:`, SPEC-004)
+
+**Gaps to close:**
+1. **Moderation ledger is NOT persisted** (SPEC-002 in-memory) — who approved/rejected what, when, with which request is lost on restart (biggest gap)
+2. **No correlation/causation IDs** — trace a unit of work (pipeline batch, UI session, API call) through the log
+3. **No revert markers** — a reverting commit is indistinguishable from a normal one (`is_reverted`/`reverted_by` semantics)
+4. **No audit query surface** — needs by entity / scope / actor / time range / event type; today only raw `log()`
+5. **Principal-verified authors** — commit `author` must come from the authenticated SPEC-003 principal, not a caller-supplied string (spoofable today)
+
+**Design sketch:**
+- Audit = **projection over the commit stream** (SPEC-004 events + commit log + persisted ledger decisions) — no separate audit store; TerminusDB commits are append-only by nature
+- Persist the ledger (change requests + decisions) via the repository (SPEC-006) → also unblocks the SPEC-002 activity stream
+- Correlation IDs on all write entry points (pipeline/batch/API/session)
+- Audit API: `GET /audit?entity=&actor=&scope=&from=&to=` (future API layer)
+
+**Dependencies:** SPEC-002 (ledger persistence), SPEC-003 (principal-verified authors), SPEC-004 (event projection), SPEC-006 (commit backbone), SPEC-011 (pipeline correlation IDs)
+
 ## SPEC-011 (planned): Batch Ingestion Pipelines & Workflows
 
 **Requirement (captured 2026-08-07):** Organizations and users build **pipelines/workflows** with different technologies — crawlers, Airflow, agents/MCP — to add **batches** of nodes, edges, combos, creative works, actions, etc. Comes with **race conditions, conflicts, and other design challenges/trade-offs**.
 
 **Reference proposal (fetched 2026-08-07):** gustavorps' RFC "Graph Conductor" — github.com/reconurge/flowsint/issues/133 — a coordination layer for multi-agent graph mutations: command queue, region locking, version-vector OCC, event sourcing + agnostic revert, idempotency registry, role-scoped permissions, DLQ, anti-corruption layer. Stack: Redis/Neo4j/PG/Celery.
 
-**Roadmap-fit brainstorm: done (docs/brainstorm/graph-conductor-roadmap-fit.md)** — conclusion: most mechanisms already exist in our stack (version guards = version vectors; commit log = event sourcing; SPEC-003 Policy = role permissions; TerminusDB branches = optimistic region isolation, replacing pessimistic locks). Genuinely new: batch API with idempotency keys, fast-track auto-approval for trusted pipelines, revert/undo surface (time-travel), DLQ, pipeline identity, MCP server integration (fork has mcp-server crate).
+**Roadmap-fit brainstorm: done (docs/brainstorm/graph-conductor-roadmap-fit.md)** — conclusion: most mechanisms already exist in our stack (version guards = version vectors; commit log = event sourcing; SPEC-003 Policy = role permissions; TerminusDB branches = optimistic region isolation, replacing pessimistic locks). Genuinely new: batch API with idempotency keys, fast-track auto-approval for trusted pipelines, revert/undo surface (time-travel), DLQ, pipeline identity, MCP server integration (fork has mcp-server crate). **Pipeline audit requirements (correlation IDs, revert markers, batch traceability) live in SPEC-012 (platform-wide audit).**
 
 **Design questions to resolve in the spec:**
 - Batch write semantics on top of the moderation ladder (SPEC-002): batch = many change requests? one request per batch? fast-track auto-approve for trusted pipelines
