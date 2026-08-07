@@ -77,9 +77,17 @@ impl SchemaRegistry {
             spec: BranchSpec::from(db.as_str()),
             db,
         };
-        reg.register(&core::core_v1(), "core.v1", "1").await?;
-        reg.register(&core::org_schema_v1(), "org.schema.v1", "1")
-            .await?;
+        // Seeds are idempotent: a persisted db may already hold them.
+        let _ = match reg.register(&core::core_v1(), "core.v1", "1").await {
+            Ok(()) => Ok(()),
+            Err(RegistryError::AlreadyRegistered { .. }) => Ok(()),
+            Err(e) => Err(e),
+        }?;
+        let _ = match reg.register(&core::org_schema_v1(), "org.schema.v1", "1").await {
+            Ok(()) => Ok(()),
+            Err(RegistryError::AlreadyRegistered { .. }) => Ok(()),
+            Err(e) => Err(e),
+        }?;
         Ok(reg)
     }
 

@@ -72,6 +72,12 @@ pub fn router(repo: Repository, registry: SchemaRegistry) -> Router {
                 .url("/api-docs/openapi.json", ApiDoc::openapi()),
         )
         .with_state(state)
+        .layer(
+            tower_http::cors::CorsLayer::new()
+                .allow_origin(tower_http::cors::Any)
+                .allow_methods(tower_http::cors::Any)
+                .allow_headers(tower_http::cors::Any),
+        )
 }
 
 async fn openapi_json() -> axum::Json<utoipa::openapi::OpenApi> {
