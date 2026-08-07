@@ -1,4 +1,5 @@
 backend/target/
 *.rs.bk
 .DS_Store
-.wipbackend/crates/terminusdb-repository/logs/
+
+backend/crates/terminusdb-repository/logs/
