@@ -1,0 +1,45 @@
+# Real TerminusDB services for integration testing (SPEC-006/008).
+#   docker compose up -d            # main server on 6363
+#   docker compose up -d terminusdb-peer   # + peer server on 6364 (clone/push/pull tests)
+#   docker compose down -v          # full teardown including volumes
+
+name: coop-graph-network
+
+services:
+  terminusdb:
+    image: terminusdb/terminusdb-server:latest
+    container_name: cgn-terminusdb
+    ports:
+      - "6363:6363"
+    environment:
+      TERMINUSDB_ADMIN_PASS: root
+    volumes:
+      - terminusdb_storage:/app/terminusdb/storage
+    healthcheck:
+      test: ["CMD", "curl", "-sf", "http://localhost:6363/api/info"]
+      interval: 10s
+      timeout: 5s
+      retries: 12
+      start_period: 20s
+    restart: unless-stopped
+
+  terminusdb-peer:
+    image: terminusdb/terminusdb-server:latest
+    container_name: cgn-terminusdb-peer
+    ports:
+      - "6364:6363"
+    environment:
+      TERMINUSDB_ADMIN_PASS: root
+    volumes:
+      - terminusdb_peer_storage:/app/terminusdb/storage
+    healthcheck:
+      test: ["CMD", "curl", "-sf", "http://localhost:6363/api/info"]
+      interval: 10s
+      timeout: 5s
+      retries: 12
+      start_period: 20s
+    restart: unless-stopped
+
+volumes:
+  terminusdb_storage:
+  terminusdb_peer_storage:

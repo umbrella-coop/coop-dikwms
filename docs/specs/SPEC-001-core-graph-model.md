@@ -100,7 +100,7 @@ The system SHALL model entities from a **single source schema** based on schema.
 
 | ID | Risk | Impact | Mitigation |
 |----|------|--------|------------|
-| R-1 | TerminusDB capabilities (versioning, `@to`, WOQL, subscriptions) **unverified** — terminusdb.com returned HTTP 522 at fetch time | High — gates single-store v1 | Verify before IMPLEMENTATION of the persistence layer; fallback: PostgreSQL-first with graph projection later |
+| R-1 | TerminusDB capabilities — **partially verified** (github.com/terminusdb/terminusdb README, Aug 2026): commits/diff/push-pull ✓, time-travel queries ✓, Allen-interval temporal reasoning (v12) ✓, JSON Git-for-Data ✓, WOQL/GraphQL/REST ✓, Rust client (ParaplouOU/terminusdb-rs) ✓; live subscriptions ✗ (unconfirmed). Site terminusdb.com still HTTP 522 | High — gates persistence layer | Verify remaining unknowns (@to schema specifics, Rust client maturity, subscription availability) hands-on via local Docker server; fallback: PostgreSQL-first with graph projection later |
 | R-2 | Codegen toolchain (schema.org → @to → Rust DTOs) not chosen | Medium | Spike 2 candidate toolchains during IMPLEMENTATION |
 | R-3 | schema.org coverage for edge/combo semantics incomplete | Medium | Define custom extension types in source schema |
 

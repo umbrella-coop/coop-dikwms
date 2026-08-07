@@ -35,12 +35,14 @@ The fork SHALL build without warnings/errors under the project toolchain (Rust 1
 
 ### Requirement: Live-Server Verification
 
-The repository SHALL verify CRUD, SSE streaming, and collaboration against a real TerminusDB server (Docker, port 6363).
+The repository SHALL verify CRUD, live updates, and collaboration against a real TerminusDB server (per-process `TerminusDBServer` or Docker).
 
-#### Scenario: SSE change listener receives events
-- **GIVEN** a running TerminusDB server and a connected client
-- **WHEN** a document is inserted/updated/deleted
-- **THEN** the change listener dispatches typed `on_added`/`on_updated`/`on_deleted` callbacks
+#### Scenario: Live update via the native commit stream
+- **GIVEN** a running TerminusDB 12 server and a client
+- **WHEN** a document is inserted
+- **THEN** the branch's latest commit advances and the commit-log diff exposes the added entity
+
+> **Verification finding (2026-08-06, real server):** the client's SSE `change_listener` targets the deprecated `changeset-sse` plugin (`/api/changesets/stream` → 404 on v12; plugin unmaintained — fork `docker/changeset-sse/README.md`). The **v12-native live-update path is the commit stream** (`get_latest_commit_id` + `commit_added_entities_ids`) — verified passing. SPEC-004's live-stream design must use the commit stream, not SSE.
 
 #### Scenario: Push/pull/clone between servers
 - **GIVEN** two local TerminusDB server instances
@@ -60,7 +62,7 @@ The client SHALL support API-key and bearer-token authentication in addition to 
 
 - AC-1: Given the fork, when built with the project toolchain, then the workspace compiles with zero errors and clippy is clean.
 - AC-2: Given a running TerminusDB server, when the client performs a CRUD round-trip, then data round-trips without loss.
-- AC-3: Given a live server and a change listener, when a document is added/updated/deleted, then typed callbacks fire with correct payloads.
+- AC-3: Given a live server, when a document is inserted, then the branch's latest commit advances and the commit-log diff exposes the added entity (commit-stream path; SSE plugin verified dead on v12).
 - AC-4: Given two servers, when clone/push/pull is executed, then data converges.
 - AC-5: Given a merge of two branches with the Rebase and Apply strategies, then merged state is correct per strategy.
 - AC-6: Given a server with API-key auth enabled, when the client authenticates via API key, then authorized operations succeed.
@@ -95,7 +97,7 @@ The client SHALL support API-key and bearer-token authentication in addition to 
 | ID | Risk | Impact | Mitigation |
 |----|------|--------|------------|
 | R-11 | Fork build unverified (large workspace, vendor/protoc) | Medium | Verify early (AC-1 first); document toolchain needs |
-| R-12 | SSE endpoint behavior on server v12 (change_listener untested against real server) | Medium | AC-3 integration test with real server; fall back to commit-log polling (SPEC-004) |
+| R-12 | ~~SSE endpoint behavior on server v12~~ **Resolved (2026-08-06):** `/api/changesets/stream` returns 404; plugin deprecated. Native commit stream verified working | Medium | Commit-stream cursor for live updates (SPEC-004) |
 | R-13 | Advanced auth may require server-side API-key support that v12 exposes differently | Medium | Check server docs/config first; scope to bearer-token if API-key unsupported |
 
 ## Relationship to Other Specs
