@@ -1,6 +1,6 @@
 # SPEC-016 Feature: Programmatic API Docs & OpenAPI Generation (mdBook)
 
-<!-- status: Implemented -->
+<!-- status: Archived -->
 
 ## Overview
 
@@ -107,3 +107,13 @@ docs/book/
 - SPEC-009: registry reference content; SPEC-004: events reference
 - SPEC-007 (planned): docs build joins the gauntlet gates
 - SPEC-016 is docs-only — no domain behavior changes
+
+
+---
+
+## ARCHIVED (2026-08-07)
+
+- **Verification commit:** `ae24ce5`
+- **Evidence:** backend/crates/api/tests/spec_016_docs.rs
+- **ACs:** 4/4 verified green against real TerminusDB 12.1 (TerminusDBServer pattern)
+- **Status change:** Implemented → Archived. Re-check (spec-vs-code convergence) if touched by future work.

@@ -1,6 +1,6 @@
 # SPEC-006 Feature: TerminusDB Git-Like Version Control & Temporal Architecture
 
-<!-- status: Implemented -->
+<!-- status: Archived -->
 
 ## Overview
 
@@ -144,3 +144,13 @@ backend/crates/
 
 - **MODIFIED — Message token format:** commit-message tokens are `{user-message}|ps:{entity}:{instance}:{scope}:v{version}` (scope added by SPEC-004). `resolve_at` parses both the 3-part legacy and 4-part current forms.
 - **MODIFIED — Time-travel mechanics:** v1 as-of resolution is reconstructed from the commit log (fork client `ref_commit` reads not wired); an explicit `get_document_as_of` client feature is a candidate fork follow-up.
+
+
+---
+
+## ARCHIVED (2026-08-07)
+
+- **Verification commit:** `26cefa5`
+- **Evidence:** backend/crates/terminusdb-repository/tests/spec_006_repository.rs
+- **ACs:** 6/6 verified green against real TerminusDB 12.1 (TerminusDBServer pattern)
+- **Status change:** Implemented → Archived. Re-check (spec-vs-code convergence) if touched by future work.

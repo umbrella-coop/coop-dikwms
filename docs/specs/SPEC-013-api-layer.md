@@ -1,6 +1,6 @@
 # SPEC-013 Feature: API Layer (axum REST)
 
-<!-- status: Implemented -->
+<!-- status: Archived -->
 
 ## Overview
 
@@ -126,3 +126,13 @@ backend/crates/api/
 - SPEC-001/002/003: composed surfaces; SPEC-003 principals deferred to SPEC-014
 - SPEC-004: SSE mounted; SPEC-009: registry warnings; SPEC-012: audit queries
 - SPEC-011 (planned): batch API lands on this surface; SPEC-014 (planned): real auth
+
+
+---
+
+## ARCHIVED (2026-08-07)
+
+- **Verification commit:** `bae983a`
+- **Evidence:** backend/crates/api/tests/spec_013_api.rs
+- **ACs:** 6/6 verified green against real TerminusDB 12.1 (TerminusDBServer pattern)
+- **Status change:** Implemented → Archived. Re-check (spec-vs-code convergence) if touched by future work.

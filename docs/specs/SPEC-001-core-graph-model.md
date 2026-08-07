@@ -1,6 +1,6 @@
 # SPEC-001 Feature: Core Graph Model — Identity & Scoped Knowledge
 
-<!-- status: Implemented -->
+<!-- status: Archived -->
 
 ## Overview
 
@@ -121,3 +121,13 @@ The system SHALL model entities from a **single source schema** based on schema.
 
 - **MODIFIED — Scoped Property Sets storage key:** implemented storage is keyed by **(entity, scope-instance)**, not ladder level — per-SPEC-003 refactor; `resolve` walks the instance's ancestor chain. The `Scope` enum remains the ladder-level marker on `PropertySet`.
 - **MODIFIED — Schema pipeline (R-2):** the codegen toolchain is **`#[derive(TerminusDBModel)]`** (Rust struct = single source schema; TerminusDB schema = generated artifact) — not "schema.org → @to → DTOs". Verified: schemas/proto registry namespace (SPEC-009) is the long-term schema source.
+
+
+---
+
+## ARCHIVED (2026-08-07)
+
+- **Verification commit:** `2ac3c4f`
+- **Evidence:** backend/crates/terminusdb-repository/tests/spec_001_persistence.rs + knowledge-domain tests
+- **ACs:** 6/6 verified green against real TerminusDB 12.1 (TerminusDBServer pattern)
+- **Status change:** Implemented → Archived. Re-check (spec-vs-code convergence) if touched by future work.

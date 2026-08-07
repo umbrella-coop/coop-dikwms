@@ -1,6 +1,6 @@
 # SPEC-012 Feature: Audit & Traceability (platform-wide)
 
-<!-- status: Implemented -->
+<!-- status: Archived -->
 
 ## Overview
 
@@ -119,3 +119,13 @@ pub async fn audit_for_actor(repo, actor) -> Vec<AuditEntry>
 - SPEC-006: immutable versioned-doc pattern + resolve_at reused for revert
 - SPEC-011: batch correlation rides the same mechanism
 - SPEC-013 (planned): HTTP audit surface
+
+
+---
+
+## ARCHIVED (2026-08-07)
+
+- **Verification commit:** `182159a`
+- **Evidence:** backend/crates/terminusdb-repository/tests/spec_012_audit.rs
+- **ACs:** 5/5 verified green against real TerminusDB 12.1 (TerminusDBServer pattern)
+- **Status change:** Implemented → Archived. Re-check (spec-vs-code convergence) if touched by future work.

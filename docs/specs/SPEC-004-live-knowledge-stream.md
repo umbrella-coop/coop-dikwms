@@ -1,6 +1,6 @@
 # SPEC-004 Feature: Live Knowledge Stream via the TerminusDB Commit Stream
 
-<!-- status: Implemented -->
+<!-- status: Archived -->
 
 ## Overview
 
@@ -111,3 +111,13 @@ backend/crates/stream-api/
 - SPEC-002: activity stream (change-request lifecycle events) later, via ledger persistence
 - SPEC-003: scope-scoped subscriptions later (filter events by instance in chain)
 - Future: moderation-action events (PostgreSQL), API layer consolidation
+
+
+---
+
+## ARCHIVED (2026-08-07)
+
+- **Verification commit:** `a5a8dbe`
+- **Evidence:** backend/crates/terminusdb-repository/tests/spec_004_stream.rs + stream-api/tests/spec_004_sse.rs
+- **ACs:** 5/5 verified green against real TerminusDB 12.1 (TerminusDBServer pattern)
+- **Status change:** Implemented → Archived. Re-check (spec-vs-code convergence) if touched by future work.

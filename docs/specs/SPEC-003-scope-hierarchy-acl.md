@@ -1,6 +1,6 @@
 # SPEC-003 Feature: Scope Hierarchy & Access Control
 
-<!-- status: Approved -->
+<!-- status: Archived -->
 
 ## Overview
 
@@ -160,3 +160,23 @@ pub fn entities_in_scope(&self, scope_id: Uuid) -> Vec<Uuid>;
 - SPEC-001: scope instances live at ladder levels; content isolation via ladder
 - SPEC-002: `authorize` gates moderation; closes R-4 (principal replaces String reviewer)
 - SPEC-004 (planned): live streaming — scope-scoped event subscriptions use `entities_in_scope`
+
+
+---
+
+## ARCHIVED (2026-08-07)
+
+- **Verification commit:** `d01ccb4`
+- **Evidence:** backend/crates/knowledge-domain/tests/spec_003_scope_hierarchy_acl.rs
+- **ACs:** 8/8 verified green against real TerminusDB 12.1 (TerminusDBServer pattern)
+- **Status change:** Implemented → Archived. Re-check (spec-vs-code convergence) if touched by future work.
+
+
+---
+
+## ARCHIVED (2026-08-07)
+
+- **Verification commit:** `d01ccb4`
+- **Evidence:** backend/crates/knowledge-domain/tests/spec_003_scope_hierarchy_acl.rs
+- **ACs:** 8/8 verified green against real TerminusDB 12.1 (TerminusDBServer pattern)
+- **Status change:** → Archived. Re-check (spec-vs-code convergence) if touched by future work.

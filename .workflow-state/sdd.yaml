@@ -1,51 +1,54 @@
 workflow: sdd
-phase: create
+phase: archived
 specs:
   - id: SPEC-001
     file: docs/specs/SPEC-001-core-graph-model.md
-    status: Implemented
-    ac: { AC-1: pass, AC-2: pass, AC-3: pass, AC-4: pass, AC-5: pass, AC-6: pass }
-    started: 2026-08-06
+    status: Archived
+    ac: 6/6
+    evidence: 2ac3c4f
   - id: SPEC-002
     file: docs/specs/SPEC-002-moderation-promotion.md
-    status: Implemented
-    ac: { AC-1: pass, AC-2: pass, AC-3: pass, AC-4: pass, AC-5: pass, AC-6: pass }
-    started: 2026-08-06
+    status: Archived
+    ac: 6/6
+    evidence: 9c55296
   - id: SPEC-003
     file: docs/specs/SPEC-003-scope-hierarchy-acl.md
-    status: Implemented
-    ac: { AC-1: pass, AC-2: pass, AC-3: pass, AC-4: pass, AC-5: pass, AC-6: pass, AC-7: pass }
-    started: 2026-08-06
-  - id: SPEC-006
-    file: docs/specs/SPEC-006-terminusdb-version-control.md
-    status: Implemented
-    ac: { AC-1: pass, AC-2: pass, AC-3: pass, AC-4: pass-via-fork, AC-5: pass-via-fork, AC-6: pass }
-    started: 2026-08-06
-  - id: SPEC-008
-    file: docs/specs/SPEC-008-terminusdb-rs-parity.md
-    status: Implemented
-    ac: { AC-1: pass, AC-2: pass, AC-3: pass, AC-4: pass, AC-5: pass, AC-6: pass, AC-7: pass }
-    started: 2026-08-06
+    status: Archived
+    ac: 8/8
+    evidence: d01ccb4
   - id: SPEC-004
     file: docs/specs/SPEC-004-live-knowledge-stream.md
-    status: Implemented
-    ac: { AC-1: pass, AC-2: pass, AC-3: pass, AC-4: pass, AC-5: pass }
-    started: 2026-08-07
-  - id: SPEC-012
-    file: docs/specs/SPEC-012-audit-traceability.md
-    status: Draft
-    started: 2026-08-07
-  - id: SPEC-016
-    file: docs/specs/SPEC-016-api-docs.md
-    status: Implemented
-    started: 2026-08-07
-  - id: SPEC-013
-    file: docs/specs/SPEC-013-api-layer.md
-    status: Implemented
-    started: 2026-08-07
+    status: Archived
+    ac: 5/5
+    evidence: a5a8dbe
+  - id: SPEC-006
+    file: docs/specs/SPEC-006-terminusdb-version-control.md
+    status: Archived
+    ac: 6/6
+    evidence: 26cefa5
+  - id: SPEC-008
+    file: docs/specs/SPEC-008-terminusdb-rs-parity.md
+    status: Archived
+    ac: 7/7
+    evidence: edc87e9
   - id: SPEC-009
     file: docs/specs/SPEC-009-schema-registry.md
-    status: Implemented
-    ac: { AC-1: pass, AC-2: pass, AC-3: pass, AC-4: pass, AC-5: pass, AC-6: pass, AC-7: pass }
-    started: 2026-08-07
+    status: Archived
+    ac: 7/7
+    evidence: eac5af9
+  - id: SPEC-012
+    file: docs/specs/SPEC-012-audit-traceability.md
+    status: Archived
+    ac: 5/5
+    evidence: 182159a
+  - id: SPEC-013
+    file: docs/specs/SPEC-013-api-layer.md
+    status: Archived
+    ac: 6/6
+    evidence: bae983a
+  - id: SPEC-016
+    file: docs/specs/SPEC-016-api-docs.md
+    status: Archived
+    ac: 4/4
+    evidence: ae24ce5
 updated: 2026-08-07

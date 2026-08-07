@@ -1,6 +1,6 @@
 # SPEC-009 Feature: Versioned Schema Registry — Core (v1)
 
-<!-- status: Draft -->
+<!-- status: Archived -->
 
 ## Overview
 
@@ -131,3 +131,23 @@ crates/schema-registry/
 
 - **MODIFIED — additionalType validation (R-14, philosophy):** per the **schemaless-by-default** core philosophy, `validate_additional_type` returns a **warning outcome and the write proceeds** — it SHALL NOT reject writes. Tag-immutability linting remains a hard gate (wire-compatibility guarantee, not data conformance). Enforcement may become opt-in per scope later.
 - **NOTE — AC-4/AC-5 test alignment:** integration tests currently assert hard failure (`TypeNotFound`); they SHALL be updated when the warn mode lands.
+
+
+---
+
+## ARCHIVED (2026-08-07)
+
+- **Verification commit:** `eac5af9`
+- **Evidence:** backend/crates/schema-registry/tests/spec_009_registry.rs
+- **ACs:** 7/7 verified green against real TerminusDB 12.1 (TerminusDBServer pattern)
+- **Status change:** Implemented → Archived. Re-check (spec-vs-code convergence) if touched by future work.
+
+
+---
+
+## ARCHIVED (2026-08-07)
+
+- **Verification commit:** `eac5af9`
+- **Evidence:** backend/crates/schema-registry/tests/spec_009_registry.rs
+- **ACs:** 7/7 verified green against real TerminusDB 12.1 (TerminusDBServer pattern)
+- **Status change:** → Archived. Re-check (spec-vs-code convergence) if touched by future work.

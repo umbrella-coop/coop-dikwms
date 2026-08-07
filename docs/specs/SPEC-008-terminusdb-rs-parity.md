@@ -1,6 +1,6 @@
 # SPEC-008 Feature: terminusdb-rs Fork — Verification & JS-Client Parity Completion
 
-<!-- status: Implemented -->
+<!-- status: Archived -->
 
 ## Overview
 
@@ -107,3 +107,13 @@ The client SHALL support API-key and bearer-token authentication in addition to 
 - SPEC-004 (planned): SSE change_listener → live streaming without polling (kills the polling fallback)
 - SPEC-006: fork becomes the dependency of `terminusdb-repository` (R-7 mitigation; branch-per-scope via collaboration/merge ops)
 - SPEC-001: unblocks AC-5/AC-6 via real persistence + derive-macro schema
+
+
+---
+
+## ARCHIVED (2026-08-07)
+
+- **Verification commit:** `edc87e9`
+- **Evidence:** third_party/terminusdb-rs fork commits 3bd396d..11d525b
+- **ACs:** 7/7 verified green against real TerminusDB 12.1 (TerminusDBServer pattern)
+- **Status change:** Implemented → Archived. Re-check (spec-vs-code convergence) if touched by future work.

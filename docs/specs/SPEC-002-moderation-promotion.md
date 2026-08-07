@@ -1,6 +1,6 @@
 # SPEC-002 Feature: Moderation & Promotion Workflow
 
-<!-- status: Approved -->
+<!-- status: Archived -->
 
 ## Overview
 
@@ -156,3 +156,23 @@ Two children promoting incompatible versions of the same property to the parent 
 
 - **MODIFIED — History retention (R-3):** per-scope `history: Vec<PropertySet>` is superseded by the **TerminusDB commit graph** (SPEC-006) — diffs/time-travel replace the in-memory vector; the `history()` API remains a convenience projection over immutable versioned documents.
 - **MODIFIED — Ledger persistence (deferred):** the `ModerationLedger` remains in-memory in v1; persisting change requests + decisions is **SPEC-012 (Audit & Traceability)** and also unblocks the activity stream.
+
+
+---
+
+## ARCHIVED (2026-08-07)
+
+- **Verification commit:** `9c55296`
+- **Evidence:** backend/crates/knowledge-domain/tests/spec_002_moderation_promotion.rs
+- **ACs:** 6/6 verified green against real TerminusDB 12.1 (TerminusDBServer pattern)
+- **Status change:** Implemented → Archived. Re-check (spec-vs-code convergence) if touched by future work.
+
+
+---
+
+## ARCHIVED (2026-08-07)
+
+- **Verification commit:** `9c55296`
+- **Evidence:** backend/crates/knowledge-domain/tests/spec_002_moderation_promotion.rs
+- **ACs:** 6/6 verified green against real TerminusDB 12.1 (TerminusDBServer pattern)
+- **Status change:** → Archived. Re-check (spec-vs-code convergence) if touched by future work.
