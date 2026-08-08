@@ -1,0 +1,44 @@
+.wrap {
+  display: flex;
+  flex-direction: column;
+  min-height: 100%;
+  padding: 0 24px;
+  background: #f5f5f5;
+}
+
+.wrap[data-ghost='true'] {
+  background: transparent;
+}
+
+.header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  gap: 8px 16px;
+  padding: 16px 0 8px;
+}
+
+.titleRow {
+  margin: 0;
+}
+
+.title {
+  margin: 0 !important;
+}
+
+.subTitle {
+  color: rgba(0, 0, 0, 0.45);
+}
+
+.extra {
+  margin-left: auto;
+}
+
+.content {
+  flex: 1;
+  padding: 16px 0;
+}
+
+.footer {
+  padding: 8px 0 16px;
+}

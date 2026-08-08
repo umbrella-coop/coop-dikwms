@@ -93,5 +93,19 @@
             }
         }
     },
+    "ui/data-graph/project-page-container": {
+        "name": "ui/data-graph/project-page-container",
+        "scope": "",
+        "version": "",
+        "defaultScope": "coop-codes.dikwms",
+        "mainFile": "index.ts",
+        "rootDir": "dikwms/ui/data-graph/project-page-container",
+        "config": {
+            "bitdev.react/react-env@6.0.28": {},
+            "teambit.envs/envs": {
+                "env": "bitdev.react/react-env"
+            }
+        }
+    },
     "$schema-version": "17.0.0"
 }

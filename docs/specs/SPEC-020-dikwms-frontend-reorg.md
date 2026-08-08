@@ -143,3 +143,9 @@ Iterative + opportunistic (SPEC-020 policy): each move rides on the next touch o
 
 - **Namespace singularized (2026-08-08, orchestrator):** `types/` → `type/` —
   component `coop-codes.dikwms/type/core-v1`, dir `dikwms/type/core-v1/`.
+
+- **New component (2026-08-08, orchestrator):** `ui/data-graph/project-page-container`
+  (`coop-codes.dikwms.ui.data-graph.project-page-container`) — page shell mirroring
+  ProComponents PageContainer API (title/subTitle/extra/breadcrumb/tabs/content/
+  footer/ghost/loading), implemented natively on antd 6 (pro-components requires
+  antd ^5 — rejected; native keeps the workspace on antd 6). 3 specs green.
