@@ -13,7 +13,7 @@ This is the authoritative context map for the **dikwms** codebase. It guides:
 
 | Bounded context | Backend container | Frontend namespace | Status | Responsibilities |
 |---|---|---|---|---|
-| **Data Graph** | `data-graph` (rename from `knowledge-domain` — pending, SPEC-020) | `ui/data-graph/` (canvas, node-drawer, layout-select) + `hook/use-data-graph-sse` | **active** | entities, scoped property sets, resolve (nearest-wins), G6 rendering, live-event consumption (SSE via `stream-api`) |
+| **Data Graph** | `data-graph` (rename from `knowledge-domain` — pending, SPEC-020) | `ui/data-graph/` (node-drawer) + `ui/data-graph-antv-g6/` (canvas, layout-select — G6 rendering engine) + `hook/use-data-graph-sse` | **active** | entities, scoped property sets, resolve (nearest-wins), G6 rendering, live-event consumption (SSE via `stream-api`) |
 | **Governance** | moderation + audit logic (co-located in `data-graph` + `terminusdb-repository` today) | `ui/data-graph-governance/` | reserved | change requests, decisions, promotion ladder, moderation ledger, audit trail, correlation, revert |
 | **IAM** | Policy ACL (co-located in `data-graph` today) | `ui/iam/` | reserved | scope instances, principals, ACL enforcement |
 | **Data Schema Registry** | `schema-registry` (standalone ✓) | `ui/data-schema-registry/` | reserved | namespaces, additionalType, versioned schema docs |
@@ -56,8 +56,9 @@ frontend/dikwms/                        (Bit scope: coop-codes.dikwms)
 ├── app/                                (app shell: app)
 └── ui/
     ├── data-graph/
+    │   └── node-drawer/                (← ui/entity-drawer, testids node-*)
+    ├── data-graph-antv-g6/             (G6 rendering engine)
     │   ├── canvas/                     (← ui/graph)
-    │   ├── node-drawer/                (← ui/entity-drawer, testids node-*)
     │   └── layout-select/              (extracted from canvas; testid layout-select)
     ├── data-graph-governance/          (reserved — created on first component)
     ├── iam/                            (reserved)
@@ -77,7 +78,7 @@ documentation).
 3. **testids are a stable contract (ADR-003):** kebab-case, intent-descriptive (`layout-select`, `node-drawer`, `node-save-btn`) — testids do **not** change on pure moves; the E2E POM layer (SPEC-021) depends on them.
 4. **Dependency rule:** components communicate via interfaces; the API is the translation layer. No cross-context imports (documented rule; CI import-boundary check deferred). Frontend context X may only call API routes of context X (+ shared `app/dikwms`).
 5. **Reserved namespaces** are created on first landing component, never pre-provisioned.
-6. **check-layout.mjs (v2, SPEC-020 AC-8):** enforces `{app, hook, ui}` + context whitelist (`data-graph`, `data-graph-governance`, `iam`, `data-schema-registry`) + `index.ts` presence.
+6. **check-layout.mjs (v2, SPEC-020 AC-8):** enforces `{app, hook, ui}` + context whitelist (`data-graph`, `data-graph-antv-g6`, `data-graph-governance`, `iam`, `data-schema-registry`) + `index.ts` presence.
 
 ### 3.3 Migration history (completed 2026-08-08)
 
@@ -88,6 +89,7 @@ documentation).
 | `ui/graph` | `ui/data-graph/canvas` | `1fc67fb` |
 | `ui/entity-drawer` | `ui/data-graph/node-drawer` (testids `node-*`) | `1fc67fb`, `c0d3511` |
 | (inside `canvas`) | `ui/data-graph/layout-select` | `f5d92c8` |
+| `ui/data-graph/canvas`, `ui/data-graph/layout-select` | `ui/data-graph-antv-g6/{canvas,layout-select}` (G6 rendering engine namespace) | `(orchestrator, 2026-08-08)` |
 | scope `coop-codes.network-graph` | `coop-codes.dikwms` | `1fc67fb` |
 
 ## 4. Backend Refactor Guide (toward v2)

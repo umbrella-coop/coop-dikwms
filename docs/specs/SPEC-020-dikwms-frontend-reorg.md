@@ -129,3 +129,8 @@ Iterative + opportunistic (SPEC-020 policy): each move rides on the next touch o
 **Deviations:** none. Final suite: 9 tests green (4 files); `bit status` clean (5 components).
 
 - **Spelling correction (2026-08-08):** canonical name is **`dikwms`** (DIKW+ms) — scope `coop-codes.dikwms`, dir `frontend/dikwms/` (the `diwkms` form used in early directives was a typo; corrected everywhere in the 2026-08-08 correction batch).
+
+- **Post-implementation move (2026-08-08, orchestrator):** `canvas` + `layout-select`
+  moved to new rendering-engine namespace `ui/data-graph-antv-g6/` (ids
+  `coop-codes.dikwms.ui.data-graph-antv-g6.*`); `check-layout.mjs` whitelist +
+  `docs/ddd/bounded-contexts.md` + ADR-002 updated in the same commit.

@@ -23,7 +23,7 @@ Frontend conventions for AI agents and E2E testing. Derived from
 - Layout (SPEC-020 context-first, Bit standard, no SSR — client-only apps):
   - `dikwms/app/<name>` — app shells composing components (currently `app`)
   - `dikwms/hook/<name>` — logic hooks, context in the hook name (`use-data-graph-sse`)
-  - `dikwms/ui/<context>/<name>` — visual components per bounded context (`data-graph`, reserved: `data-graph-governance`, `iam`, `data-schema-registry`)
+  - `dikwms/ui/<context>/<name>` — visual components per bounded context (`data-graph`, `data-graph-antv-g6` — G6 rendering engine, reserved: `data-graph-governance`, `iam`, `data-schema-registry`)
   - Reserved namespaces are created when their first component lands — no empty dirs
 - Enforced by `node frontend/scripts/check-layout.mjs` (AC-8)
 - Per-component `vite.config.js`/`index.html` are Bit structural — do not collapse

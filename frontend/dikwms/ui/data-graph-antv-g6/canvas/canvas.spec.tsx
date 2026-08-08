@@ -3,7 +3,7 @@ import { describe, expect, it, vi, beforeEach } from 'vitest';
 import { Canvas } from './canvas.js';
 
 vi.mock('@antv/g6', () => ({
-  Canvas: class {
+  Graph: class {
     on() {}
     setData() {}
     setLayout() {}

@@ -49,3 +49,7 @@ Restructure via `bit move` (preserves history), never re-creation.
 - Flat per-component dirs — rejected: no context signal.
 
 - **Spelling correction (2026-08-08):** canonical name is **`dikwms`** (DIKW+ms) — scope `coop-codes.dikwms`, dir `frontend/dikwms/` (typo `diwkms` fixed everywhere).
+
+- **Rendering-engine namespace (2026-08-08):** G6 implementation lives at
+  `ui/data-graph-antv-g6/{canvas,layout-select}` (renderer SPI split; future
+  renderers get their own namespace under `data-graph-*`); whitelist updated.

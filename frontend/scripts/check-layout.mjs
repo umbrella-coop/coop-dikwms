@@ -9,7 +9,7 @@ import { fileURLToPath } from 'node:url';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..', 'dikwms');
 const namespaces = new Set(['app', 'hook', 'ui']);
-const contexts = new Set(['data-graph', 'data-graph-governance', 'iam', 'data-schema-registry']);
+const contexts = new Set(['data-graph', 'data-graph-antv-g6', 'data-graph-governance', 'iam', 'data-schema-registry']);
 const errors = [];
 
 if (!existsSync(root)) {

@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
-import { Canvas as G6Canvas } from '@antv/g6';
+import { Graph as G6Graph } from '@antv/g6';
 import { Spin, Tag } from 'antd';
-import { LayoutSelect } from '@coop-codes/dikwms.ui.data-graph.layout-select';
+import { LayoutSelect } from '@coop-codes/dikwms.ui.data-graph-antv-g6.layout-select';
 import type { Entity, EventStreamState } from '@coop-codes/dikwms.hook.use-data-graph-sse';
 import styles from './canvas.module.css';
 
@@ -26,7 +26,7 @@ export type CanvasProps = {
 
 export function Canvas({ entities, streamState, loading, onSelect, layout = DEFAULT_LAYOUT }: CanvasProps) {
   const containerRef = useRef<HTMLDivElement>(null);
-  const canvasRef = useRef<G6Canvas | null>(null);
+  const canvasRef = useRef<G6Graph | null>(null);
   const onSelectRef = useRef(onSelect);
   onSelectRef.current = onSelect;
   const [layoutType, setLayoutType] = useState(layout.type);
@@ -34,7 +34,7 @@ export function Canvas({ entities, streamState, loading, onSelect, layout = DEFA
   layoutRef.current = layout;
 
   useEffect(() => {
-    const canvas = new G6Canvas({
+    const canvas = new G6Graph({
       container: containerRef.current!,
       autoFit: 'view',
       layout: layoutRef.current,

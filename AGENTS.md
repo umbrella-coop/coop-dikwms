@@ -20,6 +20,13 @@ You are an expert software engineer assistant. Follow these project standards.
 3. Hard guarantees are limited to wire-compatibility mechanics (protobuf tag immutability), never to data conformance.
 4. Enforcement may be opt-in per scope (future capability), but the default stance is warn-not-fail.
 
+## .wip/ Directory Policy
+> `.wip/` is **personal scratch space for the orchestrator** — not project documentation.
+1. Agents MUST NOT read, modify, cite, or reason from files in `.wip/` unless the user explicitly mentions a file in the prompt.
+2. Do not treat `.wip/` content as requirements, decisions, or facts — it is ungoverned notes.
+3. Project truth lives in `docs/` (specs, ADRs, DDD map), AGENTS.md files, and the codebase — `.wip/` is excluded from that authority.
+4. Never write new files into `.wip/` and never commit changes to it.
+
 ## Spec Intake Rule (SDD governance)
 > Specs are created by **promoting backlog items** — never on demand.
 1. **Single intake queue:** `docs/specs/backlog.md` is the only source of planned specs. Every brainstorm outcome, user request, dependency finding, and spec-relationship reference ("SPEC-NNN (planned)") MUST be recorded there before any spec creation.

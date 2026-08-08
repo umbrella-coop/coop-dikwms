@@ -37,13 +37,13 @@
             }
         }
     },
-    "ui/data-graph/canvas": {
-        "name": "ui/data-graph/canvas",
+    "ui/data-graph-antv-g6/canvas": {
+        "name": "ui/data-graph-antv-g6/canvas",
         "scope": "",
         "version": "",
         "defaultScope": "coop-codes.dikwms",
         "mainFile": "index.ts",
-        "rootDir": "dikwms/ui/data-graph/canvas",
+        "rootDir": "dikwms/ui/data-graph-antv-g6/canvas",
         "config": {
             "bitdev.react/react-env@6.0.28": {},
             "teambit.envs/envs": {
@@ -51,13 +51,13 @@
             }
         }
     },
-    "ui/data-graph/layout-select": {
-        "name": "ui/data-graph/layout-select",
+    "ui/data-graph-antv-g6/layout-select": {
+        "name": "ui/data-graph-antv-g6/layout-select",
         "scope": "",
         "version": "",
         "defaultScope": "coop-codes.dikwms",
         "mainFile": "index.ts",
-        "rootDir": "dikwms/ui/data-graph/layout-select",
+        "rootDir": "dikwms/ui/data-graph-antv-g6/layout-select",
         "config": {
             "bitdev.react/react-env@6.0.28": {},
             "teambit.envs/envs": {
