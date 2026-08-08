@@ -1,7 +1,17 @@
+:global(html),
+:global(body),
+:global(#root) {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+}
+
 .app {
   height: 100vh;
   display: flex;
   flex-direction: column;
+  overflow: hidden;
   font-family: system-ui, -apple-system, sans-serif;
 }
 
