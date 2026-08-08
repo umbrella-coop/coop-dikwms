@@ -33,6 +33,19 @@ Planned specs not yet created. Add requirements captured during development here
 
 **Dependencies:** SPEC-007 (drift checks in CI), existing BDD derivations (features/SPEC-*.feature), crate layout
 
+## SPEC-021 (planned): Frontend E2E Suite (Playwright) — held
+
+**Requirement (captured 2026-08-07, source: orchestrator):** hold SPEC-018's deferred E2E features; until then, frontend testing is **manual, orchestrator-driven via the UI** (`bit run diwkms -p <port>` + browser).
+
+**Held items (from SPEC-018, deferred):**
+- AC-3 E2E assertion: `window.__APP_READY__` wait + canvas render + drawer open + live-update lands
+- AC-6 E2E: SSE genesis replay + cursor reconnect in a real browser
+- Drawer save-failure error UI (antd form submission — unreliable under jsdom)
+- Playwright Page Object Models over the data-testid contract (SPEC-018 AC-1 selectors)
+- Integration with SPEC-017 (bounded-context feature dirs + drift checks)
+
+**Dependencies:** SPEC-018 (conventions in place), SPEC-017 (E2E org), SPEC-010 (remote test exec, later)
+
 ## SPEC-020 (planned): Context Reorganization — data-graph rename & namespace moves
 
 **Requirement (captured 2026-08-07, source: orchestrator DDD review):**
@@ -44,6 +57,8 @@ Planned specs not yet created. Add requirements captured during development here
   - `apps/coop-graph-app` → `app/diwkms`
 - Reserved namespaces (created when first component lands): `data-graph-governance/`, `iam/`, `data-schema-registry/`
 - `frontend/check-layout.mjs` updated to the context map
+
+**Execution policy (orchestrator, 2026-08-07):** moves and renames are **opportunistic** — applied as components are touched, never a dedicated batch restructure.
 
 **Dependencies:** DDD context map v2 (orchestrator-approved), SPEC-019 (scope), SPEC-018 (conventions)
 

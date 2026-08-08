@@ -76,6 +76,14 @@ Consumers SHALL bootstrap state from the SSE genesis replay (`/events?cursor=`),
 
 > Note (2026-08-07): drawer save-failure error UI is exercised via Playwright E2E (SPEC-017), not jsdom — antd v6 form submission is unreliable under jsdom. The `app:error` dispatch contract is unit-covered in hooks/use-event-stream.
 
+---
+
+## MODIFIED Requirements (delta — 2026-08-07, orchestrator)
+
+- **Held — E2E suite (AC-3, AC-6, drawer error-UI, POMs):** deferred to **SPEC-021** (backlog). Until it lands, frontend verification is **manual orchestrator-driven UI testing** (`bit run` + browser).
+- AC-3/AC-6 status: **held** (spike evidence only, not verified by an E2E suite).
+- No changes to the conventions (AC-1/2/4/5 remain enforced by component specs).
+
 ## Open Risks
 
 | ID | Risk | Impact | Mitigation |
