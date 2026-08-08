@@ -58,6 +58,6 @@ specs:
     started: 2026-08-07
   - id: SPEC-019
     file: docs/specs/SPEC-019-naming-scope-correction.md
-    status: Approved
+    status: Archived
     started: 2026-08-07
 updated: 2026-08-07

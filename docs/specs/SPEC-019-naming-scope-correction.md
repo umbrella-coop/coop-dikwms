@@ -1,6 +1,6 @@
 # SPEC-019 Feature: Naming & Bit Scope Correction — coop-codes.network-graph
 
-<!-- status: Approved -->
+<!-- status: Archived -->
 
 ## Overview
 
@@ -69,3 +69,17 @@ No configuration, docs, or AGENTS references SHALL use `grps.coop-graph` for the
 
 - SPEC-018: frontend platform components resolve under this scope
 - Frontend spike: applies the rename now
+
+
+---
+
+## MODIFIED Requirements (delta — 2026-08-07)
+
+- **MODIFIED — Namespace layout guidance:** the flat `network-graph/<name>` layout described in Technical Design is **superseded** by the DDD context map v2 (docs/brainstorm/ddd-bounded-contexts.md): components live at `ui/<context>/<component>` and app shells at `app/<shell>` (e.g. `app/diwkms`). The Bit **scope** `coop-codes.network-graph` is unchanged; only component paths evolved (opportunistic moves per SPEC-020).
+- Scope-correction requirements (AC-1..AC-3) remain fully in force.
+
+## ARCHIVED (2026-08-07)
+
+- **Verification:** AC-1 component ids `@coop-codes/network-graph.*` ✓ (bit list); AC-2 `bit list` clean ✓; AC-3 grep audit — zero `grps.` references ✓ (commits `e83a018`, `41fbba3`)
+- **Supersession:** component-path guidance superseded by DDD context map v2 / SPEC-020; scope correction itself stands
+- **Status change:** Approved → Archived
