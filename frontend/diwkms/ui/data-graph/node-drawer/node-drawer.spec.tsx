@@ -17,11 +17,11 @@ beforeAll(() => {
     })),
   });
 });
-import { EntityDrawer } from './entity-drawer.js';
+import { NodeDrawer } from './node-drawer.js';
 
 const entity = { id: '019f-entity', kind: 'Node', name: 'acme' };
 
-describe('SPEC-018 ui/entity-drawer', () => {
+describe('SPEC-018 ui/node-drawer', () => {
   beforeEach(() => {
     vi.restoreAllMocks();
     global.fetch = vi.fn().mockResolvedValue({
@@ -32,8 +32,8 @@ describe('SPEC-018 ui/entity-drawer', () => {
 
   // AC-1: stable selectors on drawer, form, and inputs
   it('exposes stable data-testid selectors', async () => {
-    render(<EntityDrawer entity={entity} apiBase="http://api" onClose={() => {}} />);
-    expect(screen.getByTestId('entity-drawer')).toBeTruthy();
+    render(<NodeDrawer entity={entity} apiBase="http://api" onClose={() => {}} />);
+    expect(screen.getByTestId('node-drawer')).toBeTruthy();
     await waitFor(() => expect(screen.getByTestId('entity-form')).toBeTruthy());
     expect(screen.getByTestId('entity-name-input')).toBeTruthy();
     expect(screen.getByTestId('entity-save-btn')).toBeTruthy();
@@ -41,9 +41,9 @@ describe('SPEC-018 ui/entity-drawer', () => {
 
   // AC-2: data-state reflects drawer open/closed
   it('reflects open state on the drawer', () => {
-    const { rerender } = render(<EntityDrawer entity={entity} apiBase="http://api" onClose={() => {}} />);
-    expect(screen.getByTestId('entity-drawer').getAttribute('data-state')).toBe('open');
-    rerender(<EntityDrawer entity={undefined} apiBase="http://api" onClose={() => {}} />);
-    expect(screen.getByTestId('entity-drawer').getAttribute('data-state')).toBe('closed');
+    const { rerender } = render(<NodeDrawer entity={entity} apiBase="http://api" onClose={() => {}} />);
+    expect(screen.getByTestId('node-drawer').getAttribute('data-state')).toBe('open');
+    rerender(<NodeDrawer entity={undefined} apiBase="http://api" onClose={() => {}} />);
+    expect(screen.getByTestId('node-drawer').getAttribute('data-state')).toBe('closed');
   });
 });

@@ -27,7 +27,7 @@
     /**
      * default scope for all components in workspace.
      **/
-    "defaultScope": "coop-codes.network-graph",
+    "defaultScope": "coop-codes.diwkms",
     "resolveAspectsFromNodeModules": true,
     "resolveEnvsFromRoots": true
   },

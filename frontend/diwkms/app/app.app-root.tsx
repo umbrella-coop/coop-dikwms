@@ -3,8 +3,8 @@ import {
   createRoot,
   // hydrateRoot
 } from 'react-dom/client';
-import { CoopGraphApp } from "./coop-graph-app.js";
-import "./coop-graph-app.module.css";
+import { App } from "./app.js";
+import "./app.module.css";
 
 /**
  * comment this in for server-side rendering (ssr) and comment 
@@ -13,7 +13,7 @@ import "./coop-graph-app.module.css";
 // hydrateRoot(
 //   document.getElementById("root") as HTMLElement,
 //   <BrowserRouter>
-//     <CoopGraphApp />
+//     <App />
 //   </BrowserRouter>
 // );
 
@@ -29,6 +29,6 @@ const root = createRoot(container!);
 
 root.render(
   <BrowserRouter>
-    <CoopGraphApp />
+    <App />
   </BrowserRouter>
 );

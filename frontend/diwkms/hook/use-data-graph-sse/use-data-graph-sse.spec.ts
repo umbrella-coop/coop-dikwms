@@ -1,7 +1,7 @@
 import { describe, expect, it, vi, afterEach } from 'vitest';
-import { reportError } from './use-event-stream.js';
+import { reportError } from './use-data-graph-sse.js';
 
-describe('SPEC-018 hooks/use-event-stream', () => {
+describe('SPEC-018 hooks/use-data-graph-sse', () => {
   afterEach(() => {
     vi.restoreAllMocks();
   });

@@ -1,10 +1,10 @@
 import { useEffect, useRef, useState } from 'react';
-import { Graph as G6Graph } from '@antv/g6';
+import { Canvas as G6Canvas } from '@antv/g6';
 import { Select, Spin, Tag } from 'antd';
-import type { Entity, EventStreamState } from '@coop-codes/network-graph.hooks.use-event-stream';
-import styles from './graph.module.css';
+import type { Entity, EventStreamState } from '@coop-codes/diwkms.hook.use-data-graph-sse';
+import styles from './canvas.module.css';
 
-export type GraphLayout = { type: string; [key: string]: unknown };
+export type CanvasLayout = { type: string; [key: string]: unknown };
 
 const LAYOUT_OPTIONS: { value: string; label: string }[] = [
   { value: 'force', label: 'Force (default)' },
@@ -19,7 +19,7 @@ const LAYOUT_OPTIONS: { value: string; label: string }[] = [
 ];
 
 /** User-friendly default: force-directed with overlap prevention. */
-const DEFAULT_LAYOUT: GraphLayout = {
+const DEFAULT_LAYOUT: CanvasLayout = {
   type: 'force',
   gravity: 10,
   linkDistance: 120,
@@ -27,25 +27,25 @@ const DEFAULT_LAYOUT: GraphLayout = {
   enableWorker: true,
 };
 
-export type GraphProps = {
+export type CanvasProps = {
   entities: Record<string, Entity>;
   streamState: EventStreamState;
   loading: boolean;
   onSelect: (id: string) => void;
-  layout?: GraphLayout;
+  layout?: CanvasLayout;
 };
 
-export function Graph({ entities, streamState, loading, onSelect, layout = DEFAULT_LAYOUT }: GraphProps) {
+export function Canvas({ entities, streamState, loading, onSelect, layout = DEFAULT_LAYOUT }: CanvasProps) {
   const containerRef = useRef<HTMLDivElement>(null);
-  const graphRef = useRef<G6Graph | null>(null);
+  const canvasRef = useRef<G6Canvas | null>(null);
   const onSelectRef = useRef(onSelect);
   onSelectRef.current = onSelect;
   const [layoutType, setLayoutType] = useState(layout.type);
-  const layoutRef = useRef<GraphLayout>(layout);
+  const layoutRef = useRef<CanvasLayout>(layout);
   layoutRef.current = layout;
 
   useEffect(() => {
-    const graph = new G6Graph({
+    const canvas = new G6Canvas({
       container: containerRef.current!,
       autoFit: 'view',
       layout: layoutRef.current,
@@ -60,31 +60,31 @@ export function Graph({ entities, streamState, loading, onSelect, layout = DEFAU
       },
       behaviors: ['drag-canvas', 'zoom-canvas', 'click-select'],
     });
-    graph.on('node:click', (ev) => {
+    canvas.on('node:click', (ev) => {
       const id = (ev as unknown as { target?: { id?: string } }).target?.id;
       if (id) onSelectRef.current(id);
     });
-    graphRef.current = graph;
+    canvasRef.current = canvas;
     return () => {
-      graph.destroy();
-      graphRef.current = null;
+      canvas.destroy();
+      canvasRef.current = null;
     };
   }, []);
 
   useEffect(() => {
-    const graph = graphRef.current;
-    if (!graph) return;
+    const canvas = canvasRef.current;
+    if (!canvas) return;
     const nodes = Object.values(entities).map((e) => ({ id: e.id, data: e }));
-    graph.setData({ nodes, edges: [] });
-    graph.render();
+    canvas.setData({ nodes, edges: [] });
+    canvas.render();
   }, [entities]);
 
   // layout switch: re-run the layout algorithm on the current data
   useEffect(() => {
-    const graph = graphRef.current;
-    if (!graph) return;
-    graph.setLayout({ ...layoutRef.current, type: layoutType });
-    graph.layout();
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    canvas.setLayout({ ...layoutRef.current, type: layoutType });
+    canvas.layout();
   }, [layoutType]);
 
   return (
@@ -92,13 +92,13 @@ export function Graph({ entities, streamState, loading, onSelect, layout = DEFAU
       <div
         ref={containerRef}
         className={styles.canvas}
-        data-testid="coop-graph-canvas"
+        data-testid="coop-canvas-canvas"
         data-loading={loading}
         data-state={streamState}
         role="img"
-        aria-label="Knowledge graph visualization canvas"
+        aria-label="Knowledge canvas visualization canvas"
       >
-        {loading && <Spin data-testid="graph-loading" />}
+        {loading && <Spin data-testid="canvas-loading" />}
       </div>
       <footer className={styles.footer}>
         <Select
@@ -107,7 +107,7 @@ export function Graph({ entities, streamState, loading, onSelect, layout = DEFAU
           options={LAYOUT_OPTIONS}
           size="small"
           data-testid="layout-select"
-          aria-label="Graph layout type"
+          aria-label="Canvas layout type"
         />
         <Tag color={streamState === 'open' ? 'green' : streamState === 'error' ? 'red' : 'orange'}>
           stream: {streamState}

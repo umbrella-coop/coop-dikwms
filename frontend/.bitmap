@@ -9,13 +9,13 @@
  */
 
 {
-    "apps/coop-graph-app": {
-        "name": "apps/coop-graph-app",
+    "app": {
+        "name": "app",
         "scope": "",
         "version": "",
-        "defaultScope": "coop-codes.network-graph",
+        "defaultScope": "coop-codes.diwkms",
         "mainFile": "index.ts",
-        "rootDir": "network-graph/apps/coop-graph-app",
+        "rootDir": "diwkms/app",
         "config": {
             "bitdev.react/react-env@6.0.28": {},
             "teambit.envs/envs": {
@@ -23,13 +23,13 @@
             }
         }
     },
-    "hooks/use-event-stream": {
-        "name": "hooks/use-event-stream",
+    "hook/use-data-graph-sse": {
+        "name": "hook/use-data-graph-sse",
         "scope": "",
         "version": "",
-        "defaultScope": "coop-codes.network-graph",
+        "defaultScope": "coop-codes.diwkms",
         "mainFile": "index.ts",
-        "rootDir": "network-graph/hooks/use-event-stream",
+        "rootDir": "diwkms/hook/use-data-graph-sse",
         "config": {
             "bitdev.react/react-env@6.0.28": {},
             "teambit.envs/envs": {
@@ -37,13 +37,13 @@
             }
         }
     },
-    "ui/entity-drawer": {
-        "name": "ui/entity-drawer",
+    "ui/data-graph/canvas": {
+        "name": "ui/data-graph/canvas",
         "scope": "",
         "version": "",
-        "defaultScope": "coop-codes.network-graph",
+        "defaultScope": "coop-codes.diwkms",
         "mainFile": "index.ts",
-        "rootDir": "network-graph/ui/entity-drawer",
+        "rootDir": "diwkms/ui/data-graph/canvas",
         "config": {
             "bitdev.react/react-env@6.0.28": {},
             "teambit.envs/envs": {
@@ -51,13 +51,13 @@
             }
         }
     },
-    "ui/graph": {
-        "name": "ui/graph",
+    "ui/data-graph/node-drawer": {
+        "name": "ui/data-graph/node-drawer",
         "scope": "",
         "version": "",
-        "defaultScope": "coop-codes.network-graph",
+        "defaultScope": "coop-codes.diwkms",
         "mainFile": "index.ts",
-        "rootDir": "network-graph/ui/graph",
+        "rootDir": "diwkms/ui/data-graph/node-drawer",
         "config": {
             "bitdev.react/react-env@6.0.28": {},
             "teambit.envs/envs": {

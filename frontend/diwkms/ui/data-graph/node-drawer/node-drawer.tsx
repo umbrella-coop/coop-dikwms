@@ -1,15 +1,15 @@
 import { useEffect, useState } from 'react';
 import { Button, Drawer, Form, Input } from 'antd';
-import type { Entity } from '@coop-codes/network-graph.hooks.use-event-stream';
-import { reportError } from '@coop-codes/network-graph.hooks.use-event-stream';
+import type { Entity } from '@coop-codes/diwkms.hook.use-data-graph-sse';
+import { reportError } from '@coop-codes/diwkms.hook.use-data-graph-sse';
 
-export type EntityDrawerProps = {
+export type NodeDrawerProps = {
   entity: Entity | undefined;
   apiBase: string;
   onClose: () => void;
 };
 
-export function EntityDrawer({ entity, apiBase, onClose }: EntityDrawerProps) {
+export function NodeDrawer({ entity, apiBase, onClose }: NodeDrawerProps) {
   const [properties, setProperties] = useState<Record<string, string>>({});
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -72,7 +72,7 @@ export function EntityDrawer({ entity, apiBase, onClose }: EntityDrawerProps) {
       title={entity ? `${entity.kind} — ${entity.id.slice(0, 8)}` : 'Entity'}
       open={!!entity}
       onClose={onClose}
-      data-testid="entity-drawer"
+      data-testid="node-drawer"
       data-state={entity ? 'open' : 'closed'}
       aria-label="Entity details drawer"
     >

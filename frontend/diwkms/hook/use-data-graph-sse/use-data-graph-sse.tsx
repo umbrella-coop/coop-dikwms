@@ -14,7 +14,7 @@ export type Entity = { id: string; kind: string; name?: string };
 
 export type EventStreamState = 'connecting' | 'open' | 'error';
 
-export function useEventStream(apiBase: string) {
+export function useDataGraphSse(apiBase: string) {
   const [entities, setEntities] = useState<Record<string, Entity>>({});
   const [streamState, setStreamState] = useState<EventStreamState>('connecting');
   const [ready, setReady] = useState(false);

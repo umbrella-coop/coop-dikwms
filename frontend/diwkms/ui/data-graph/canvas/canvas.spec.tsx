@@ -1,9 +1,9 @@
 import { render, screen } from '@testing-library/react';
 import { describe, expect, it, vi, beforeEach } from 'vitest';
-import { Graph } from './graph.js';
+import { Canvas } from './canvas.js';
 
 vi.mock('@antv/g6', () => ({
-  Graph: class {
+  Canvas: class {
     on() {}
     setData() {}
     setLayout() {}
@@ -13,7 +13,7 @@ vi.mock('@antv/g6', () => ({
   },
 }));
 
-describe('SPEC-018 ui/graph', () => {
+describe('SPEC-018 ui/canvas', () => {
   const base = {
     entities: {},
     streamState: 'connecting' as const,
@@ -27,32 +27,32 @@ describe('SPEC-018 ui/graph', () => {
 
   // AC-1: stable data-testid on the canvas
   it('exposes a stable data-testid on the canvas', () => {
-    render(<Graph {...base} />);
-    expect(screen.getByTestId('coop-graph-canvas')).toBeTruthy();
+    render(<Canvas {...base} />);
+    expect(screen.getByTestId('coop-canvas-canvas')).toBeTruthy();
   });
 
   // AC-2: data-loading / data-state reflect async state
   it('reflects loading and stream state on the DOM', () => {
-    const { rerender } = render(<Graph {...base} />);
-    expect(screen.getByTestId('coop-graph-canvas').getAttribute('data-loading')).toBe('true');
-    expect(screen.getByTestId('coop-graph-canvas').getAttribute('data-state')).toBe('connecting');
+    const { rerender } = render(<Canvas {...base} />);
+    expect(screen.getByTestId('coop-canvas-canvas').getAttribute('data-loading')).toBe('true');
+    expect(screen.getByTestId('coop-canvas-canvas').getAttribute('data-state')).toBe('connecting');
 
-    rerender(<Graph {...base} loading={false} streamState="open" />);
-    expect(screen.getByTestId('coop-graph-canvas').getAttribute('data-loading')).toBe('false');
-    expect(screen.getByTestId('coop-graph-canvas').getAttribute('data-state')).toBe('open');
+    rerender(<Canvas {...base} loading={false} streamState="open" />);
+    expect(screen.getByTestId('coop-canvas-canvas').getAttribute('data-loading')).toBe('false');
+    expect(screen.getByTestId('coop-canvas-canvas').getAttribute('data-state')).toBe('open');
   });
 
   // AC-1: layout selector (user-facing layout control)
   it('exposes a layout selector', () => {
-    render(<Graph {...base} />);
+    render(<Canvas {...base} />);
     expect(screen.getByTestId('layout-select')).toBeTruthy();
-    expect(screen.getByLabelText('Graph layout type')).toBeTruthy();
+    expect(screen.getByLabelText('Canvas layout type')).toBeTruthy();
   });
 
   // AC-1: entity count selector for E2E assertions
   it('exposes an entity count selector', () => {
     render(
-      <Graph
+      <Canvas
         {...base}
         entities={{
           a: { id: 'a', kind: 'Node' },

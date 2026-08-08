@@ -1,12 +1,12 @@
 import { useState } from 'react';
-import { useEventStream } from '@coop-codes/network-graph.hooks.use-event-stream';
-import { Graph } from '@coop-codes/network-graph.ui.graph';
-import { EntityDrawer } from '@coop-codes/network-graph.ui.entity-drawer';
-import styles from './coop-graph-app.module.css';
+import { useEventStream } from '@coop-codes/diwkms.hook.use-data-graph-sse';
+import { Graph } from '@coop-codes/diwkms.ui.data-graph.canvas';
+import { EntityDrawer } from '@coop-codes/diwkms.ui.data-graph.node-drawer';
+import styles from './app.module.css';
 
 const API_BASE = import.meta.env.VITE_API_BASE ?? 'http://localhost:8080';
 
-export function CoopGraphApp() {
+export function App() {
   const { entities, streamState, ready } = useEventStream(API_BASE);
   const [selected, setSelected] = useState<string | null>(null);
   const selectedEntity = selected ? entities[selected] : undefined;

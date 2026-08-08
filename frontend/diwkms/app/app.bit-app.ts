@@ -4,7 +4,7 @@ export default ViteReact.from({
   /**
    * name of your app.
    */
-  name: 'coop-graph-app',
+  name: 'app',
 
   /**
    * determine whether to use ssr mode or not.
