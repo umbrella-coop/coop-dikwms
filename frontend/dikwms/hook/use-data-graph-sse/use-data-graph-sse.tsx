@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-import type { DataGraphNode } from '@coop-codes/dikwms.types.core-v1';
+import type { DataGraphNode } from '@coop-codes/dikwms.type.core-v1';
 
 export type DomainEvent = {
   type: 'entity_created' | 'property_set_saved';

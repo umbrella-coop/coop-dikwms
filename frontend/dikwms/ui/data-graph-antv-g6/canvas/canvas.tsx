@@ -3,7 +3,7 @@ import { Graph as G6Graph } from '@antv/g6';
 import { Spin, Tag } from 'antd';
 import { LayoutSelect } from '@coop-codes/dikwms.ui.data-graph-antv-g6.layout-select';
 import type { EventStreamState } from '@coop-codes/dikwms.hook.use-data-graph-sse';
-import type { DataGraphNode } from '@coop-codes/dikwms.types.core-v1';
+import type { DataGraphNode } from '@coop-codes/dikwms.type.core-v1';
 import styles from './canvas.module.css';
 
 export type CanvasLayout = { type: string; [key: string]: unknown };

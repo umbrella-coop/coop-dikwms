@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Button, Drawer, Form, Input } from 'antd';
-import type { DataGraphNode } from '@coop-codes/dikwms.types.core-v1';
+import type { DataGraphNode } from '@coop-codes/dikwms.type.core-v1';
 import { reportError } from '@coop-codes/dikwms.hook.use-data-graph-sse';
 
 export type NodeDrawerProps = {

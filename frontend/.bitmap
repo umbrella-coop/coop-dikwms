@@ -37,13 +37,13 @@
             }
         }
     },
-    "types/core-v1": {
-        "name": "types/core-v1",
+    "type/core-v1": {
+        "name": "type/core-v1",
         "scope": "",
         "version": "",
         "defaultScope": "coop-codes.dikwms",
         "mainFile": "index.ts",
-        "rootDir": "dikwms/types/core-v1",
+        "rootDir": "dikwms/type/core-v1",
         "config": {
             "bitdev.react/react-env@6.0.28": {},
             "teambit.envs/envs": {

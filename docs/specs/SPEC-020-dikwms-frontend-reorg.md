@@ -137,6 +137,9 @@ Iterative + opportunistic (SPEC-020 policy): each move rides on the next touch o
 
 - **Shared types namespace (2026-08-08, orchestrator):** `Entity` renamed
   `DataGraphNode`; `DataGraphEdge` + `DataGraphCombo` added; moved to new
-  component `coop-codes.dikwms/types/core-v1` (dir `types/core-v1/`,
+  component `coop-codes.dikwms/type/core-v1` (dir `type/core-v1/`,
   DIKW Data-layer primitives, backend EntityKind parity). Hook + canvas +
   node-drawer consume the types component; hook index re-exports.
+
+- **Namespace singularized (2026-08-08, orchestrator):** `types/` → `type/` —
+  component `coop-codes.dikwms/type/core-v1`, dir `dikwms/type/core-v1/`.
