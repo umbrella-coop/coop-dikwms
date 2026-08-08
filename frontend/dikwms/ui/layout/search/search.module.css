@@ -1,0 +1,17 @@
+.wrap {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.input {
+  background: rgba(0, 0, 0, 0.04);
+  border-radius: 4px;
+  width: 220px;
+}
+
+.action {
+  cursor: pointer;
+  font-size: 18px;
+  color: var(--ant-color-primary, #1677ff);
+}

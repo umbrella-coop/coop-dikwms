@@ -56,6 +56,15 @@ frontend/dikwms/                        (Bit scope: coop-codes.dikwms)
 ├── app/                                (app shell: app)
 ├── type/
 │   └── core-v1/                   (DataGraphNode/Edge/Combo — DIKW Data primitives; mirrors registry `core.v1`)
+├── ui/
+│   └── layout/                    (app-shell layout system — ProLayout parity, antd 6 native)
+│       ├── frame/                 (sider+header+content shell)
+│       ├── header-title/          (logo+title+extra)
+│       ├── mega-menu/             (category + hot-product popover)
+│       ├── search/                (global search input)
+│       ├── header-actions/        (icon action set)
+│       ├── user-menu/             (avatar + dropdown)
+│       └── menu-footer/           (sider footer lines)
 └── ui/
     ├── data-graph/
     │   └── node-drawer/                (← ui/entity-drawer, testids node-*)

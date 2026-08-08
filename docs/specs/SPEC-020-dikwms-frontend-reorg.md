@@ -182,3 +182,8 @@ Iterative + opportunistic (SPEC-020 policy): each move rides on the next touch o
 - **New component (2026-08-08, orchestrator):** `ui/project/console-page-index-container`
   (exports `ProjectConsolePageIndexContainer`) — completes the Scope-family
   console index shells (organization/workspace/project).
+
+- **Layout system (2026-08-08, orchestrator):** `ui/layout/` — ProLayout demo
+  decomposed into 7 components (frame, header-title, mega-menu, search,
+  header-actions, user-menu, menu-footer) on antd 6 primitives (ProLayout
+  requires antd ^5 — rejected; native parity). `layout` context whitelisted.

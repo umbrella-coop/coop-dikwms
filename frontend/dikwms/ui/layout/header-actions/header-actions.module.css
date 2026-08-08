@@ -1,0 +1,15 @@
+.wrap {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.action {
+  cursor: pointer;
+  font-size: 16px;
+  color: rgba(0, 0, 0, 0.65);
+}
+
+.action:hover {
+  color: var(--ant-color-primary, #1677ff);
+}

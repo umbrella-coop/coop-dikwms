@@ -224,6 +224,133 @@ importers:
         specifier: ^16.0.0
         version: 16.3.2(@testing-library/dom@10.4.1)(@types/react-dom@19.2.3(@types/react@19.2.14))(@types/react@19.2.14)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
 
+  dikwms/ui/layout/frame:
+    dependencies:
+      antd:
+        specifier: ^6.5.4
+        version: 6.5.4(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
+      react:
+        specifier: 19.2.4
+        version: 19.2.4
+      react-dom:
+        specifier: 19.2.4
+        version: 19.2.4(react@19.2.4)
+    devDependencies:
+      '@bitdev/react.react-env':
+        specifier: ^6.0.27
+        version: 6.0.28(@emnapi/core@1.11.3)(@emnapi/runtime@1.11.3)(esbuild@0.27.7)(eslint@8.57.1)(react-refresh@0.18.0)(rollup@4.62.4)(rxjs@7.8.2)(sass-embedded@1.100.0)(terser@5.49.2)(webpack@5.109.2(esbuild@0.27.7))(yaml@2.9.0)
+      '@testing-library/react':
+        specifier: ^16.0.0
+        version: 16.3.2(@testing-library/dom@10.4.1)(@types/react-dom@19.2.3(@types/react@19.2.14))(@types/react@19.2.14)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
+
+  dikwms/ui/layout/header-actions:
+    dependencies:
+      antd:
+        specifier: ^6.5.4
+        version: 6.5.4(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
+      react:
+        specifier: 19.2.4
+        version: 19.2.4
+      react-dom:
+        specifier: 19.2.4
+        version: 19.2.4(react@19.2.4)
+    devDependencies:
+      '@bitdev/react.react-env':
+        specifier: ^6.0.27
+        version: 6.0.28(@emnapi/core@1.11.3)(@emnapi/runtime@1.11.3)(esbuild@0.27.7)(eslint@8.57.1)(react-refresh@0.18.0)(rollup@4.62.4)(rxjs@7.8.2)(sass-embedded@1.100.0)(terser@5.49.2)(webpack@5.109.2(esbuild@0.27.7))(yaml@2.9.0)
+      '@testing-library/react':
+        specifier: ^16.0.0
+        version: 16.3.2(@testing-library/dom@10.4.1)(@types/react-dom@19.2.3(@types/react@19.2.14))(@types/react@19.2.14)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
+
+  dikwms/ui/layout/header-title:
+    dependencies:
+      react:
+        specifier: 19.2.4
+        version: 19.2.4
+      react-dom:
+        specifier: 19.2.4
+        version: 19.2.4(react@19.2.4)
+    devDependencies:
+      '@bitdev/react.react-env':
+        specifier: ^6.0.27
+        version: 6.0.28(@emnapi/core@1.11.3)(@emnapi/runtime@1.11.3)(esbuild@0.27.7)(eslint@8.57.1)(react-refresh@0.18.0)(rollup@4.62.4)(rxjs@7.8.2)(sass-embedded@1.100.0)(terser@5.49.2)(webpack@5.109.2(esbuild@0.27.7))(yaml@2.9.0)
+      '@testing-library/react':
+        specifier: ^16.0.0
+        version: 16.3.2(@testing-library/dom@10.4.1)(@types/react-dom@19.2.3(@types/react@19.2.14))(@types/react@19.2.14)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
+
+  dikwms/ui/layout/mega-menu:
+    dependencies:
+      antd:
+        specifier: ^6.5.4
+        version: 6.5.4(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
+      react:
+        specifier: 19.2.4
+        version: 19.2.4
+      react-dom:
+        specifier: 19.2.4
+        version: 19.2.4(react@19.2.4)
+    devDependencies:
+      '@bitdev/react.react-env':
+        specifier: ^6.0.27
+        version: 6.0.28(@emnapi/core@1.11.3)(@emnapi/runtime@1.11.3)(esbuild@0.27.7)(eslint@8.57.1)(react-refresh@0.18.0)(rollup@4.62.4)(rxjs@7.8.2)(sass-embedded@1.100.0)(terser@5.49.2)(webpack@5.109.2(esbuild@0.27.7))(yaml@2.9.0)
+      '@testing-library/react':
+        specifier: ^16.0.0
+        version: 16.3.2(@testing-library/dom@10.4.1)(@types/react-dom@19.2.3(@types/react@19.2.14))(@types/react@19.2.14)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
+
+  dikwms/ui/layout/menu-footer:
+    dependencies:
+      react:
+        specifier: 19.2.4
+        version: 19.2.4
+      react-dom:
+        specifier: 19.2.4
+        version: 19.2.4(react@19.2.4)
+    devDependencies:
+      '@bitdev/react.react-env':
+        specifier: ^6.0.27
+        version: 6.0.28(@emnapi/core@1.11.3)(@emnapi/runtime@1.11.3)(esbuild@0.27.7)(eslint@8.57.1)(react-refresh@0.18.0)(rollup@4.62.4)(rxjs@7.8.2)(sass-embedded@1.100.0)(terser@5.49.2)(webpack@5.109.2(esbuild@0.27.7))(yaml@2.9.0)
+      '@testing-library/react':
+        specifier: ^16.0.0
+        version: 16.3.2(@testing-library/dom@10.4.1)(@types/react-dom@19.2.3(@types/react@19.2.14))(@types/react@19.2.14)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
+
+  dikwms/ui/layout/search:
+    dependencies:
+      antd:
+        specifier: ^6.5.4
+        version: 6.5.4(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
+      react:
+        specifier: 19.2.4
+        version: 19.2.4
+      react-dom:
+        specifier: 19.2.4
+        version: 19.2.4(react@19.2.4)
+    devDependencies:
+      '@bitdev/react.react-env':
+        specifier: ^6.0.27
+        version: 6.0.28(@emnapi/core@1.11.3)(@emnapi/runtime@1.11.3)(esbuild@0.27.7)(eslint@8.57.1)(react-refresh@0.18.0)(rollup@4.62.4)(rxjs@7.8.2)(sass-embedded@1.100.0)(terser@5.49.2)(webpack@5.109.2(esbuild@0.27.7))(yaml@2.9.0)
+      '@testing-library/react':
+        specifier: ^16.0.0
+        version: 16.3.2(@testing-library/dom@10.4.1)(@types/react-dom@19.2.3(@types/react@19.2.14))(@types/react@19.2.14)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
+
+  dikwms/ui/layout/user-menu:
+    dependencies:
+      antd:
+        specifier: ^6.5.4
+        version: 6.5.4(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
+      react:
+        specifier: 19.2.4
+        version: 19.2.4
+      react-dom:
+        specifier: 19.2.4
+        version: 19.2.4(react@19.2.4)
+    devDependencies:
+      '@bitdev/react.react-env':
+        specifier: ^6.0.27
+        version: 6.0.28(@emnapi/core@1.11.3)(@emnapi/runtime@1.11.3)(esbuild@0.27.7)(eslint@8.57.1)(react-refresh@0.18.0)(rollup@4.62.4)(rxjs@7.8.2)(sass-embedded@1.100.0)(terser@5.49.2)(webpack@5.109.2(esbuild@0.27.7))(yaml@2.9.0)
+      '@testing-library/react':
+        specifier: ^16.0.0
+        version: 16.3.2(@testing-library/dom@10.4.1)(@types/react-dom@19.2.3(@types/react@19.2.14))(@types/react@19.2.14)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
+
   dikwms/ui/organization/console-page-index-container:
     dependencies:
       antd:
@@ -332,6 +459,27 @@ importers:
       '@coop-codes/dikwms.ui.data-graph.project-interactive-canvas-container':
         specifier: workspace:*
         version: file:dikwms/ui/data-graph/project-interactive-canvas-container(react@19.2.4)
+      '@coop-codes/dikwms.ui.layout.frame':
+        specifier: workspace:*
+        version: file:dikwms/ui/layout/frame(react@19.2.4)
+      '@coop-codes/dikwms.ui.layout.header-actions':
+        specifier: workspace:*
+        version: file:dikwms/ui/layout/header-actions(react@19.2.4)
+      '@coop-codes/dikwms.ui.layout.header-title':
+        specifier: workspace:*
+        version: file:dikwms/ui/layout/header-title(react@19.2.4)
+      '@coop-codes/dikwms.ui.layout.mega-menu':
+        specifier: workspace:*
+        version: file:dikwms/ui/layout/mega-menu(react@19.2.4)
+      '@coop-codes/dikwms.ui.layout.menu-footer':
+        specifier: workspace:*
+        version: file:dikwms/ui/layout/menu-footer(react@19.2.4)
+      '@coop-codes/dikwms.ui.layout.search':
+        specifier: workspace:*
+        version: file:dikwms/ui/layout/search(react@19.2.4)
+      '@coop-codes/dikwms.ui.layout.user-menu':
+        specifier: workspace:*
+        version: file:dikwms/ui/layout/user-menu(react@19.2.4)
       '@coop-codes/dikwms.ui.organization.console-page-index-container':
         specifier: workspace:*
         version: file:dikwms/ui/organization/console-page-index-container(react@19.2.4)
@@ -458,6 +606,27 @@ importers:
       '@coop-codes/dikwms.ui.data-graph.project-interactive-canvas-container':
         specifier: workspace:*
         version: file:dikwms/ui/data-graph/project-interactive-canvas-container(react@19.2.4)
+      '@coop-codes/dikwms.ui.layout.frame':
+        specifier: workspace:*
+        version: file:dikwms/ui/layout/frame(react@19.2.4)
+      '@coop-codes/dikwms.ui.layout.header-actions':
+        specifier: workspace:*
+        version: file:dikwms/ui/layout/header-actions(react@19.2.4)
+      '@coop-codes/dikwms.ui.layout.header-title':
+        specifier: workspace:*
+        version: file:dikwms/ui/layout/header-title(react@19.2.4)
+      '@coop-codes/dikwms.ui.layout.mega-menu':
+        specifier: workspace:*
+        version: file:dikwms/ui/layout/mega-menu(react@19.2.4)
+      '@coop-codes/dikwms.ui.layout.menu-footer':
+        specifier: workspace:*
+        version: file:dikwms/ui/layout/menu-footer(react@19.2.4)
+      '@coop-codes/dikwms.ui.layout.search':
+        specifier: workspace:*
+        version: file:dikwms/ui/layout/search(react@19.2.4)
+      '@coop-codes/dikwms.ui.layout.user-menu':
+        specifier: workspace:*
+        version: file:dikwms/ui/layout/user-menu(react@19.2.4)
       '@coop-codes/dikwms.ui.organization.console-page-index-container':
         specifier: workspace:*
         version: file:dikwms/ui/organization/console-page-index-container(react@19.2.4)
@@ -1570,6 +1739,41 @@ packages:
 
   '@coop-codes/dikwms.ui.data-graph.project-interactive-canvas-container@file:dikwms/ui/data-graph/project-interactive-canvas-container':
     resolution: {directory: dikwms/ui/data-graph/project-interactive-canvas-container, type: directory}
+    peerDependencies:
+      react: ^17.0.0 || ^18.0.0 || ^19.0.0
+
+  '@coop-codes/dikwms.ui.layout.frame@file:dikwms/ui/layout/frame':
+    resolution: {directory: dikwms/ui/layout/frame, type: directory}
+    peerDependencies:
+      react: ^17.0.0 || ^18.0.0 || ^19.0.0
+
+  '@coop-codes/dikwms.ui.layout.header-actions@file:dikwms/ui/layout/header-actions':
+    resolution: {directory: dikwms/ui/layout/header-actions, type: directory}
+    peerDependencies:
+      react: ^17.0.0 || ^18.0.0 || ^19.0.0
+
+  '@coop-codes/dikwms.ui.layout.header-title@file:dikwms/ui/layout/header-title':
+    resolution: {directory: dikwms/ui/layout/header-title, type: directory}
+    peerDependencies:
+      react: ^17.0.0 || ^18.0.0 || ^19.0.0
+
+  '@coop-codes/dikwms.ui.layout.mega-menu@file:dikwms/ui/layout/mega-menu':
+    resolution: {directory: dikwms/ui/layout/mega-menu, type: directory}
+    peerDependencies:
+      react: ^17.0.0 || ^18.0.0 || ^19.0.0
+
+  '@coop-codes/dikwms.ui.layout.menu-footer@file:dikwms/ui/layout/menu-footer':
+    resolution: {directory: dikwms/ui/layout/menu-footer, type: directory}
+    peerDependencies:
+      react: ^17.0.0 || ^18.0.0 || ^19.0.0
+
+  '@coop-codes/dikwms.ui.layout.search@file:dikwms/ui/layout/search':
+    resolution: {directory: dikwms/ui/layout/search, type: directory}
+    peerDependencies:
+      react: ^17.0.0 || ^18.0.0 || ^19.0.0
+
+  '@coop-codes/dikwms.ui.layout.user-menu@file:dikwms/ui/layout/user-menu':
+    resolution: {directory: dikwms/ui/layout/user-menu, type: directory}
     peerDependencies:
       react: ^17.0.0 || ^18.0.0 || ^19.0.0
 
@@ -10453,6 +10657,66 @@ snapshots:
       - moment
 
   '@coop-codes/dikwms.ui.data-graph.project-interactive-canvas-container@file:dikwms/ui/data-graph/project-interactive-canvas-container(react@19.2.4)':
+    dependencies:
+      antd: 6.5.4(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
+      react: 19.2.4
+      react-dom: 19.2.4(react@19.2.4)
+    transitivePeerDependencies:
+      - date-fns
+      - luxon
+      - moment
+
+  '@coop-codes/dikwms.ui.layout.frame@file:dikwms/ui/layout/frame(react@19.2.4)':
+    dependencies:
+      antd: 6.5.4(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
+      react: 19.2.4
+      react-dom: 19.2.4(react@19.2.4)
+    transitivePeerDependencies:
+      - date-fns
+      - luxon
+      - moment
+
+  '@coop-codes/dikwms.ui.layout.header-actions@file:dikwms/ui/layout/header-actions(react@19.2.4)':
+    dependencies:
+      antd: 6.5.4(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
+      react: 19.2.4
+      react-dom: 19.2.4(react@19.2.4)
+    transitivePeerDependencies:
+      - date-fns
+      - luxon
+      - moment
+
+  '@coop-codes/dikwms.ui.layout.header-title@file:dikwms/ui/layout/header-title(react@19.2.4)':
+    dependencies:
+      react: 19.2.4
+      react-dom: 19.2.4(react@19.2.4)
+
+  '@coop-codes/dikwms.ui.layout.mega-menu@file:dikwms/ui/layout/mega-menu(react@19.2.4)':
+    dependencies:
+      antd: 6.5.4(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
+      react: 19.2.4
+      react-dom: 19.2.4(react@19.2.4)
+    transitivePeerDependencies:
+      - date-fns
+      - luxon
+      - moment
+
+  '@coop-codes/dikwms.ui.layout.menu-footer@file:dikwms/ui/layout/menu-footer(react@19.2.4)':
+    dependencies:
+      react: 19.2.4
+      react-dom: 19.2.4(react@19.2.4)
+
+  '@coop-codes/dikwms.ui.layout.search@file:dikwms/ui/layout/search(react@19.2.4)':
+    dependencies:
+      antd: 6.5.4(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
+      react: 19.2.4
+      react-dom: 19.2.4(react@19.2.4)
+    transitivePeerDependencies:
+      - date-fns
+      - luxon
+      - moment
+
+  '@coop-codes/dikwms.ui.layout.user-menu@file:dikwms/ui/layout/user-menu(react@19.2.4)':
     dependencies:
       antd: 6.5.4(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
       react: 19.2.4

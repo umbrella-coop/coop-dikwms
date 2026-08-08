@@ -107,6 +107,104 @@
             }
         }
     },
+    "ui/layout/frame": {
+        "name": "ui/layout/frame",
+        "scope": "",
+        "version": "",
+        "defaultScope": "coop-codes.dikwms",
+        "mainFile": "index.ts",
+        "rootDir": "dikwms/ui/layout/frame",
+        "config": {
+            "bitdev.react/react-env@6.0.28": {},
+            "teambit.envs/envs": {
+                "env": "bitdev.react/react-env"
+            }
+        }
+    },
+    "ui/layout/header-actions": {
+        "name": "ui/layout/header-actions",
+        "scope": "",
+        "version": "",
+        "defaultScope": "coop-codes.dikwms",
+        "mainFile": "index.ts",
+        "rootDir": "dikwms/ui/layout/header-actions",
+        "config": {
+            "bitdev.react/react-env@6.0.28": {},
+            "teambit.envs/envs": {
+                "env": "bitdev.react/react-env"
+            }
+        }
+    },
+    "ui/layout/header-title": {
+        "name": "ui/layout/header-title",
+        "scope": "",
+        "version": "",
+        "defaultScope": "coop-codes.dikwms",
+        "mainFile": "index.ts",
+        "rootDir": "dikwms/ui/layout/header-title",
+        "config": {
+            "bitdev.react/react-env@6.0.28": {},
+            "teambit.envs/envs": {
+                "env": "bitdev.react/react-env"
+            }
+        }
+    },
+    "ui/layout/mega-menu": {
+        "name": "ui/layout/mega-menu",
+        "scope": "",
+        "version": "",
+        "defaultScope": "coop-codes.dikwms",
+        "mainFile": "index.ts",
+        "rootDir": "dikwms/ui/layout/mega-menu",
+        "config": {
+            "bitdev.react/react-env@6.0.28": {},
+            "teambit.envs/envs": {
+                "env": "bitdev.react/react-env"
+            }
+        }
+    },
+    "ui/layout/menu-footer": {
+        "name": "ui/layout/menu-footer",
+        "scope": "",
+        "version": "",
+        "defaultScope": "coop-codes.dikwms",
+        "mainFile": "index.ts",
+        "rootDir": "dikwms/ui/layout/menu-footer",
+        "config": {
+            "bitdev.react/react-env@6.0.28": {},
+            "teambit.envs/envs": {
+                "env": "bitdev.react/react-env"
+            }
+        }
+    },
+    "ui/layout/search": {
+        "name": "ui/layout/search",
+        "scope": "",
+        "version": "",
+        "defaultScope": "coop-codes.dikwms",
+        "mainFile": "index.ts",
+        "rootDir": "dikwms/ui/layout/search",
+        "config": {
+            "bitdev.react/react-env@6.0.28": {},
+            "teambit.envs/envs": {
+                "env": "bitdev.react/react-env"
+            }
+        }
+    },
+    "ui/layout/user-menu": {
+        "name": "ui/layout/user-menu",
+        "scope": "",
+        "version": "",
+        "defaultScope": "coop-codes.dikwms",
+        "mainFile": "index.ts",
+        "rootDir": "dikwms/ui/layout/user-menu",
+        "config": {
+            "bitdev.react/react-env@6.0.28": {},
+            "teambit.envs/envs": {
+                "env": "bitdev.react/react-env"
+            }
+        }
+    },
     "ui/organization/console-page-index-container": {
         "name": "ui/organization/console-page-index-container",
         "scope": "",

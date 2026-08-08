@@ -70,3 +70,8 @@ Restructure via `bit move` (preserves history), never re-creation.
   representation per `ProjectViewType` — composition seam: `'graph'` →
   data-graph/project-interactive-canvas-container (renamed from project-live-view-container),
   `'tabular'` → placeholder until data-tabular lands. `project` context whitelisted.
+
+- **Layout system (2026-08-08):** `ui/layout/` added — ProLayout surface decomposed
+  into 7 native antd 6 components (frame, header-title, mega-menu, search,
+  header-actions, user-menu, menu-footer; `layout-` prefix dropped, namespace
+  carries the context). Whitelist updated.
