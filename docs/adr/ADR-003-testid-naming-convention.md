@@ -10,7 +10,9 @@ collide-prone across components. Selectors are a stable E2E contract.
 
 ## Decision
 `data-testid` values are **context-prefixed, kebab-case, intent-descriptive**:
-- `layout-select` → `graph-select-layout` (canvas context, intent: choose layout)
+- `layout-select` → `graph-select-layout` (data-graph context, intent: choose layout)
+- testid prefixes derive from the owning context (`graph-` for data-graph,
+  `entity-` for governance, `iam-`, `schema-`, `app-`)
 - `entity-drawer` → `entity-drawer` stays (already context-prefixed)
 
 Rules:

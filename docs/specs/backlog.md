@@ -33,6 +33,20 @@ Planned specs not yet created. Add requirements captured during development here
 
 **Dependencies:** SPEC-007 (drift checks in CI), existing BDD derivations (features/SPEC-*.feature), crate layout
 
+## SPEC-020 (planned): Context Reorganization — data-graph rename & namespace moves
+
+**Requirement (captured 2026-08-07, source: orchestrator DDD review):**
+- Rename backend crate `knowledge-domain` → **`data-graph`** (bounded context: Data Graph)
+- Frontend moves (via `bit move`, never re-create):
+  - `ui/graph` → `ui/data-graph/canvas`
+  - `ui/select-layout` (extracted from graph) → `ui/data-graph/select-layout`
+  - `hooks/use-event-stream` → `ui/data-graph/hook-use-event-stream` (hooks live in their owning context)
+  - `apps/coop-graph-app` → `app/diwkms`
+- Reserved namespaces (created when first component lands): `data-graph-governance/`, `iam/`, `data-schema-registry/`
+- `frontend/check-layout.mjs` updated to the context map
+
+**Dependencies:** DDD context map v2 (orchestrator-approved), SPEC-019 (scope), SPEC-018 (conventions)
+
 ## SPEC-019 (planned): Naming & Bit Scope Correction — coop-codes.network-graph
 
 **Requirement (captured 2026-08-07, source: user request):** replace the placeholder `grps.coop-graph` Bit scope with the real organization scope **`coop-codes.network-graph`** (Bit dev org `@coop-codes`), and correct the "graph-network" naming drift to `network-graph` across the project.

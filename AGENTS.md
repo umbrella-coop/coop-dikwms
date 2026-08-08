@@ -4,6 +4,15 @@
 
 You are an expert software engineer assistant. Follow these project standards.
 
+## Product Vision: DIKW Management System
+> The product is a **Data, Information, Knowledge and Wisdom (DIKW) Management System** — acronym **diwkms** — based on Jennifer Rowley's DIKW hierarchy paper as the base taxonomy: *"The wisdom hierarchy: representations of the DIKW hierarchy"*, Journal of Information Science, 33(2), 2007 [Source: External — Rowley, 2007; critics acknowledged, adopted as base literature for architecture/design].
+1. **Data** → raw graph primitives (nodes, edges, combos, property sets)
+2. **Information** → structured/curated knowledge (scoped property sets, registry namespaces)
+3. **Knowledge** → governed, promoted truth (moderation, promotion ladder, provenance)
+4. **Wisdom** → derived insight (audit, analytics, actions)
+- Architecture and design decisions SHOULD map onto the DIKW layers.
+- The app shell is named `diwkms`.
+
 ## Project Core Philosophy
 > **Schemaless by default.** The platform does NOT enforce registered schemas on data — mismatches with registered schemas produce **warnings**, not failures.
 1. Data may exist without any registered schema (open-world, like the web).

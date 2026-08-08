@@ -24,6 +24,16 @@ Restructure via `bit move` (preserves history), never re-creation.
 - `frontend/check-layout.mjs` enforces the rule.
 - Renames are batch `bit move` operations with testid stability preserved.
 
+## MODIFIED (2026-08-07, orchestrator review)
+
+- Layout is `ui/<context>/<component>` for visual components and hooks:
+  - `ui/data-graph/canvas`, `ui/data-graph/select-layout`,
+    `ui/data-graph/hook-use-event-stream`
+  - `app/diwkms` (app shell)
+- Hook components carry a `hook-` prefix within their context
+  (`hook-use-event-stream`).
+- Restructure via `bit move` per SPEC-020.
+
 ## Alternatives Considered
 - Keep Bit standard layout — rejected: type-based navigation.
 - Flat per-component dirs — rejected: no context signal.

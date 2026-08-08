@@ -41,7 +41,23 @@ Organization follows *component type* (ui/, hooks/, apps/) but humans and AI age
 - Generator customization (revisit at 10+ components)
 - Governance/Access/Registry frontend namespaces (until those UIs exist)
 
+## MODIFIED — Context Map v2 (orchestrator review, 2026-08-07)
+
+| Context | Backend container | Frontend namespace | Status |
+|---|---|---|---|
+| Data Graph | `data-graph` (rename from `knowledge-domain` — SPEC-020) | `ui/data-graph/canvas`, `ui/data-graph/select-layout`, `ui/data-graph/hook-use-event-stream` | active |
+| Governance | moderation + audit (backend) | `data-graph-governance/` | reserved |
+| IAM | Policy | `iam/` | reserved |
+| Data Schema Registry | `schema-registry` | `data-schema-registry/` | reserved |
+| App Shell | `api` (transport) | `app/diwkms` | active |
+
+Orchestrator rulings:
+- Canvas + select-layout are COMPONENTS of the Data Graph context (`ui/data-graph/...`)
+- Hooks live in their owning context (`hook-` prefix): `data-graph/hook-use-event-stream`
+- Reserved namespaces are created when their first component lands (no empty dirs now)
+- Product is the DIKW Management System (`diwkms`, Rowley 2007 taxonomy) — see AGENTS.md
+
 ## Next Steps
 - [x] Approval gate passed
 - [x] Codify UDS options + ADRs (Actions 2–3)
-- [ ] Restructure `frontend/network-graph/` to context-first layout (`bit move` batch)
+- [ ] Context map v2 applied: SPEC-020 (crate rename + `bit move` batch), check-layout update
