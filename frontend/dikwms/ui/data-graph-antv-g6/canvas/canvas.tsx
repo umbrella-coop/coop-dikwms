@@ -8,13 +8,16 @@ import styles from './canvas.module.css';
 
 export type CanvasLayout = { type: string; [key: string]: unknown };
 
-/** User-friendly default: force-directed with overlap prevention. */
+/** User-friendly default: force-directed with overlap prevention.
+ * enableWorker: false — G6 worker layout breaks under vite dev (worker script
+ * resolves to HTML; options closures fail structured clone; fallback crashes
+ * with 'postLayout' undefined). Main-thread layout is fine at this scale. */
 const DEFAULT_LAYOUT: CanvasLayout = {
   type: 'force',
   gravity: 10,
   linkDistance: 120,
   preventOverlap: true,
-  enableWorker: true,
+  enableWorker: false,
 };
 
 export type CanvasProps = {
@@ -69,8 +72,16 @@ export function Canvas({ entities, streamState, loading, onSelect, layout = DEFA
     canvas.render();
   }, [entities]);
 
-  // layout switch: re-run the layout algorithm on the current data
+  // layout switch: re-run the layout algorithm on the current data.
+  // Skips the initial mount — render() already lays out from construction
+  // options; a second concurrent layout() races G6's layout state machine
+  // ('postLayout' undefined crash).
+  const mountedRef = useRef(false);
   useEffect(() => {
+    if (!mountedRef.current) {
+      mountedRef.current = true;
+      return;
+    }
     const canvas = canvasRef.current;
     if (!canvas) return;
     canvas.setLayout({ ...layoutRef.current, type: layoutType });
