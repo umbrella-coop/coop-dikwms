@@ -1,25 +1,25 @@
 import { Result } from 'antd';
 import type { ReactNode } from 'react';
-import { DataGraphProjectLiveViewContainer } from '@coop-codes/dikwms.ui.data-graph.project-live-view-container';
-import type { DataGraphProjectLiveViewContainerProps } from '@coop-codes/dikwms.ui.data-graph.project-live-view-container';
+import { DataGraphProjectInteractiveCanvasContainer } from '@coop-codes/dikwms.ui.data-graph.project-interactive-canvas-container';
+import type { DataGraphProjectInteractiveCanvasContainerProps } from '@coop-codes/dikwms.ui.data-graph.project-interactive-canvas-container';
 
 /**
  * Live project view types. A dikwms project can be interacted with through
  * multiple live representations; each is implemented by its own context:
- *   - 'graph': graph interaction (data-graph/project-live-view-container)
+ *   - 'graph': graph interaction (data-graph/project-interactive-canvas-container)
  *   - 'tabular': tabular interaction (data-tabular — future)
  *   - 'geographic': geographic interaction (data-geographic — future)
  */
 export type ProjectLiveViewType = 'graph' | 'tabular' | 'geographic';
 
-export type ProjectLiveViewWraperProps = Omit<DataGraphProjectLiveViewContainerProps, 'data-testid'> & {
+export type ProjectLiveViewWraperProps = Omit<DataGraphProjectInteractiveCanvasContainerProps, 'data-testid'> & {
   viewType: ProjectLiveViewType;
   'data-testid'?: string;
 };
 
 export function ProjectLiveViewWraper({ viewType, children, ...containerProps }: ProjectLiveViewWraperProps) {
   if (viewType === 'graph') {
-    return <DataGraphProjectLiveViewContainer {...containerProps}>{children}</DataGraphProjectLiveViewContainer>;
+    return <DataGraphProjectInteractiveCanvasContainer {...containerProps}>{children}</DataGraphProjectInteractiveCanvasContainer>;
   }
   const placeholders: Record<'tabular' | 'geographic', { title: string; subTitle: string; testId: string }> = {
     tabular: {

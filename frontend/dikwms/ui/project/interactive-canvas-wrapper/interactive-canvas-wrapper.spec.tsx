@@ -11,7 +11,7 @@ globalThis.ResizeObserver ??= ResizeObserverStub as unknown as typeof ResizeObse
 
 it('renders the live view container for viewType graph', () => {
   render(<ProjectLiveViewWraper viewType="graph" title="Project" subTitle="demo" />);
-  expect(screen.getByTestId('project-live-view-container')).toBeTruthy();
+  expect(screen.getByTestId('project-interactive-canvas-container')).toBeTruthy();
   expect(screen.getByText('Project')).toBeTruthy();
 });
 

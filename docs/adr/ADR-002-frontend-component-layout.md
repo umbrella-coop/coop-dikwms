@@ -67,6 +67,6 @@ Restructure via `bit move` (preserves history), never re-creation.
   `Scope::Workspace` domain). Whitelist updated.
 
 - **Project views (2026-08-08):** `ui/project/view-wrapper` selects the view
-  representation per `ProjectViewType` — composition seam: `'live'` →
-  data-graph/project-live-view-container (renamed from project-view-container),
+  representation per `ProjectViewType` — composition seam: `'graph'` →
+  data-graph/project-interactive-canvas-container (renamed from project-live-view-container),
   `'tabular'` → placeholder until data-tabular lands. `project` context whitelisted.

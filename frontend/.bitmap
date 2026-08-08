@@ -93,13 +93,13 @@
             }
         }
     },
-    "ui/data-graph/project-live-view-container": {
-        "name": "ui/data-graph/project-live-view-container",
+    "ui/data-graph/project-interactive-canvas-container": {
+        "name": "ui/data-graph/project-interactive-canvas-container",
         "scope": "",
         "version": "",
         "defaultScope": "coop-codes.dikwms",
         "mainFile": "index.ts",
-        "rootDir": "dikwms/ui/data-graph/project-live-view-container",
+        "rootDir": "dikwms/ui/data-graph/project-interactive-canvas-container",
         "config": {
             "bitdev.react/react-env@6.0.28": {},
             "teambit.envs/envs": {

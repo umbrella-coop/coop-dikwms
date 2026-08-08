@@ -173,3 +173,8 @@ Iterative + opportunistic (SPEC-020 policy): each move rides on the next touch o
   `ProjectLiveViewType = 'graph' | 'tabular' | 'geographic'` — graph renders
   `data-graph/project-live-view-container`; tabular/geographic placeholders
   until `data-tabular` / `data-geographic` contexts land.
+
+- **Renamed (2026-08-08, orchestrator):** `ui/data-graph/project-live-view-container` →
+  `ui/data-graph/project-interactive-canvas-container` (export
+  `DataGraphProjectInteractiveCanvasContainer`); the `ui/project/interactive-canvas-wrapper`
+  seam consumes it for `ProjectLiveViewType 'graph'`.
