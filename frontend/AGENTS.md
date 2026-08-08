@@ -45,7 +45,7 @@ Frontend conventions for AI agents and E2E testing. Derived from
   - `dikwms/app/<name>` — app shells composing components (currently `app`)
   - `dikwms/hook/<name>` — logic hooks, context in the hook name (`use-data-graph-sse`)
   - `dikwms/type/<name>` — shared wire-agnostic types (`type/core-v1`: DataGraphNode/Edge/Combo, mirrors schema-registry `core.v1`)
-  - `dikwms/ui/<context>/<name>` — visual components per bounded context (`data-graph`, `data-graph-antv-g6` — G6 rendering engine, `organization` — org console, reserved: `data-graph-governance`, `iam`, `data-schema-registry`)
+  - `dikwms/ui/<context>/<name>` — visual components per bounded context (`data-graph`, `data-graph-antv-g6` — G6 rendering engine, `organization` — org console, `workspace` — workspace console, reserved: `data-graph-governance`, `iam`, `data-schema-registry`)
   - Reserved namespaces are created when their first component lands — no empty dirs
 - Enforced by `node frontend/scripts/check-layout.mjs` (AC-8)
 - Per-component `vite.config.js`/`index.html` are Bit structural — do not collapse

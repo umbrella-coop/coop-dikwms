@@ -121,5 +121,19 @@
             }
         }
     },
+    "ui/workspace/console-page-index-container": {
+        "name": "ui/workspace/console-page-index-container",
+        "scope": "",
+        "version": "",
+        "defaultScope": "coop-codes.dikwms",
+        "mainFile": "index.ts",
+        "rootDir": "dikwms/ui/workspace/console-page-index-container",
+        "config": {
+            "bitdev.react/react-env@6.0.28": {},
+            "teambit.envs/envs": {
+                "env": "bitdev.react/react-env"
+            }
+        }
+    },
     "$schema-version": "17.0.0"
 }

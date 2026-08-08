@@ -61,3 +61,7 @@ Restructure via `bit move` (preserves history), never re-creation.
 - **Organization context (2026-08-08):** `ui/organization/` lands with
   `console-page-index-container` (org console index page shell —
   `Scope::Org` domain). Whitelist updated.
+
+- **Workspace context (2026-08-08):** `ui/workspace/` lands with
+  `console-page-index-container` (`WorkspaceConsolePageIndexContainer`,
+  `Scope::Workspace` domain). Whitelist updated.

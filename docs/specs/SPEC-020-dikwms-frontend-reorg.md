@@ -153,3 +153,7 @@ Iterative + opportunistic (SPEC-020 policy): each move rides on the next touch o
 - **New context + component (2026-08-08, orchestrator):** `ui/organization/`
   created with `console-page-index-container` (exports
   `OrganizationConsolePageIndexContainer`); check-layout whitelist + docs updated.
+
+- **New context + component (2026-08-08, orchestrator):** `ui/workspace/`
+  created with `console-page-index-container` (exports
+  `WorkspaceConsolePageIndexContainer`); check-layout whitelist + docs updated.
