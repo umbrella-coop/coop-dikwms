@@ -306,3 +306,15 @@ Planned specs not yet created. Add requirements captured during development here
 **Open questions:** build verification vs artifact production on Linux (macOS targets), network transfer vs local build time break-even (~5s threshold implies very cheap fast-path), running remote tests against TerminusDB servers (Docker-in-remote)
 
 **Dependencies:** SPEC-007 (gauntlet gates can trigger remote runs), fork build times (current bottleneck)
+
+## SPEC-022 (planned): Bit DX workflow — HMR, linking, cache hygiene
+
+**Requirement (captured 2026-08-08, source: user request — bit.dev blog "Local Cross-Project Component Development with Bit Link Target"):**
+- Vite HMR for the org scope in the app dev server (`server.watch.ignored` + `optimizeDeps.exclude: ['@coop-codes']`)
+- `bit link --target <path> --peers` documented for future cross-repo consumers (symlink live components + peers)
+- Cache/re-link hygiene: clear `node_modules/.vite` after renames/moves; re-establish links after installs; `bit watch` for continuous compile
+- Frontend npm scripts: `dev`, `watch`, `test`, `check`, `fix-links`, `build`
+
+**Verdict (roadmap fit):** reuse — thin surface (config + scripts + docs), no product behavior. Fold into frontend AGENTS.md.
+
+**Dependencies:** SPEC-020 (workspace layout), SPEC-018 (frontend conventions)
