@@ -161,3 +161,9 @@ Iterative + opportunistic (SPEC-020 policy): each move rides on the next touch o
 - **Renamed (2026-08-08, orchestrator):** `ui/data-graph/project-page-container` →
   `ui/data-graph/project-view-container`, export `DataGraphProjectViewContainer`
   (id `coop-codes.dikwms.ui.data-graph.project-view-container`).
+
+- **Project views (2026-08-08, orchestrator):** `ui/data-graph/project-view-container`
+  → `project-live-view-container` (export `DataGraphProjectLiveViewContainer`);
+  new `ui/project/view-wrapper` exports `ProjectPageWraper` — the project
+  view-type seam ('live' now, 'tabular' future via data-tabular context).
+  `project` context whitelisted.

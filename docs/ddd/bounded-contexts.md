@@ -80,7 +80,7 @@ documentation).
 3. **testids are a stable contract (ADR-003):** kebab-case, intent-descriptive (`layout-select`, `node-drawer`, `node-save-btn`) — testids do **not** change on pure moves; the E2E POM layer (SPEC-021) depends on them.
 4. **Dependency rule:** components communicate via interfaces; the API is the translation layer. No cross-context imports (documented rule; CI import-boundary check deferred). Frontend context X may only call API routes of context X (+ shared `app/dikwms`).
 5. **Reserved namespaces** are created on first landing component, never pre-provisioned.
-6. **check-layout.mjs (v2, SPEC-020 AC-8):** enforces `{app, hook, type, ui}` + context whitelist (`data-graph`, `data-graph-antv-g6`, `data-graph-governance`, `iam`, `organization`, `workspace`, `data-schema-registry`) + `index.ts` presence.
+6. **check-layout.mjs (v2, SPEC-020 AC-8):** enforces `{app, hook, type, ui}` + context whitelist (`data-graph`, `data-graph-antv-g6`, `data-graph-governance`, `iam`, `organization`, `project`, `workspace`, `data-schema-registry`) + `index.ts` presence.
 
 ### 3.3 Migration history (completed 2026-08-08)
 

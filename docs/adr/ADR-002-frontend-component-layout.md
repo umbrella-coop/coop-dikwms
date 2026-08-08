@@ -65,3 +65,8 @@ Restructure via `bit move` (preserves history), never re-creation.
 - **Workspace context (2026-08-08):** `ui/workspace/` lands with
   `console-page-index-container` (`WorkspaceConsolePageIndexContainer`,
   `Scope::Workspace` domain). Whitelist updated.
+
+- **Project views (2026-08-08):** `ui/project/view-wrapper` selects the view
+  representation per `ProjectViewType` — composition seam: `'live'` →
+  data-graph/project-live-view-container (renamed from project-view-container),
+  `'tabular'` → placeholder until data-tabular lands. `project` context whitelisted.
