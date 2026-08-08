@@ -1,10 +1,10 @@
 import { useEffect, useState } from 'react';
 import { Button, Drawer, Form, Input } from 'antd';
-import type { Entity } from '@coop-codes/dikwms.hook.use-data-graph-sse';
+import type { DataGraphNode } from '@coop-codes/dikwms.types.core-v1';
 import { reportError } from '@coop-codes/dikwms.hook.use-data-graph-sse';
 
 export type NodeDrawerProps = {
-  entity: Entity | undefined;
+  entity: DataGraphNode | undefined;
   apiBase: string;
   onClose: () => void;
 };

@@ -2,7 +2,8 @@ import { useEffect, useRef, useState } from 'react';
 import { Graph as G6Graph } from '@antv/g6';
 import { Spin, Tag } from 'antd';
 import { LayoutSelect } from '@coop-codes/dikwms.ui.data-graph-antv-g6.layout-select';
-import type { Entity, EventStreamState } from '@coop-codes/dikwms.hook.use-data-graph-sse';
+import type { EventStreamState } from '@coop-codes/dikwms.hook.use-data-graph-sse';
+import type { DataGraphNode } from '@coop-codes/dikwms.types.core-v1';
 import styles from './canvas.module.css';
 
 export type CanvasLayout = { type: string; [key: string]: unknown };
@@ -17,7 +18,7 @@ const DEFAULT_LAYOUT: CanvasLayout = {
 };
 
 export type CanvasProps = {
-  entities: Record<string, Entity>;
+  entities: Record<string, DataGraphNode>;
   streamState: EventStreamState;
   loading: boolean;
   onSelect: (id: string) => void;
@@ -41,7 +42,7 @@ export function Canvas({ entities, streamState, loading, onSelect, layout = DEFA
       node: {
         style: {
           labelText: (d) => {
-            const e = d.data as unknown as Entity;
+            const e = d.data as unknown as DataGraphNode;
             return e.name ?? e.id.slice(0, 8);
           },
           labelPlacement: 'bottom',

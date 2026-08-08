@@ -8,7 +8,7 @@ import { join, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..', 'dikwms');
-const namespaces = new Set(['app', 'hook', 'ui']);
+const namespaces = new Set(['app', 'hook', 'types', 'ui']);
 const contexts = new Set(['data-graph', 'data-graph-antv-g6', 'data-graph-governance', 'iam', 'data-schema-registry']);
 const errors = [];
 
@@ -55,4 +55,4 @@ if (errors.length) {
   for (const e of errors) console.error(`  - ${e}`);
   process.exit(1);
 }
-console.log('layout ok: dikwms/{app,hook,ui} + context whitelist');
+console.log('layout ok: dikwms/{app,hook,types,ui} + context whitelist');

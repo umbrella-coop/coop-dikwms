@@ -54,6 +54,8 @@ This is the authoritative context map for the **dikwms** codebase. It guides:
 ```
 frontend/dikwms/                        (Bit scope: coop-codes.dikwms)
 ├── app/                                (app shell: app)
+├── types/
+│   └── core-v1/                   (DataGraphNode/Edge/Combo — DIKW Data primitives; mirrors registry `core.v1`)
 └── ui/
     ├── data-graph/
     │   └── node-drawer/                (← ui/entity-drawer, testids node-*)
@@ -73,12 +75,12 @@ documentation).
 
 ### 3.2 Rules
 
-1. **Type-first namespace, context in path or name:** `ui/<context>/<name>` for visual components, `hook/<name>` for hooks (context encoded in the hook name, e.g. `use-data-graph-sse`), `app/<name>` for shells.
+1. **Type-first namespace, context in path or name:** `ui/<context>/<name>` for visual components, `hook/<name>` for hooks (context encoded in the hook name, e.g. `use-data-graph-sse`), `types/<name>` for shared wire-agnostic types (`types/core-v1`), `app/<name>` for shells.
 2. **Bit moves only, never re-create:** `bit move`/`bit rename -s/-p` preserve component ids, dependencies, and test specs.
 3. **testids are a stable contract (ADR-003):** kebab-case, intent-descriptive (`layout-select`, `node-drawer`, `node-save-btn`) — testids do **not** change on pure moves; the E2E POM layer (SPEC-021) depends on them.
 4. **Dependency rule:** components communicate via interfaces; the API is the translation layer. No cross-context imports (documented rule; CI import-boundary check deferred). Frontend context X may only call API routes of context X (+ shared `app/dikwms`).
 5. **Reserved namespaces** are created on first landing component, never pre-provisioned.
-6. **check-layout.mjs (v2, SPEC-020 AC-8):** enforces `{app, hook, ui}` + context whitelist (`data-graph`, `data-graph-antv-g6`, `data-graph-governance`, `iam`, `data-schema-registry`) + `index.ts` presence.
+6. **check-layout.mjs (v2, SPEC-020 AC-8):** enforces `{app, hook, types, ui}` + context whitelist (`data-graph`, `data-graph-antv-g6`, `data-graph-governance`, `iam`, `data-schema-registry`) + `index.ts` presence.
 
 ### 3.3 Migration history (completed 2026-08-08)
 

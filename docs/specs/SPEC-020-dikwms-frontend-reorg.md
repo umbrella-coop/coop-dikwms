@@ -134,3 +134,9 @@ Iterative + opportunistic (SPEC-020 policy): each move rides on the next touch o
   moved to new rendering-engine namespace `ui/data-graph-antv-g6/` (ids
   `coop-codes.dikwms.ui.data-graph-antv-g6.*`); `check-layout.mjs` whitelist +
   `docs/ddd/bounded-contexts.md` + ADR-002 updated in the same commit.
+
+- **Shared types namespace (2026-08-08, orchestrator):** `Entity` renamed
+  `DataGraphNode`; `DataGraphEdge` + `DataGraphCombo` added; moved to new
+  component `coop-codes.dikwms/types/core-v1` (dir `types/core-v1/`,
+  DIKW Data-layer primitives, backend EntityKind parity). Hook + canvas +
+  node-drawer consume the types component; hook index re-exports.

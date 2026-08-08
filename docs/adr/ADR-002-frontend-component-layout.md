@@ -53,3 +53,7 @@ Restructure via `bit move` (preserves history), never re-creation.
 - **Rendering-engine namespace (2026-08-08):** G6 implementation lives at
   `ui/data-graph-antv-g6/{canvas,layout-select}` (renderer SPI split; future
   renderers get their own namespace under `data-graph-*`); whitelist updated.
+
+- **Shared types namespace (2026-08-08):** `types/<name>` added for wire-agnostic
+  domain types (`types/core-v1`: DataGraphNode/Edge/Combo, DIKW Data layer, mirroring registry `core.v1`);
+  `use-data-graph-sse` re-exports them; check-layout allows `types`.

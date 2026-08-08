@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
+import type { DataGraphNode } from '@coop-codes/dikwms.types.core-v1';
 
 export type DomainEvent = {
   type: 'entity_created' | 'property_set_saved';
@@ -10,15 +11,13 @@ export type DomainEvent = {
   commit: string;
 };
 
-export type Entity = { id: string; kind: string; name?: string };
-
 export type EventStreamState = 'connecting' | 'open' | 'error';
 
 export function useDataGraphSse(apiBase: string) {
-  const [entities, setEntities] = useState<Record<string, Entity>>({});
+  const [entities, setEntities] = useState<Record<string, DataGraphNode>>({});
   const [streamState, setStreamState] = useState<EventStreamState>('connecting');
   const [ready, setReady] = useState(false);
-  const entitiesRef = useRef<Record<string, Entity>>({});
+  const entitiesRef = useRef<Record<string, DataGraphNode>>({});
   // last seen commit cursor for lossless reconnect
   const cursorRef = useRef('');
 
