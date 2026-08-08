@@ -48,6 +48,8 @@ Planned specs not yet created. Add requirements captured during development here
 
 ## SPEC-020 (planned): Context Reorganization — data-graph rename & namespace moves
 
+> **PROMOTED (2026-08-08):** frontend portion created as docs/specs/SPEC-020-diwkms-frontend-reorg.md — entry kept for provenance. Backend portion (`knowledge-domain` → `data-graph` crate rename) remains deferred here.
+
 **Requirement (captured 2026-08-07, source: orchestrator DDD review):**
 - Rename backend crate `knowledge-domain` → **`data-graph`** (bounded context: Data Graph)
 - Frontend moves (via `bit move`, never re-create):
