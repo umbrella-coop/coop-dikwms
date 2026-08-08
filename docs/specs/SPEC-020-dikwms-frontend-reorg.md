@@ -178,3 +178,7 @@ Iterative + opportunistic (SPEC-020 policy): each move rides on the next touch o
   `ui/data-graph/project-interactive-canvas-container` (export
   `DataGraphProjectInteractiveCanvasContainer`); the `ui/project/interactive-canvas-wrapper`
   seam consumes it for `ProjectLiveViewType 'graph'`.
+
+- **New component (2026-08-08, orchestrator):** `ui/project/console-page-index-container`
+  (exports `ProjectConsolePageIndexContainer`) — completes the Scope-family
+  console index shells (organization/workspace/project).

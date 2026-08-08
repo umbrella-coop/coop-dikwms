@@ -205,7 +205,7 @@ importers:
         specifier: ^16.0.0
         version: 16.3.2(@testing-library/dom@10.4.1)(@types/react-dom@19.2.3(@types/react@19.2.14))(@types/react@19.2.14)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
 
-  dikwms/ui/data-graph/project-live-view-container:
+  dikwms/ui/data-graph/project-interactive-canvas-container:
     dependencies:
       antd:
         specifier: ^6.5.4
@@ -243,7 +243,26 @@ importers:
         specifier: ^16.0.0
         version: 16.3.2(@testing-library/dom@10.4.1)(@types/react-dom@19.2.3(@types/react@19.2.14))(@types/react@19.2.14)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
 
-  dikwms/ui/project/view-wrapper:
+  dikwms/ui/project/console-page-index-container:
+    dependencies:
+      antd:
+        specifier: ^6.5.4
+        version: 6.5.4(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
+      react:
+        specifier: 19.2.4
+        version: 19.2.4
+      react-dom:
+        specifier: 19.2.4
+        version: 19.2.4(react@19.2.4)
+    devDependencies:
+      '@bitdev/react.react-env':
+        specifier: ^6.0.27
+        version: 6.0.28(@emnapi/core@1.11.3)(@emnapi/runtime@1.11.3)(esbuild@0.27.7)(eslint@8.57.1)(react-refresh@0.18.0)(rollup@4.62.4)(rxjs@7.8.2)(sass-embedded@1.100.0)(terser@5.49.2)(webpack@5.109.2(esbuild@0.27.7))(yaml@2.9.0)
+      '@testing-library/react':
+        specifier: ^16.0.0
+        version: 16.3.2(@testing-library/dom@10.4.1)(@types/react-dom@19.2.3(@types/react@19.2.14))(@types/react@19.2.14)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
+
+  dikwms/ui/project/interactive-canvas-wrapper:
     dependencies:
       antd:
         specifier: ^6.5.4
@@ -310,15 +329,18 @@ importers:
       '@coop-codes/dikwms.ui.data-graph.node-drawer':
         specifier: workspace:*
         version: file:dikwms/ui/data-graph/node-drawer(react@19.2.4)(vitest@4.1.10)
-      '@coop-codes/dikwms.ui.data-graph.project-live-view-container':
+      '@coop-codes/dikwms.ui.data-graph.project-interactive-canvas-container':
         specifier: workspace:*
-        version: file:dikwms/ui/data-graph/project-live-view-container(react@19.2.4)
+        version: file:dikwms/ui/data-graph/project-interactive-canvas-container(react@19.2.4)
       '@coop-codes/dikwms.ui.organization.console-page-index-container':
         specifier: workspace:*
         version: file:dikwms/ui/organization/console-page-index-container(react@19.2.4)
-      '@coop-codes/dikwms.ui.project.view-wrapper':
+      '@coop-codes/dikwms.ui.project.console-page-index-container':
         specifier: workspace:*
-        version: file:dikwms/ui/project/view-wrapper(react@19.2.4)
+        version: file:dikwms/ui/project/console-page-index-container(react@19.2.4)
+      '@coop-codes/dikwms.ui.project.interactive-canvas-wrapper':
+        specifier: workspace:*
+        version: file:dikwms/ui/project/interactive-canvas-wrapper(react@19.2.4)
       '@coop-codes/dikwms.ui.workspace.console-page-index-container':
         specifier: workspace:*
         version: file:dikwms/ui/workspace/console-page-index-container(react@19.2.4)
@@ -433,15 +455,18 @@ importers:
       '@coop-codes/dikwms.ui.data-graph.node-drawer':
         specifier: workspace:*
         version: file:dikwms/ui/data-graph/node-drawer(react@19.2.4)(vitest@4.1.10)
-      '@coop-codes/dikwms.ui.data-graph.project-live-view-container':
+      '@coop-codes/dikwms.ui.data-graph.project-interactive-canvas-container':
         specifier: workspace:*
-        version: file:dikwms/ui/data-graph/project-live-view-container(react@19.2.4)
+        version: file:dikwms/ui/data-graph/project-interactive-canvas-container(react@19.2.4)
       '@coop-codes/dikwms.ui.organization.console-page-index-container':
         specifier: workspace:*
         version: file:dikwms/ui/organization/console-page-index-container(react@19.2.4)
-      '@coop-codes/dikwms.ui.project.view-wrapper':
+      '@coop-codes/dikwms.ui.project.console-page-index-container':
         specifier: workspace:*
-        version: file:dikwms/ui/project/view-wrapper(react@19.2.4)
+        version: file:dikwms/ui/project/console-page-index-container(react@19.2.4)
+      '@coop-codes/dikwms.ui.project.interactive-canvas-wrapper':
+        specifier: workspace:*
+        version: file:dikwms/ui/project/interactive-canvas-wrapper(react@19.2.4)
       '@coop-codes/dikwms.ui.workspace.console-page-index-container':
         specifier: workspace:*
         version: file:dikwms/ui/workspace/console-page-index-container(react@19.2.4)
@@ -1543,8 +1568,8 @@ packages:
       react: ^17.0.0 || ^18.0.0 || ^19.0.0
       vitest: ^4.1.0
 
-  '@coop-codes/dikwms.ui.data-graph.project-live-view-container@file:dikwms/ui/data-graph/project-live-view-container':
-    resolution: {directory: dikwms/ui/data-graph/project-live-view-container, type: directory}
+  '@coop-codes/dikwms.ui.data-graph.project-interactive-canvas-container@file:dikwms/ui/data-graph/project-interactive-canvas-container':
+    resolution: {directory: dikwms/ui/data-graph/project-interactive-canvas-container, type: directory}
     peerDependencies:
       react: ^17.0.0 || ^18.0.0 || ^19.0.0
 
@@ -1553,8 +1578,13 @@ packages:
     peerDependencies:
       react: ^17.0.0 || ^18.0.0 || ^19.0.0
 
-  '@coop-codes/dikwms.ui.project.view-wrapper@file:dikwms/ui/project/view-wrapper':
-    resolution: {directory: dikwms/ui/project/view-wrapper, type: directory}
+  '@coop-codes/dikwms.ui.project.console-page-index-container@file:dikwms/ui/project/console-page-index-container':
+    resolution: {directory: dikwms/ui/project/console-page-index-container, type: directory}
+    peerDependencies:
+      react: ^17.0.0 || ^18.0.0 || ^19.0.0
+
+  '@coop-codes/dikwms.ui.project.interactive-canvas-wrapper@file:dikwms/ui/project/interactive-canvas-wrapper':
+    resolution: {directory: dikwms/ui/project/interactive-canvas-wrapper, type: directory}
     peerDependencies:
       react: ^17.0.0 || ^18.0.0 || ^19.0.0
 
@@ -10422,7 +10452,7 @@ snapshots:
       - luxon
       - moment
 
-  '@coop-codes/dikwms.ui.data-graph.project-live-view-container@file:dikwms/ui/data-graph/project-live-view-container(react@19.2.4)':
+  '@coop-codes/dikwms.ui.data-graph.project-interactive-canvas-container@file:dikwms/ui/data-graph/project-interactive-canvas-container(react@19.2.4)':
     dependencies:
       antd: 6.5.4(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
       react: 19.2.4
@@ -10442,9 +10472,19 @@ snapshots:
       - luxon
       - moment
 
-  '@coop-codes/dikwms.ui.project.view-wrapper@file:dikwms/ui/project/view-wrapper(react@19.2.4)':
+  '@coop-codes/dikwms.ui.project.console-page-index-container@file:dikwms/ui/project/console-page-index-container(react@19.2.4)':
     dependencies:
-      '@coop-codes/dikwms.ui.data-graph.project-live-view-container': file:dikwms/ui/data-graph/project-live-view-container(react@19.2.4)
+      antd: 6.5.4(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
+      react: 19.2.4
+      react-dom: 19.2.4(react@19.2.4)
+    transitivePeerDependencies:
+      - date-fns
+      - luxon
+      - moment
+
+  '@coop-codes/dikwms.ui.project.interactive-canvas-wrapper@file:dikwms/ui/project/interactive-canvas-wrapper(react@19.2.4)':
+    dependencies:
+      '@coop-codes/dikwms.ui.data-graph.project-interactive-canvas-container': file:dikwms/ui/data-graph/project-interactive-canvas-container(react@19.2.4)
       antd: 6.5.4(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
       react: 19.2.4
       react-dom: 19.2.4(react@19.2.4)

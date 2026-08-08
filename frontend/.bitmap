@@ -121,6 +121,20 @@
             }
         }
     },
+    "ui/project/console-page-index-container": {
+        "name": "ui/project/console-page-index-container",
+        "scope": "",
+        "version": "",
+        "defaultScope": "coop-codes.dikwms",
+        "mainFile": "index.ts",
+        "rootDir": "dikwms/ui/project/console-page-index-container",
+        "config": {
+            "bitdev.react/react-env@6.0.28": {},
+            "teambit.envs/envs": {
+                "env": "bitdev.react/react-env"
+            }
+        }
+    },
     "ui/project/interactive-canvas-wrapper": {
         "name": "ui/project/interactive-canvas-wrapper",
         "scope": "",
