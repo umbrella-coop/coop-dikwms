@@ -149,3 +149,7 @@ Iterative + opportunistic (SPEC-020 policy): each move rides on the next touch o
   ProComponents PageContainer API (title/subTitle/extra/breadcrumb/tabs/content/
   footer/ghost/loading), implemented natively on antd 6 (pro-components requires
   antd ^5 — rejected; native keeps the workspace on antd 6). 3 specs green.
+
+- **New context + component (2026-08-08, orchestrator):** `ui/organization/`
+  created with `console-page-index-container` (exports
+  `OrganizationConsolePageIndexContainer`); check-layout whitelist + docs updated.

@@ -224,6 +224,25 @@ importers:
         specifier: ^16.0.0
         version: 16.3.2(@testing-library/dom@10.4.1)(@types/react-dom@19.2.3(@types/react@19.2.14))(@types/react@19.2.14)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
 
+  dikwms/ui/organization/console-page-index-container:
+    dependencies:
+      antd:
+        specifier: ^6.5.4
+        version: 6.5.4(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
+      react:
+        specifier: 19.2.4
+        version: 19.2.4
+      react-dom:
+        specifier: 19.2.4
+        version: 19.2.4(react@19.2.4)
+    devDependencies:
+      '@bitdev/react.react-env':
+        specifier: ^6.0.27
+        version: 6.0.28(@emnapi/core@1.11.3)(@emnapi/runtime@1.11.3)(esbuild@0.27.7)(eslint@8.57.1)(react-refresh@0.18.0)(rollup@4.62.4)(rxjs@7.8.2)(sass-embedded@1.100.0)(terser@5.49.2)(webpack@5.109.2(esbuild@0.27.7))(yaml@2.9.0)
+      '@testing-library/react':
+        specifier: ^16.0.0
+        version: 16.3.2(@testing-library/dom@10.4.1)(@types/react-dom@19.2.3(@types/react@19.2.14))(@types/react@19.2.14)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
+
   node_modules/.bit_roots/bitdev.react_react-env@6.0.28:
     dependencies:
       '@apollo/client':
@@ -256,6 +275,9 @@ importers:
       '@coop-codes/dikwms.ui.data-graph.project-page-container':
         specifier: workspace:*
         version: file:dikwms/ui/data-graph/project-page-container(react@19.2.4)
+      '@coop-codes/dikwms.ui.organization.console-page-index-container':
+        specifier: workspace:*
+        version: file:dikwms/ui/organization/console-page-index-container(react@19.2.4)
       '@mdx-js/mdx':
         specifier: 3.1.1
         version: 3.1.1
@@ -370,6 +392,9 @@ importers:
       '@coop-codes/dikwms.ui.data-graph.project-page-container':
         specifier: workspace:*
         version: file:dikwms/ui/data-graph/project-page-container(react@19.2.4)
+      '@coop-codes/dikwms.ui.organization.console-page-index-container':
+        specifier: workspace:*
+        version: file:dikwms/ui/organization/console-page-index-container(react@19.2.4)
       '@mdx-js/mdx':
         specifier: 3.1.1
         version: 3.1.1
@@ -1470,6 +1495,11 @@ packages:
 
   '@coop-codes/dikwms.ui.data-graph.project-page-container@file:dikwms/ui/data-graph/project-page-container':
     resolution: {directory: dikwms/ui/data-graph/project-page-container, type: directory}
+    peerDependencies:
+      react: ^17.0.0 || ^18.0.0 || ^19.0.0
+
+  '@coop-codes/dikwms.ui.organization.console-page-index-container@file:dikwms/ui/organization/console-page-index-container':
+    resolution: {directory: dikwms/ui/organization/console-page-index-container, type: directory}
     peerDependencies:
       react: ^17.0.0 || ^18.0.0 || ^19.0.0
 
@@ -10333,6 +10363,16 @@ snapshots:
       - moment
 
   '@coop-codes/dikwms.ui.data-graph.project-page-container@file:dikwms/ui/data-graph/project-page-container(react@19.2.4)':
+    dependencies:
+      antd: 6.5.4(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
+      react: 19.2.4
+      react-dom: 19.2.4(react@19.2.4)
+    transitivePeerDependencies:
+      - date-fns
+      - luxon
+      - moment
+
+  '@coop-codes/dikwms.ui.organization.console-page-index-container@file:dikwms/ui/organization/console-page-index-container(react@19.2.4)':
     dependencies:
       antd: 6.5.4(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
       react: 19.2.4

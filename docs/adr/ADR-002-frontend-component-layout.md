@@ -57,3 +57,7 @@ Restructure via `bit move` (preserves history), never re-creation.
 - **Shared types namespace (2026-08-08):** `type/<name>` added for wire-agnostic
   domain types (`type/core-v1`: DataGraphNode/Edge/Combo, DIKW Data layer, mirroring registry `core.v1`);
   `use-data-graph-sse` re-exports them; check-layout allows `type`.
+
+- **Organization context (2026-08-08):** `ui/organization/` lands with
+  `console-page-index-container` (org console index page shell —
+  `Scope::Org` domain). Whitelist updated.
