@@ -1,6 +1,6 @@
 # Feature: SPEC-020-diwkms-frontend-reorg — diwkms Frontend Context Reorganization (Iterative)
 
-<!-- status: Approved -->
+<!-- status: Implemented -->
 <!-- approved-date: 2026-08-08 -->
 <!-- approved-by: orchestrator -->
 <!-- created: 2026-08-08 -->
@@ -108,3 +108,22 @@ None — all resolved with the orchestrator (2026-08-08).
 ## Rollout Plan
 
 Iterative + opportunistic (SPEC-020 policy): each move rides on the next touch of its component — no dedicated batch restructure. Each landed move: code+test+doc delta in one commit, spec delta recorded (AC-9). Order suggested: scope rename first (unblocks id stability), then app → hook → canvas/node-drawer/layout-select as touched.
+
+
+---
+
+## MODIFIED — Implementation record (living document, 2026-08-08)
+
+| AC | Evidence | Commit |
+|----|----------|--------|
+| AC-1 | scope `coop-codes.diwkms`; `bit status` clean (5 components ok); ids `coop-codes.diwkms.*` | `1fc67fb` |
+| AC-2 | `bit run app -p 3100` → root + `@vite/client` 200 (smoke) | `1fc67fb`, `55a9280` |
+| AC-3 | hook at `hook/use-data-graph-sse`; spec green (2 tests); canvas consumes it | `1fc67fb` |
+| AC-4 | canvas at `ui/data-graph/canvas`; layout selector working; spec green | `1fc67fb` |
+| AC-5 | node-drawer at `ui/data-graph/node-drawer`; testids `node-drawer/node-form/node-form-error/node-name-input/node-save-btn`; spec green | `1fc67fb`, `c0d3511` |
+| AC-6 | `layout-select` component extracted; `data-testid="layout-select"` in DOM (canvas spec + own spec assert it); layout switch works | `f5d92c8` |
+| AC-7 | `docs/ddd/bounded-contexts.md` + `frontend/AGENTS.md` + ADR-002 reflect realized layout, same commits as moves | `55a9280` |
+| AC-8 | `node frontend/scripts/check-layout.mjs` green — `diwkms/{app,hook,ui}` + context whitelist (moved to `frontend/scripts/` per orchestrator) | `55a9280` |
+| AC-9 | this delta; each move committed with AC refs | `1fc67fb`, `c0d3511`, `f5d92c8`, `55a9280` |
+
+**Deviations:** none. Final suite: 9 tests green (4 files); `bit status` clean (5 components).
