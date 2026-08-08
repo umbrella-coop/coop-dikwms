@@ -58,7 +58,7 @@ specs:
     started: 2026-08-07
   - id: SPEC-020
     file: docs/specs/SPEC-020-diwkms-frontend-reorg.md
-    status: Review
+    status: Approved
   - id: SPEC-019
     file: docs/specs/SPEC-019-naming-scope-correction.md
     status: Archived

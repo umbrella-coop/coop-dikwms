@@ -1,6 +1,8 @@
 # Feature: SPEC-020-diwkms-frontend-reorg — diwkms Frontend Context Reorganization (Iterative)
 
-<!-- status: Review -->
+<!-- status: Approved -->
+<!-- approved-date: 2026-08-08 -->
+<!-- approved-by: orchestrator -->
 <!-- created: 2026-08-08 -->
 <!-- source: backlog SPEC-020 (promoted, narrowed to frontend; orchestrator directive 2026-08-08) -->
 
