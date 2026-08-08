@@ -1,0 +1,58 @@
+---
+name: ddd-bounded-context-org
+description: |
+  Bounded-context-driven codebase organization: context map, ubiquitous
+  language, context-first directory and naming rules, and generated-artefact
+  conformance (bit create / boilerplate). Derived from the approved DDD
+  brainstorm (docs/brainstorm/ddd-bounded-contexts.md).
+tags: [ddd, architecture, organization, naming, codebase]
+version: "1.0.0"
+---
+
+# DDD Bounded-Context Organization
+
+> Applies to directory layout, component ids, feature organization, and
+> generated artefacts. Normative source:
+> docs/brainstorm/ddd-bounded-contexts.md (approved 2026-08-07).
+
+## Context Map
+
+| Context | Backend container | Frontend namespace |
+|---|---|---|
+| Graph Knowledge | `knowledge-domain` | `canvas/` |
+| Governance | moderation + audit | `governance/` |
+| Access | Policy | `access/` |
+| Registry | `schema-registry` | `registry/` |
+| Stream | `stream-api` | `stream/` |
+| Workspace Shell | `api` (transport) | `workspace/` |
+
+## Directory Rule
+
+- Frontend: `frontend/network-graph/<context>/<component>` (context-first).
+- Backend: crates are the context containers (no re-split in v1).
+- Anti-corruption: the API is a translation layer; components communicate via
+  interfaces, never direct cross-context imports.
+
+## Naming Rule
+
+- Component ids: `<context>/<component>` kebab-case (e.g. `canvas/select-layout`).
+- `data-testid`: context-prefixed kebab-case, intent-descriptive.
+- Conventions apply to NEW artefacts; incremental migration for existing
+  (selectors are a stable contract).
+
+## Generated Artefacts
+
+- Boilerplate generators (e.g. `bit create react`) produce generic output;
+  a **post-create lint** validates conformance (selectors, layout, specs)
+  until generator customization is justified (10+ components).
+
+## Ubiquitous Language (glossary stub)
+
+node · edge · combo · property set · scope instance · change request ·
+promotion · namespace · bounded context — one canonical term per concept;
+synonyms documented in the glossary.
+
+## Verification
+
+- `frontend/check-layout.mjs` enforces context-first directories.
+- Context map is referenced by ADRs (docs/adr/).

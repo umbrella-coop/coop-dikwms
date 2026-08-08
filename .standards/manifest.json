@@ -181,7 +181,9 @@
       "system-testing",
       "e2e-testing"
     ],
-    "release_mode": "ci-cd"
+    "release_mode": "ci-cd",
+    "frontend-component-conventions": {},
+    "ddd-bounded-context-org": {}
   },
   "generateAgentsMd": false,
   "aiTools": [

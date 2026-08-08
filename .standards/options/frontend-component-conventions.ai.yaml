@@ -1,0 +1,57 @@
+---
+name: frontend-component-conventions
+description: |
+  Frontend component conventions for AI-agent-friendly UIs: stable selectors,
+  DOM state reflection, accessibility, readiness flags, structured errors,
+  and component granularity. Derived from SPEC-018 and
+  .wip/todo-friently-e2e-to-code-agents.md.
+tags: [frontend, e2e, testing, accessibility, components]
+version: "1.0.0"
+---
+
+# Frontend Component Conventions
+
+> Applies to any frontend component (React/Bit or otherwise) built in this
+> platform. Normative source: docs/specs/SPEC-018-frontend-e2e-testability.md.
+
+## Stable Selectors
+
+- Every interactive component SHALL expose persistent `data-testid` attributes.
+- Tests and agents MUST NOT depend on CSS class names or user-visible copy.
+- Selector naming: context-prefixed kebab-case, descriptive of intent
+  (e.g. `graph-select-layout`, `entity-drawer-form`).
+
+## DOM State Reflection
+
+- Async/lifecycle state SHALL be reflected via `data-loading`, `data-state`,
+  and `data-error` attributes.
+- Example: `data-loading="true"`, `data-state="open|closed"`.
+
+## Accessibility
+
+- Semantic elements (`<button>`, `<nav>`, `<form>`, `<main>`) instead of
+  clickable `<div>`s.
+- Explicit ARIA: `role="dialog"`, `aria-expanded`, `aria-label` on custom
+  widgets.
+
+## Readiness Flag
+
+- The app SHALL set `window.__APP_READY__ = true` after its first rendered
+  frame; E2E agents assert on it, never sleep.
+
+## Structured Errors
+
+- Error boundaries and network failures SHALL log
+  `{"@type":"app:Error", context, message, timestamp}` and dispatch
+  `app:error` events. Bare console.log is prohibited.
+
+## Component Granularity
+
+- Reusable pieces SHALL be their own components (e.g. a layout selector is
+  `canvas/select-layout`, not markup inside `canvas/graph`).
+- App shells compose components; monoliths are prohibited.
+
+## Verification
+
+- Component specs assert `data-testid` presence + state reflection.
+- `frontend/check-layout.mjs` enforces the directory structure.
