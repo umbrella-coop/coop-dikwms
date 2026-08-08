@@ -1,6 +1,6 @@
 # SPEC-018 Feature: Frontend Platform — AI-Agent-Friendly E2E Testability
 
-<!-- status: Implemented -->
+<!-- status: Archived -->
 
 ## Overview
 
@@ -97,3 +97,13 @@ Consumers SHALL bootstrap state from the SSE genesis replay (`/events?cursor=`),
 - SPEC-013/016: API + OpenAPI contract the consumption rules
 - SPEC-004: SSE genesis replay is the bootstrap mechanism
 - SPEC-009: registry-driven forms (additionalType warnings tolerated per schemaless philosophy)
+
+
+---
+
+## ARCHIVED (2026-08-07)
+
+- **Verification commit:** `e543a58` (enforcement: component specs + check-layout)
+- **Evidence:** 7 frontend tests green (ui/graph, ui/entity-drawer, hooks/use-event-stream specs); `frontend/check-layout.mjs` green; spike smoke test (`7887709`, `b27d661`) + browser verification by orchestrator (manual UI testing policy per SPEC-021)
+- **ACs:** AC-1/AC-2/AC-4/AC-5 enforced by tests; **AC-3/AC-6 held** — deferred to SPEC-021 (Playwright E2E suite)
+- **Status change:** Implemented → Archived. Conventions remain normative via `.standards/options/frontend-component-conventions.ai.yaml` + `frontend/AGENTS.md`. Re-check (spec-vs-code convergence) if touched by future work (e.g. SPEC-020 opportunistic moves).

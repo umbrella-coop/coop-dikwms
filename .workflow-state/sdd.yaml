@@ -53,7 +53,7 @@ specs:
     evidence: ae24ce5
   - id: SPEC-018
     file: docs/specs/SPEC-018-frontend-e2e-testability.md
-    status: Implemented
+    status: Archived
     ac: { AC-1: pass, AC-2: pass, AC-3: held-spec021, AC-4: pass, AC-5: pass, AC-6: held-spec021 }
     started: 2026-08-07
   - id: SPEC-019
