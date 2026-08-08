@@ -1,6 +1,6 @@
 # Feature: SPEC-020-diwkms-frontend-reorg — diwkms Frontend Context Reorganization (Iterative)
 
-<!-- status: Draft -->
+<!-- status: Review -->
 <!-- created: 2026-08-08 -->
 <!-- source: backlog SPEC-020 (promoted, narrowed to frontend; orchestrator directive 2026-08-08) -->
 
@@ -68,11 +68,11 @@ frontend/diwkms/                      (Bit scope: coop-codes.diwkms)
 
 ## Acceptance Criteria
 
-- AC-1: Given the Bit workspace, When the scope is renamed to `coop-codes.diwkms`, Then `bit status` is clean and component ids resolve to `@coop-codes/diwkms.*`
-- AC-2: Given the app shell, When it is moved to `frontend/diwkms/app`, Then `bit run` serves it and the root/`@vite/client`/app modules return 200
+- AC-1: Given the Bit workspace, When the scope is renamed to `coop-codes.diwkms`, Then `bit status` is clean and component ids resolve to `@coop-codes/diwkms.*` (per-component via `bit rename --scope`/`-s`)
+- AC-2: Given the app shell, When it is moved to `frontend/diwkms/app`, Then `bit run -p 3100` serves it and the root/`@vite/client`/app modules return 200 (dev port per SPEC-018 R-28)
 - AC-3: Given the SSE hook, When moved to `frontend/diwkms/hook/use-data-graph-sse`, Then its spec passes and the smoke canvas still receives live events
 - AC-4: Given the canvas, When moved to `frontend/diwkms/ui/data-graph/canvas`, Then the graph renders with the layout selector working and its spec passes
-- AC-5: Given the entity drawer, When moved and renamed to `frontend/diwkms/ui/data-graph/node-drawer`, Then the drawer opens from canvas selection, its spec passes, and its testid is `node-drawer-form`
+- AC-5: Given the entity drawer, When moved and renamed to `frontend/diwkms/ui/data-graph/node-drawer`, Then the drawer opens from canvas selection, its spec passes, and its testids are renamed `entity-*` → `node-*` (`entity-drawer`→`node-drawer`, `entity-form`→`node-form`, `entity-form-error`→`node-form-error`, `entity-name-input`→`node-name-input`, `entity-save-btn`→`node-save-btn`)
 - AC-6: Given the layout selector, When extracted to `frontend/diwkms/ui/data-graph/layout-select` and consumed by canvas, Then `data-testid="layout-select"` remains in the DOM and layout switching still works
 - AC-7: Given the reorganized codebase, When docs are checked, Then `docs/ddd/bounded-contexts.md` and `frontend/AGENTS.md` describe the actual layout (scope `diwkms`, `app/`, `hook/`, `ui/<context>/`) — committed in the same commits as the moves
 - AC-8: Given the new layout, When `node frontend/check-layout.mjs` runs, Then it validates `{app, hook, ui}` + context whitelist and reports green
@@ -88,7 +88,7 @@ frontend/diwkms/                      (Bit scope: coop-codes.diwkms)
 | A2 | New scope id is `coop-codes.diwkms` (org prefix stays) | REQ-001 | confirmed with orchestrator | Verified |
 | A3 | Hooks live at `hook/` (singular) with context in the name | REQ-003 | confirmed with orchestrator | Verified |
 | A4 | Backend `knowledge-domain` → `data-graph` rename stays out of scope (deferred in backlog) | REQ-008 | confirmed with orchestrator | Verified |
-| A5 | testid renames (`entity-drawer-form` → `node-drawer-form`) are cheap now, before SPEC-021 E2E exists | REQ-005 | E2E not implemented | Verified |
+| A5 | testid renames (`entity-*` → `node-*`, five testids verified in code) are cheap now, before SPEC-021 E2E exists | REQ-005 | E2E not implemented | Verified |
 | A6 | Component ids follow Bit convention `coop-codes.diwkms/<path>/<name>` | all | bit status clean check | Unverified → AC-1 |
 
 ### Open Questions
