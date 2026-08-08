@@ -13,14 +13,14 @@ This is the authoritative context map for the **diwkms** codebase. It guides:
 
 | Bounded context | Backend container | Frontend namespace | Status | Responsibilities |
 |---|---|---|---|---|
-| **Data Graph** | `data-graph` (rename from `knowledge-domain` — pending, SPEC-020) | `ui/data-graph/` (canvas, select-layout, entity-drawer, hook-use-event-stream) | **active** | entities, scoped property sets, resolve (nearest-wins), G6 rendering, live-event consumption (SSE via `stream-api`) |
+| **Data Graph** | `data-graph` (rename from `knowledge-domain` — pending, SPEC-020) | `ui/data-graph/` (canvas, node-drawer, layout-select) + `hook/use-data-graph-sse` | **active** | entities, scoped property sets, resolve (nearest-wins), G6 rendering, live-event consumption (SSE via `stream-api`) |
 | **Governance** | moderation + audit logic (co-located in `data-graph` + `terminusdb-repository` today) | `ui/data-graph-governance/` | reserved | change requests, decisions, promotion ladder, moderation ledger, audit trail, correlation, revert |
 | **IAM** | Policy ACL (co-located in `data-graph` today) | `ui/iam/` | reserved | scope instances, principals, ACL enforcement |
 | **Data Schema Registry** | `schema-registry` (standalone ✓) | `ui/data-schema-registry/` | reserved | namespaces, additionalType, versioned schema docs |
-| **App Shell** | `api` (transport only — no business logic) | `app/diwkms` (rename from `apps/coop-graph-app` — pending, SPEC-020) | **active** | composes contexts, REST surface, SSE fan-out |
+| **App Shell** | `api` (transport only — no business logic) | `app` (was `apps/coop-graph-app`, SPEC-020) | **active** | composes contexts, REST surface, SSE fan-out |
 
 ### Dissolved: Stream
-`stream-api` and `hook-use-event-stream` are **not a context** — they are transport/infrastructure *of the Data Graph context* (SPEC-004 AC-4 live events). Hooks live in their owning context with a `hook-` prefix: `ui/data-graph/hook-use-event-stream`. The `stream-api` crate stays until volume justifies merging (deferred).
+`stream-api` and `hook-use-event-stream` are **not a context** — they are transport/infrastructure *of the Data Graph context* (SPEC-004 AC-4 live events). Hooks live at `hook/<name>` with the context in the hook name: `hook/use-data-graph-sse`. The `stream-api` crate stays until volume justifies merging (deferred).
 
 ### Reserved namespaces
 `ui/data-graph-governance/`, `ui/iam/`, `ui/data-schema-registry/` (and backend `data-graph-governance`, `iam` crates) are **created when their first component lands** — no empty directories now.
@@ -49,43 +49,46 @@ This is the authoritative context map for the **diwkms** codebase. It guides:
 
 ## 3. Frontend Organization (focus)
 
-### 3.1 Target layout (SPEC-020 end state)
+### 3.1 Current layout (realized 2026-08-08, SPEC-020 implemented)
 
 ```
-frontend/network-graph/                 (Bit scope: coop-codes.network-graph)
-├── app/
-│   └── diwkms/                         (← apps/coop-graph-app)
+frontend/diwkms/                        (Bit scope: coop-codes.diwkms)
+├── app/                                (app shell: app)
 └── ui/
     ├── data-graph/
     │   ├── canvas/                     (← ui/graph)
-    │   ├── select-layout/              (extracted from canvas on next layout touch)
-    │   ├── entity-drawer/              (stays — Data Graph owns property-set editing)
-    │   └── hook-use-event-stream/      (← hooks/use-event-stream)
+    │   ├── node-drawer/                (← ui/entity-drawer, testids node-*)
+    │   └── layout-select/              (extracted from canvas; testid layout-select)
     ├── data-graph-governance/          (reserved — created on first component)
     ├── iam/                            (reserved)
     └── data-schema-registry/           (reserved)
 ```
 
+Hooks live at `frontend/diwkms/hook/<name>` with the context in the hook name
+(`hook/use-data-graph-sse` — SSE transport for the Data Graph context).
+The layout above is the **reality**; the spec and this document follow the
+codebase, never the inverse (Working software over comprehensive
+documentation).
+
 ### 3.2 Rules
 
-1. **Context-first, type-second:** `ui/<context>/<name>`; app shells at `app/<shell>`. Component-type dirs at top level (`ui/`, `hooks/`, `services/`) are **eliminated** — a hook in Data Graph is `ui/data-graph/hook-<name>`.
-2. **Bit moves only, never re-create:** `bit move` preserves component ids, dependencies, and test specs.
-3. **testids are a stable contract (ADR-003):** context-prefixed kebab (`graph-select-layout`, `entity-drawer-form`) — testids do **not** change on moves; the E2E POM layer (SPEC-021) depends on them.
+1. **Type-first namespace, context in path or name:** `ui/<context>/<name>` for visual components, `hook/<name>` for hooks (context encoded in the hook name, e.g. `use-data-graph-sse`), `app/<name>` for shells.
+2. **Bit moves only, never re-create:** `bit move`/`bit rename -s/-p` preserve component ids, dependencies, and test specs.
+3. **testids are a stable contract (ADR-003):** kebab-case, intent-descriptive (`layout-select`, `node-drawer`, `node-save-btn`) — testids do **not** change on pure moves; the E2E POM layer (SPEC-021) depends on them.
 4. **Dependency rule:** components communicate via interfaces; the API is the translation layer. No cross-context imports (documented rule; CI import-boundary check deferred). Frontend context X may only call API routes of context X (+ shared `app/diwkms`).
 5. **Reserved namespaces** are created on first landing component, never pre-provisioned.
-6. **check-layout.mjs (v2, SPEC-020):** enforcement becomes `{app, ui}` with context whitelist + `hook-` prefix rule — updated in the same change as the moves, never before (must not fail on current tree).
+6. **check-layout.mjs (v2, SPEC-020 AC-8):** enforces `{app, hook, ui}` + context whitelist (`data-graph`, `data-graph-governance`, `iam`, `data-schema-registry`) + `index.ts` presence.
 
-### 3.3 Migration table (current → target, opportunistic)
+### 3.3 Migration history (completed 2026-08-08)
 
-| Current | Target | Trigger (SPEC-020 policy) |
+| From | To | Commit |
 |---|---|---|
-| `apps/coop-graph-app` | `app/diwkms` | next shell work |
-| `ui/graph` | `ui/data-graph/canvas` | next canvas work |
-| `ui/entity-drawer` | `ui/data-graph/entity-drawer` | next drawer work |
-| `hooks/use-event-stream` | `ui/data-graph/hook-use-event-stream` | next hook work |
-| (inside `canvas`) | `ui/data-graph/select-layout` | next layout work (extract directly to final path) |
-
-Moves are applied **as components are touched** — never a dedicated batch restructure.
+| `apps/coop-graph-app` | `app` | `1fc67fb` (scope+move batch) |
+| `hooks/use-event-stream` | `hook/use-data-graph-sse` | `1fc67fb` |
+| `ui/graph` | `ui/data-graph/canvas` | `1fc67fb` |
+| `ui/entity-drawer` | `ui/data-graph/node-drawer` (testids `node-*`) | `1fc67fb`, `c0d3511` |
+| (inside `canvas`) | `ui/data-graph/layout-select` | `f5d92c8` |
+| scope `coop-codes.network-graph` | `coop-codes.diwkms` | `1fc67fb` |
 
 ## 4. Backend Refactor Guide (toward v2)
 
@@ -155,3 +158,4 @@ Verification: `RUSTUP_TOOLCHAIN=nightly cargo check -p data-graph --tests` then 
 | 2026-08-07 | v1 brainstorm approved (BQS v1); ADRs + UDS options codified |
 | 2026-08-07 | v2 orchestrator review: 5-context map, stream dissolved, DIKW vision, reserved namespaces |
 | 2026-08-08 | Moved to `docs/ddd/bounded-contexts.md`; hardened with migration tables, rename mechanics, dependency invariants |
+| 2026-08-08 | SPEC-020 frontend implemented: scope `coop-codes.diwkms`, layout realized (codebase feeds this doc) |

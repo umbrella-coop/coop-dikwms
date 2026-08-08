@@ -7,7 +7,7 @@ Frontend conventions for AI agents and E2E testing. Derived from
 
 - `bit start` — workspace UI (component previews, http://localhost:3000)
 - `bit build <component>` — build pipeline (tsc + vite)
-- **Run an app:** `bit run <app> -p <port>` (e.g. `bit run coop-graph-app -p 3100`).
+- **Run an app:** `bit run <app> -p <port>` (e.g. `bit run app -p 3100`).
   R-28 RESOLVED (2026-08-07): the 404s were a PORT COLLISION — a foreign
   vite server held the default :3001; Bit's banner lies about the bound
   port. Always pass an explicit free port.
@@ -18,13 +18,14 @@ Frontend conventions for AI agents and E2E testing. Derived from
 
 ## Scope
 
-- Default scope: `coop-codes.network-graph` (SPEC-019)
-- Component ids: `@coop-codes/network-graph.<namespace>.<name>`
-- Layout (Bit standard, no SSR — client-only apps):
-  - `network-graph/apps/<name>` — app shells composing components
-  - `network-graph/ui/<name>` — visual components (graph, entity-drawer)
-  - `network-graph/hooks/<name>` — logic hooks (use-event-stream)
-  - `network-graph/services/<name>` — future backend/service components
+- Default scope: `coop-codes.diwkms` (SPEC-020; formerly `coop-codes.network-graph` per SPEC-019)
+- Component ids: `@coop-codes/diwkms.<namespace>.<name>` (dot-separated namespaces)
+- Layout (SPEC-020 context-first, Bit standard, no SSR — client-only apps):
+  - `diwkms/app/<name>` — app shells composing components (currently `app`)
+  - `diwkms/hook/<name>` — logic hooks, context in the hook name (`use-data-graph-sse`)
+  - `diwkms/ui/<context>/<name>` — visual components per bounded context (`data-graph`, reserved: `data-graph-governance`, `iam`, `data-schema-registry`)
+  - Reserved namespaces are created when their first component lands — no empty dirs
+- Enforced by `node frontend/scripts/check-layout.mjs` (AC-8)
 - Per-component `vite.config.js`/`index.html` are Bit structural — do not collapse
 
 ## E2E Conventions (mandatory for new components)

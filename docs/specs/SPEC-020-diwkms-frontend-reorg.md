@@ -21,7 +21,7 @@ Iterative process to create and refactor sets of frontend components onto the **
 - REQ-005: Move + rename `frontend/network-graph/ui/entity-drawer` → `frontend/diwkms/ui/data-graph/node-drawer`
 - REQ-006: New component `frontend/diwkms/ui/data-graph/layout-select` — decouple the layout selector from canvas; keeps `data-testid="layout-select"`
 - REQ-007: **Codebase-first docs:** `docs/ddd/bounded-contexts.md` (+ AGENTS.md, ADR-002 as needed) reflects the actual codebase layout, updated in the same commits as the moves — the doc follows the code, never the inverse (Agile Manifesto: working software over comprehensive documentation)
-- REQ-008: Iterative process: moves are opportunistic (applied as components are touched); `frontend/check-layout.mjs` updated to the new shape; spec kept in sync via deltas
+- REQ-008: Iterative process: moves are opportunistic (applied as components are touched); `frontend/scripts/check-layout.mjs` updated to the new shape; spec kept in sync via deltas
 
 ## Technical Design
 
@@ -77,7 +77,7 @@ frontend/diwkms/                      (Bit scope: coop-codes.diwkms)
 - AC-5: Given the entity drawer, When moved and renamed to `frontend/diwkms/ui/data-graph/node-drawer`, Then the drawer opens from canvas selection, its spec passes, and its testids are renamed `entity-*` → `node-*` (`entity-drawer`→`node-drawer`, `entity-form`→`node-form`, `entity-form-error`→`node-form-error`, `entity-name-input`→`node-name-input`, `entity-save-btn`→`node-save-btn`)
 - AC-6: Given the layout selector, When extracted to `frontend/diwkms/ui/data-graph/layout-select` and consumed by canvas, Then `data-testid="layout-select"` remains in the DOM and layout switching still works
 - AC-7: Given the reorganized codebase, When docs are checked, Then `docs/ddd/bounded-contexts.md` and `frontend/AGENTS.md` describe the actual layout (scope `diwkms`, `app/`, `hook/`, `ui/<context>/`) — committed in the same commits as the moves
-- AC-8: Given the new layout, When `node frontend/check-layout.mjs` runs, Then it validates `{app, hook, ui}` + context whitelist and reports green
+- AC-8: Given the new layout, When `node frontend/scripts/check-layout.mjs` runs, Then it validates `{app, hook, ui}` + context whitelist and reports green
 - AC-9: Given each move, When it lands, Then the spec records a `## MODIFIED` delta with the commit hash and AC status — the spec is a living document
 
 ## Assumptions & Open Questions
@@ -101,7 +101,7 @@ None — all resolved with the orchestrator (2026-08-08).
 
 - [ ] `bit test` — full frontend suite green after EVERY move (7 tests today + new layout-select spec)
 - [ ] New: `layout-select.spec.tsx` (render + onChange callback)
-- [ ] `node frontend/check-layout.mjs` green (v2, after first move)
+- [ ] `node frontend/scripts/check-layout.mjs` green (v2, after first move)
 - [ ] `bit status` clean; `bit list` shows `coop-codes.diwkms/*` ids
 - [ ] Smoke: `bit run` app on dev port — root + modules 200, canvas renders, layout switch works, SSE events flow
 
