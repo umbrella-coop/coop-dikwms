@@ -82,24 +82,24 @@ export function NodeDrawer({ entity, apiBase, onClose }: NodeDrawerProps) {
           onFinish={save}
           initialValues={properties}
           key={JSON.stringify(properties)}
-          data-testid="entity-form"
+          data-testid="node-form"
           data-saving={saving}
           aria-label={`Edit properties of ${entity.kind}`}
         >
           {error && (
-            <p role="alert" data-testid="entity-form-error">
+            <p role="alert" data-testid="node-form-error">
               {error}
             </p>
           )}
           <Form.Item label="name" name="name">
-            <Input placeholder="entity name" data-testid="entity-name-input" />
+            <Input placeholder="entity name" data-testid="node-name-input" />
           </Form.Item>
           <Form.Item>
             <Button
               type="primary"
               htmlType="submit"
               loading={saving}
-              data-testid="entity-save-btn"
+              data-testid="node-save-btn"
             >
               Save
             </Button>

@@ -34,9 +34,9 @@ describe('SPEC-018 ui/node-drawer', () => {
   it('exposes stable data-testid selectors', async () => {
     render(<NodeDrawer entity={entity} apiBase="http://api" onClose={() => {}} />);
     expect(screen.getByTestId('node-drawer')).toBeTruthy();
-    await waitFor(() => expect(screen.getByTestId('entity-form')).toBeTruthy());
-    expect(screen.getByTestId('entity-name-input')).toBeTruthy();
-    expect(screen.getByTestId('entity-save-btn')).toBeTruthy();
+    await waitFor(() => expect(screen.getByTestId('node-form')).toBeTruthy());
+    expect(screen.getByTestId('node-name-input')).toBeTruthy();
+    expect(screen.getByTestId('node-save-btn')).toBeTruthy();
   });
 
   // AC-2: data-state reflects drawer open/closed
