@@ -1,7 +1,7 @@
 # ADR-002: Frontend Component Directory Layout (context-first)
 
 - **Status:** Accepted (2026-08-07)
-- **Source:** DDD brainstorm (docs/brainstorm/ddd-bounded-contexts.md, approved)
+- **Source:** DDD brainstorm (docs/ddd/bounded-contexts.md, approved)
 - **Standard:** `.standards/options/ddd-bounded-context-org.ai.yaml`
 
 ## Context
