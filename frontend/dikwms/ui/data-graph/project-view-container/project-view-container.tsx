@@ -1,9 +1,9 @@
 import type { ReactNode } from 'react';
 import { Breadcrumb, Space, Spin, Tabs, Typography } from 'antd';
 import type { BreadcrumbProps, TabsProps } from 'antd';
-import styles from './project-page-container.module.css';
+import styles from './project-view-container.module.css';
 
-export type ProjectPageContainerProps = {
+export type DataGraphProjectViewContainerProps = {
   /**
    * Page title, rendered in the header.
    */
@@ -44,7 +44,7 @@ export type ProjectPageContainerProps = {
   'data-testid'?: string;
 };
 
-export function ProjectPageContainer({
+export function DataGraphProjectViewContainer({
   title,
   subTitle,
   extra,
@@ -55,8 +55,8 @@ export function ProjectPageContainer({
   ghost,
   loading,
   children,
-  'data-testid': testId = 'project-page-container',
-}: ProjectPageContainerProps) {
+  'data-testid': testId = 'project-view-container',
+}: DataGraphProjectViewContainerProps) {
   return (
     <section
       className={styles.wrap}

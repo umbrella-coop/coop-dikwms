@@ -157,3 +157,7 @@ Iterative + opportunistic (SPEC-020 policy): each move rides on the next touch o
 - **New context + component (2026-08-08, orchestrator):** `ui/workspace/`
   created with `console-page-index-container` (exports
   `WorkspaceConsolePageIndexContainer`); check-layout whitelist + docs updated.
+
+- **Renamed (2026-08-08, orchestrator):** `ui/data-graph/project-page-container` →
+  `ui/data-graph/project-view-container`, export `DataGraphProjectViewContainer`
+  (id `coop-codes.dikwms.ui.data-graph.project-view-container`).
