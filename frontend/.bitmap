@@ -51,6 +51,20 @@
             }
         }
     },
+    "ui/data-graph/layout-select": {
+        "name": "ui/data-graph/layout-select",
+        "scope": "",
+        "version": "",
+        "defaultScope": "coop-codes.diwkms",
+        "mainFile": "index.ts",
+        "rootDir": "diwkms/ui/data-graph/layout-select",
+        "config": {
+            "bitdev.react/react-env@6.0.28": {},
+            "teambit.envs/envs": {
+                "env": "bitdev.react/react-env"
+            }
+        }
+    },
     "ui/data-graph/node-drawer": {
         "name": "ui/data-graph/node-drawer",
         "scope": "",

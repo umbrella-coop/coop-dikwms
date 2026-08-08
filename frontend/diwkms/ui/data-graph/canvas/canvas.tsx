@@ -1,22 +1,11 @@
 import { useEffect, useRef, useState } from 'react';
 import { Canvas as G6Canvas } from '@antv/g6';
-import { Select, Spin, Tag } from 'antd';
+import { Spin, Tag } from 'antd';
+import { LayoutSelect } from '@coop-codes/diwkms.ui.data-graph.layout-select';
 import type { Entity, EventStreamState } from '@coop-codes/diwkms.hook.use-data-graph-sse';
 import styles from './canvas.module.css';
 
 export type CanvasLayout = { type: string; [key: string]: unknown };
-
-const LAYOUT_OPTIONS: { value: string; label: string }[] = [
-  { value: 'force', label: 'Force (default)' },
-  { value: 'd3-force', label: 'D3 Force' },
-  { value: 'fruchterman', label: 'Fruchterman' },
-  { value: 'grid', label: 'Grid' },
-  { value: 'circular', label: 'Circular' },
-  { value: 'radial', label: 'Radial' },
-  { value: 'concentric', label: 'Concentric' },
-  { value: 'mds', label: 'MDS' },
-  { value: 'random', label: 'Random' },
-];
 
 /** User-friendly default: force-directed with overlap prevention. */
 const DEFAULT_LAYOUT: CanvasLayout = {
@@ -101,14 +90,7 @@ export function Canvas({ entities, streamState, loading, onSelect, layout = DEFA
         {loading && <Spin data-testid="canvas-loading" />}
       </div>
       <footer className={styles.footer}>
-        <Select
-          value={layoutType}
-          onChange={setLayoutType}
-          options={LAYOUT_OPTIONS}
-          size="small"
-          data-testid="layout-select"
-          aria-label="Canvas layout type"
-        />
+        <LayoutSelect value={layoutType} onChange={setLayoutType} />
         <Tag color={streamState === 'open' ? 'green' : streamState === 'error' ? 'red' : 'orange'}>
           stream: {streamState}
         </Tag>
