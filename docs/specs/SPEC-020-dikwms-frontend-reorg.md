@@ -167,3 +167,9 @@ Iterative + opportunistic (SPEC-020 policy): each move rides on the next touch o
   new `ui/project/view-wrapper` exports `ProjectPageWraper` — the project
   view-type seam ('live' now, 'tabular' future via data-tabular context).
   `project` context whitelisted.
+
+- **Renamed (2026-08-08, orchestrator):** `ui/project/view-wrapper` →
+  `ui/project/interactive-canvas-wrapper`, export `ProjectLiveViewWraper`;
+  `ProjectLiveViewType = 'graph' | 'tabular' | 'geographic'` — graph renders
+  `data-graph/project-live-view-container`; tabular/geographic placeholders
+  until `data-tabular` / `data-geographic` contexts land.
