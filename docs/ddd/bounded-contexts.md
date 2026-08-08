@@ -4,7 +4,7 @@
 > **Provenance:** moved from `docs/brainstorm/ddd-bounded-contexts.md` (brainstorm report, v1) → canonicalized to `docs/ddd/` 2026-08-08. History preserved in git.
 > **Governed by:** SPEC-020 (context reorg — opportunistic moves) · ADR-001 (context map) · ADR-002 (frontend layout) · ADR-003 (testid naming) · UDS options `ddd-bounded-context-org` + `frontend-component-conventions`
 
-This is the authoritative context map for the **diwkms** codebase. It guides:
+This is the authoritative context map for the **dikwms** codebase. It guides:
 - where new code lands (frontend + backend),
 - how existing code is moved/renamed (SPEC-020, opportunistic),
 - how the backend refactor (crate `knowledge-domain` → `data-graph`) proceeds.
@@ -52,7 +52,7 @@ This is the authoritative context map for the **diwkms** codebase. It guides:
 ### 3.1 Current layout (realized 2026-08-08, SPEC-020 implemented)
 
 ```
-frontend/diwkms/                        (Bit scope: coop-codes.diwkms)
+frontend/dikwms/                        (Bit scope: coop-codes.dikwms)
 ├── app/                                (app shell: app)
 └── ui/
     ├── data-graph/
@@ -64,7 +64,7 @@ frontend/diwkms/                        (Bit scope: coop-codes.diwkms)
     └── data-schema-registry/           (reserved)
 ```
 
-Hooks live at `frontend/diwkms/hook/<name>` with the context in the hook name
+Hooks live at `frontend/dikwms/hook/<name>` with the context in the hook name
 (`hook/use-data-graph-sse` — SSE transport for the Data Graph context).
 The layout above is the **reality**; the spec and this document follow the
 codebase, never the inverse (Working software over comprehensive
@@ -75,7 +75,7 @@ documentation).
 1. **Type-first namespace, context in path or name:** `ui/<context>/<name>` for visual components, `hook/<name>` for hooks (context encoded in the hook name, e.g. `use-data-graph-sse`), `app/<name>` for shells.
 2. **Bit moves only, never re-create:** `bit move`/`bit rename -s/-p` preserve component ids, dependencies, and test specs.
 3. **testids are a stable contract (ADR-003):** kebab-case, intent-descriptive (`layout-select`, `node-drawer`, `node-save-btn`) — testids do **not** change on pure moves; the E2E POM layer (SPEC-021) depends on them.
-4. **Dependency rule:** components communicate via interfaces; the API is the translation layer. No cross-context imports (documented rule; CI import-boundary check deferred). Frontend context X may only call API routes of context X (+ shared `app/diwkms`).
+4. **Dependency rule:** components communicate via interfaces; the API is the translation layer. No cross-context imports (documented rule; CI import-boundary check deferred). Frontend context X may only call API routes of context X (+ shared `app/dikwms`).
 5. **Reserved namespaces** are created on first landing component, never pre-provisioned.
 6. **check-layout.mjs (v2, SPEC-020 AC-8):** enforces `{app, hook, ui}` + context whitelist (`data-graph`, `data-graph-governance`, `iam`, `data-schema-registry`) + `index.ts` presence.
 
@@ -88,7 +88,7 @@ documentation).
 | `ui/graph` | `ui/data-graph/canvas` | `1fc67fb` |
 | `ui/entity-drawer` | `ui/data-graph/node-drawer` (testids `node-*`) | `1fc67fb`, `c0d3511` |
 | (inside `canvas`) | `ui/data-graph/layout-select` | `f5d92c8` |
-| scope `coop-codes.network-graph` | `coop-codes.diwkms` | `1fc67fb` |
+| scope `coop-codes.network-graph` | `coop-codes.dikwms` | `1fc67fb` |
 
 ## 4. Backend Refactor Guide (toward v2)
 
@@ -158,4 +158,4 @@ Verification: `RUSTUP_TOOLCHAIN=nightly cargo check -p data-graph --tests` then 
 | 2026-08-07 | v1 brainstorm approved (BQS v1); ADRs + UDS options codified |
 | 2026-08-07 | v2 orchestrator review: 5-context map, stream dissolved, DIKW vision, reserved namespaces |
 | 2026-08-08 | Moved to `docs/ddd/bounded-contexts.md`; hardened with migration tables, rename mechanics, dependency invariants |
-| 2026-08-08 | SPEC-020 frontend implemented: scope `coop-codes.diwkms`, layout realized (codebase feeds this doc) |
+| 2026-08-08 | SPEC-020 frontend implemented: scope `coop-codes.dikwms`, layout realized (codebase feeds this doc) |

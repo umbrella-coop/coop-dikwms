@@ -57,7 +57,7 @@ specs:
     ac: { AC-1: pass, AC-2: pass, AC-3: held-spec021, AC-4: pass, AC-5: pass, AC-6: held-spec021 }
     started: 2026-08-07
   - id: SPEC-020
-    file: docs/specs/SPEC-020-diwkms-frontend-reorg.md
+    file: docs/specs/SPEC-020-dikwms-frontend-reorg.md
     status: Implemented
   - id: SPEC-019
     file: docs/specs/SPEC-019-naming-scope-correction.md

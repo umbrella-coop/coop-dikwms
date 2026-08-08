@@ -13,9 +13,9 @@
         "name": "app",
         "scope": "",
         "version": "",
-        "defaultScope": "coop-codes.diwkms",
+        "defaultScope": "coop-codes.dikwms",
         "mainFile": "index.ts",
-        "rootDir": "diwkms/app",
+        "rootDir": "dikwms/app",
         "config": {
             "bitdev.react/react-env@6.0.28": {},
             "teambit.envs/envs": {
@@ -27,9 +27,9 @@
         "name": "hook/use-data-graph-sse",
         "scope": "",
         "version": "",
-        "defaultScope": "coop-codes.diwkms",
+        "defaultScope": "coop-codes.dikwms",
         "mainFile": "index.ts",
-        "rootDir": "diwkms/hook/use-data-graph-sse",
+        "rootDir": "dikwms/hook/use-data-graph-sse",
         "config": {
             "bitdev.react/react-env@6.0.28": {},
             "teambit.envs/envs": {
@@ -41,9 +41,9 @@
         "name": "ui/data-graph/canvas",
         "scope": "",
         "version": "",
-        "defaultScope": "coop-codes.diwkms",
+        "defaultScope": "coop-codes.dikwms",
         "mainFile": "index.ts",
-        "rootDir": "diwkms/ui/data-graph/canvas",
+        "rootDir": "dikwms/ui/data-graph/canvas",
         "config": {
             "bitdev.react/react-env@6.0.28": {},
             "teambit.envs/envs": {
@@ -55,9 +55,9 @@
         "name": "ui/data-graph/layout-select",
         "scope": "",
         "version": "",
-        "defaultScope": "coop-codes.diwkms",
+        "defaultScope": "coop-codes.dikwms",
         "mainFile": "index.ts",
-        "rootDir": "diwkms/ui/data-graph/layout-select",
+        "rootDir": "dikwms/ui/data-graph/layout-select",
         "config": {
             "bitdev.react/react-env@6.0.28": {},
             "teambit.envs/envs": {
@@ -69,9 +69,9 @@
         "name": "ui/data-graph/node-drawer",
         "scope": "",
         "version": "",
-        "defaultScope": "coop-codes.diwkms",
+        "defaultScope": "coop-codes.dikwms",
         "mainFile": "index.ts",
-        "rootDir": "diwkms/ui/data-graph/node-drawer",
+        "rootDir": "dikwms/ui/data-graph/node-drawer",
         "config": {
             "bitdev.react/react-env@6.0.28": {},
             "teambit.envs/envs": {

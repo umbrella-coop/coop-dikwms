@@ -35,7 +35,7 @@ Planned specs not yet created. Add requirements captured during development here
 
 ## SPEC-021 (planned): Frontend E2E Suite (Playwright) — held
 
-**Requirement (captured 2026-08-07, source: orchestrator):** hold SPEC-018's deferred E2E features; until then, frontend testing is **manual, orchestrator-driven via the UI** (`bit run diwkms -p <port>` + browser).
+**Requirement (captured 2026-08-07, source: orchestrator):** hold SPEC-018's deferred E2E features; until then, frontend testing is **manual, orchestrator-driven via the UI** (`bit run app -p <port>` + browser).
 
 **Held items (from SPEC-018, deferred):**
 - AC-3 E2E assertion: `window.__APP_READY__` wait + canvas render + drawer open + live-update lands
@@ -48,7 +48,7 @@ Planned specs not yet created. Add requirements captured during development here
 
 ## SPEC-020 (planned): Context Reorganization — data-graph rename & namespace moves
 
-> **PROMOTED (2026-08-08):** frontend portion created as docs/specs/SPEC-020-diwkms-frontend-reorg.md — entry kept for provenance. Backend portion (`knowledge-domain` → `data-graph` crate rename) remains deferred here.
+> **PROMOTED (2026-08-08):** frontend portion created as docs/specs/SPEC-020-dikwms-frontend-reorg.md — entry kept for provenance. Backend portion (`knowledge-domain` → `data-graph` crate rename) remains deferred here.
 
 **Requirement (captured 2026-08-07, source: orchestrator DDD review):**
 - Rename backend crate `knowledge-domain` → **`data-graph`** (bounded context: Data Graph)
@@ -56,7 +56,7 @@ Planned specs not yet created. Add requirements captured during development here
   - `ui/graph` → `ui/data-graph/canvas`
   - `ui/select-layout` (extracted from graph) → `ui/data-graph/select-layout`
   - `hooks/use-event-stream` → `ui/data-graph/hook-use-event-stream` (hooks live in their owning context)
-  - `apps/coop-graph-app` → `app/diwkms`
+  - `apps/coop-graph-app` → `app`
 - Reserved namespaces (created when first component lands): `data-graph-governance/`, `iam/`, `data-schema-registry/`
 - `frontend/check-layout.mjs` updated to the context map
 

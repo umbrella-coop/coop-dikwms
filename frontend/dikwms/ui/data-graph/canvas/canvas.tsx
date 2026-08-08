@@ -1,8 +1,8 @@
 import { useEffect, useRef, useState } from 'react';
 import { Canvas as G6Canvas } from '@antv/g6';
 import { Spin, Tag } from 'antd';
-import { LayoutSelect } from '@coop-codes/diwkms.ui.data-graph.layout-select';
-import type { Entity, EventStreamState } from '@coop-codes/diwkms.hook.use-data-graph-sse';
+import { LayoutSelect } from '@coop-codes/dikwms.ui.data-graph.layout-select';
+import type { Entity, EventStreamState } from '@coop-codes/dikwms.hook.use-data-graph-sse';
 import styles from './canvas.module.css';
 
 export type CanvasLayout = { type: string; [key: string]: unknown };

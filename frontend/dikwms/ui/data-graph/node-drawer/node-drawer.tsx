@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { Button, Drawer, Form, Input } from 'antd';
-import type { Entity } from '@coop-codes/diwkms.hook.use-data-graph-sse';
-import { reportError } from '@coop-codes/diwkms.hook.use-data-graph-sse';
+import type { Entity } from '@coop-codes/dikwms.hook.use-data-graph-sse';
+import { reportError } from '@coop-codes/dikwms.hook.use-data-graph-sse';
 
 export type NodeDrawerProps = {
   entity: Entity | undefined;

@@ -1,7 +1,7 @@
 import { useState } from 'react';
-import { useEventStream } from '@coop-codes/diwkms.hook.use-data-graph-sse';
-import { Graph } from '@coop-codes/diwkms.ui.data-graph.canvas';
-import { EntityDrawer } from '@coop-codes/diwkms.ui.data-graph.node-drawer';
+import { useEventStream } from '@coop-codes/dikwms.hook.use-data-graph-sse';
+import { Graph } from '@coop-codes/dikwms.ui.data-graph.canvas';
+import { EntityDrawer } from '@coop-codes/dikwms.ui.data-graph.node-drawer';
 import styles from './app.module.css';
 
 const API_BASE = import.meta.env.VITE_API_BASE ?? 'http://localhost:8080';
