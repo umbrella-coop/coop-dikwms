@@ -43,14 +43,14 @@ The repository SHALL provide CONTRIBUTING.md covering: system dependencies per O
 - **WHEN** a Windows contributor reads the platform section
 - **THEN** they learn which crates build/test on Windows natively and the WSL path for embedded-server tests
 
-### Requirement: No imposition of tooling
+### Requirement: Per-developer cargo config (gitignored, `.example` committed)
 
-The PR SHALL NOT add `.cargo/config.toml`, `.mise.toml`, or any file that forces a linker, toolchain, or dependency install on contributors.
+The PR SHALL ship **`.cargo/config.toml.example`** (committed baseline: per-OS linker blocks — mold on Linux, lld on macOS/Windows — plus `split-debuginfo`, `debuginfo=1`, `jobs`, `RUST_TEST_*`) and SHALL add `/.cargo/config.toml` to `.gitignore` so each developer copies the example to their own gitignored local file. **No active `.cargo/config.toml` is committed** — without the copy, the workspace builds with defaults (non-imposing).
 
-#### Scenario: PR diff contains no imposed config
-- **GIVEN** the PR branch
-- **WHEN** `git diff upstream/main...branch --stat` is inspected
-- **THEN** no `.cargo/config.toml` or `.mise.toml` appears and no file sets `rustflags` or `rustc-wrapper`
+#### Scenario: Local config is per-developer
+- **GIVEN** the repo with `.cargo/config.toml.example` and the gitignore entry
+- **WHEN** a developer runs `cp .cargo/config.toml.example .cargo/config.toml`
+- **THEN** their local build uses the optimizations, the file stays untracked, and other developers' builds are unaffected
 
 ### Requirement: Test-run guidance
 
@@ -65,7 +65,7 @@ CONTRIBUTING.md SHALL document the test pattern: integration tests spawn real pe
 
 - AC-1: Given the workspace, when `cargo build -p terminusdb-client` runs on nightly without extra flags, then it succeeds with the fast dev-profile defaults.
 - AC-2: Given the PR diff, when inspected, then it contains no `-Z` flags or linker overrides (nightly remains required workspace-wide — `terminusdb-schema` uses `#![feature(specialization)]`; verified 2026-08-10 that stable fails there, pre-existing, not caused by this PR).
-- AC-3: Given the PR branch, when its diff vs upstream `main` is inspected, then no `.cargo/config.toml`, `.mise.toml`, or forced-config file appears.
+- AC-3: Given the PR branch, when its diff vs upstream `main` is inspected, then only `.cargo/config.toml.example` appears (no active `.cargo/config.toml`, no `.mise.toml`), and `/.cargo/config.toml` is gitignored.
 - AC-4: Given CONTRIBUTING.md, when read, then it has Linux/macOS/Windows dependency sections and an optional speed-ups section (sccache, lld/mold, share-generics, test threads).
 - AC-5: Given CONTRIBUTING.md, when the testing section is read, then the embedded-server pattern and `RUST_TEST_THREADS=1` escape hatch are documented.
 - AC-6: Given the PR, when CI runs, then existing tests remain green (profiles are compile-time-only).
@@ -87,7 +87,7 @@ CONTRIBUTING.md SHALL document the test pattern: integration tests spawn real pe
 2. `CONTRIBUTING.md` (new) — sections: prerequisites per OS, first build, daily loop (check → test crate → targeted test), optional speed-ups (env-var based), testing patterns, troubleshooting.
 
 ### Excluded content (explicit non-goals)
-- `.cargo/config.toml` contents from `13cb418` (lld, `-Z share-generics`, `RUST_TEST_THREADS=1`, sccache wrapper) → CONTRIBUTING.md guidance only
+- Active `.cargo/config.toml` — never committed; the gitignored local copy comes from `.cargo/config.toml.example`
 - `.mise.toml` → mentioned as optional tooling
 - `580b840` rustfmt sweep — unrelated
 - CI/workflow changes — separate axis (SPEC-024)
