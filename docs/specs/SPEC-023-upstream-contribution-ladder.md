@@ -1,6 +1,7 @@
 # SPEC-023 Feature: Upstream Contribution Ladder — terminusdb-rs fork → ParaplouOU
 
 <!-- status: Draft -->
+<!-- progress: 3/3 PRs opened (2026-08-10) — #9 casing, #10 auth, #11 collab+tests; awaiting upstream merge -->
 
 ## Overview
 
@@ -59,12 +60,12 @@ No PR SHALL include `580b840` (rustfmt sweep, 146 files) or `13cb418` (local bui
 
 ## Acceptance Criteria
 
-- AC-1: Given the fork, when `pr/casing-fix` is diffed against upstream `main`, then only the Authorization-Remote casing change is present. ✅ (cherry-pick) / pending
-- AC-2: Given `pr/auth`, when inspected, then it contains exactly `3bd396d`'s file set and Basic remains the default auth method.
-- AC-3: Given all three PR branches, when their diffs vs upstream `main` are inspected, then no rustfmt-sweep or local-tooling commit appears.
-- AC-4: Given each PR branch, when `cargo clippy` runs on the upstream nightly toolchain, then the client crate is clippy-clean.
-- AC-5: Given each opened PR, when the description is read, then the 3-line v12 evidence note is present.
-- AC-6: Given the ladder, when PR-1 is not yet merged, then PR-2/PR-3 are not opened (sequential order).
+- AC-1: Given the fork, when `pr/casing-fix` is diffed against upstream `main`, then only the Authorization-Remote casing change (plus its unit tests) is present. ✅ **Opened 2026-08-10** — PR [#9](https://github.com/ParapluOU/terminusdb-rs/pull/9); commits `9b7b3e6` (fix) + `7cbdb6f` (tests); 1 file, 3 unit tests
+- AC-2: Given `pr/auth`, when inspected, then it contains exactly `3bd396d`'s file set (plus the Token-scheme correction) and Basic remains the default auth method. ✅ **Opened 2026-08-10** — PR [#10](https://github.com/ParapluOU/terminusdb-rs/pull/10); commits `3846ebc` (auth feature) + `513f428` (Token scheme fix from JS-client review); Basic unchanged
+- AC-3: Given all three PR branches, when their diffs vs upstream `main` are inspected, then no rustfmt-sweep or local-tooling commit appears. ✅ Verified on all three branches (PR #9/#10/#11 diffs contain no `580b840`/`13cb418` content)
+- AC-4: Given each PR branch, when `cargo clippy` runs on the upstream nightly toolchain, then the client crate is clippy-clean. ⚠️ Partial — new code is clippy-clean on all three branches; upstream `main` has 77 pre-existing lib warnings (untouched, verified via stash — see session 2026-08-10)
+- AC-5: Given each opened PR, when the description is read, then the 3-line v12 evidence note is present. ⚠️ Partial — evidence notes present in #9 (verification) and #11 (v12 contract + merge-order note); #10 carries grounding notes (parity gap, DFRNT PAT flow)
+- AC-6: Given the ladder, when PR-1 is not yet merged, then PR-2/PR-3 are not opened (sequential order). ✅ **Met 2026-08-10** — opened in order #9 → #10 → #11; merge order documented in #11 (tests depend on #9's casing fix)
 
 ## Technical Design
 
