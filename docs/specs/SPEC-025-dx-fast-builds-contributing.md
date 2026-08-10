@@ -64,7 +64,7 @@ CONTRIBUTING.md SHALL document the test pattern: integration tests spawn real pe
 ## Acceptance Criteria
 
 - AC-1: Given the workspace, when `cargo build -p terminusdb-client` runs on nightly without extra flags, then it succeeds with the fast dev-profile defaults.
-- AC-2: Given the workspace, when a stable toolchain builds the client crate, then it succeeds (no `-Z`/linker references in the diff).
+- AC-2: Given the PR diff, when inspected, then it contains no `-Z` flags or linker overrides (nightly remains required workspace-wide — `terminusdb-schema` uses `#![feature(specialization)]`; verified 2026-08-10 that stable fails there, pre-existing, not caused by this PR).
 - AC-3: Given the PR branch, when its diff vs upstream `main` is inspected, then no `.cargo/config.toml`, `.mise.toml`, or forced-config file appears.
 - AC-4: Given CONTRIBUTING.md, when read, then it has Linux/macOS/Windows dependency sections and an optional speed-ups section (sccache, lld/mold, share-generics, test threads).
 - AC-5: Given CONTRIBUTING.md, when the testing section is read, then the embedded-server pattern and `RUST_TEST_THREADS=1` escape hatch are documented.
