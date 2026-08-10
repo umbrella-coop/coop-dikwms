@@ -1,3 +1,5 @@
 [submodule "third_party/terminusdb-rs"]
 	path = third_party/terminusdb-rs
 	url = https://github.com/gustavorps/terminusdb-rs
+	# Pin: fork tag v0.1.0-cgn-1 (2026-08-10). Drift = commits past this tag.
+	branch = v0.1.0-cgn-1
