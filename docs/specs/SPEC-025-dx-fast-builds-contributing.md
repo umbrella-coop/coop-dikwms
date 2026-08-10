@@ -7,6 +7,7 @@
 
 - **MODIFIED Requirement "Fast dev-profile defaults"**: profiles move from the workspace `Cargo.toml` into **`.cargo/config.toml.example`** — `Cargo.toml` stays byte-identical to upstream. Rationale (user constraint, 2026-08-10): `debug = 1` strips local-variable info and `[profile.dev.package."*"] opt-level = 2` changes test-build/runtime behavior for every contributor (incl. CI) — both are per-developer preferences, so they are opt-in, like the linker blocks.
 - **MODIFIED AC-1/AC-3/AC-6, Technical Design, Test Plan, R-30 mitigation**: see inline deltas. PR-12 branch history re-grouped to 3 commits (example+gitignore / CONTRIBUTING / bench script).
+- **ADDED Requirement "Hyperfine sweet-spot benchmark"** (user requirement 2026-08-10): `scripts/bench-dx.sh` renamed to `scripts/dx-benchmark-no-dep.sh`; new `scripts/dx-benchmark-hyperfine.sh` suggests `.cargo/config.toml` sweet-spot values from detected hardware (RAM/cores/OS) and validates with hyperfine; missing linking deps (mold/lld) emit WARNINGs only, never block. See the requirement + delta sections below.
 
 ## Overview
 
@@ -71,6 +72,20 @@ CONTRIBUTING.md SHALL document the test pattern: integration tests spawn real pe
 - **WHEN** the testing section is read
 - **THEN** it explains the embedded-server pattern and the single-threaded escape hatch
 
+### Requirement: Hyperfine sweet-spot benchmark *(ADDED 2026-08-10)*
+
+The PR SHALL ship **`scripts/dx-benchmark-hyperfine.sh`** (hyperfine-based; `scripts/bench-dx.sh` renamed to `scripts/dx-benchmark-no-dep.sh`, behavior unchanged) that: (a) detects logical/physical cores and RAM per OS (macOS `sysctl`, Linux `nproc`/`lscpu`/`/proc/meminfo`, Windows best-effort) and suggests `.cargo/config.toml` starting values — `CARGO_BUILD_JOBS = min(logical cores, floor(RAM_GB / 2.5))` (rustc is RAM-bound: 1.5–4 GB per parallel compiler during LLVM codegen) and `RUST_TEST_THREADS` guidance (physical cores for CPU-bound unit tests; 1.5–2× logical for I/O-bound integration tests; `1` for shared-resource tests); (b) validates the candidates with hyperfine (jobs scaling — incremental by default, clean builds with `--full`; test-thread scaling — unit by default, integration with `--full`); (c) **if the linking dependencies (mold/lld) are not installed, emits a WARNING but does NOT block the benchmark**; (d) `--no-bench` prints the suggestion without hyperfine.
+
+#### Scenario: Missing linker warns but doesn't block
+- **GIVEN** a machine without mold (Linux) / lld (macOS) / lld-link (Windows) installed
+- **WHEN** `scripts/dx-benchmark-hyperfine.sh` runs
+- **THEN** a WARNING names the missing tool and the benchmark proceeds on the system linker
+
+#### Scenario: Suggestion reflects hardware
+- **GIVEN** 8 logical cores and 16 GB RAM
+- **WHEN** the script runs (or `--no-bench`)
+- **THEN** the suggested `CARGO_BUILD_JOBS` is `min(8, floor(16/2.5)) = 6` and the thread guidance shows physical-core / 1.5–2× / 1 options
+
 ## Acceptance Criteria
 
 - AC-1: Given a developer who copied `.cargo/config.toml.example` to a local gitignored `.cargo/config.toml`, when `cargo build -p terminusdb-client` runs on nightly without extra flags, then it succeeds with the fast dev profile. *(MODIFIED: profiles are in the example, not `Cargo.toml`; without the copy, stock rustc defaults apply.)*
@@ -79,6 +94,7 @@ CONTRIBUTING.md SHALL document the test pattern: integration tests spawn real pe
 - AC-4: Given CONTRIBUTING.md, when read, then it has Linux/macOS/Windows dependency sections and an optional speed-ups section (sccache, lld/mold, share-generics, test threads).
 - AC-5: Given CONTRIBUTING.md, when the testing section is read, then the embedded-server pattern and `RUST_TEST_THREADS=1` escape hatch are documented.
 - AC-6: Given the PR, when CI runs, then existing tests remain green (profiles are opt-in; CI does not copy the example). *(MODIFIED: previously "profiles are compile-time-only".)*
+- AC-7: Given the PR, when `scripts/dx-benchmark-hyperfine.sh --no-bench` runs on a machine without mold/lld, then a WARNING names the missing linker and the suggestion still prints (no block). *(ADDED 2026-08-10.)*
 
 ## Technical Design
 
@@ -96,7 +112,8 @@ CONTRIBUTING.md SHALL document the test pattern: integration tests spawn real pe
    ```
 2. `.gitignore` — add `/.cargo/config.toml`; remove the tracked `.cargo/config.toml` (`RUST_TEST_THREADS = "1"`) from the tree — the single-thread escape hatch stays documented in CONTRIBUTING (`RUST_TEST_THREADS=1`, per-invocation).
 3. `CONTRIBUTING.md` (new) — sections: prerequisites per OS, first build, daily loop (check → test crate → targeted test), optional speed-ups (env-var based), per-developer cargo config workflow, testing patterns, troubleshooting, benchmarking.
-4. `scripts/bench-dx.sh` (new, executable) — rustc-native benchmark (full/incr-unchanged/incr-patched × wall/timings/self-profile).
+4. `scripts/dx-benchmark-no-dep.sh` (new, executable — renamed from `bench-dx.sh`) — rustc-native benchmark (full/incr-unchanged/incr-patched × wall/timings/self-profile). *(MODIFIED 2026-08-10: renamed; hyperfine script added as step 5.)*
+5. `scripts/dx-benchmark-hyperfine.sh` (new, executable) — hardware-guided sweet spot + hyperfine validation; linker-missing → WARNING only. *(ADDED 2026-08-10.)*
 
 `Cargo.toml` is **untouched** (byte-identical to upstream). *(MODIFIED 2026-08-10: previously step 1 appended the profiles to `Cargo.toml`.)*
 
@@ -115,9 +132,10 @@ CONTRIBUTING.md SHALL document the test pattern: integration tests spawn real pe
 - [ ] `cargo build -p terminusdb-client` (nightly, no flags, after copying the example) — succeeds with the fast dev profile (AC-1)
 - [ ] Fresh-clone build without the example copy — stock rustc defaults, succeeds (AC-1 delta)
 - [ ] Stable-toolchain build of the client crate (AC-2) — verify no `-Z` leakage
-- [ ] Diff inspection vs upstream `main` — only `.cargo/config.toml.example`, `.gitignore`, `CONTRIBUTING.md`, `scripts/bench-dx.sh`; `Cargo.toml` byte-identical (AC-3)
+- [ ] Diff inspection vs upstream `main` — only `.cargo/config.toml.example`, `.gitignore`, `CONTRIBUTING.md`, `scripts/dx-benchmark-no-dep.sh`, `scripts/dx-benchmark-hyperfine.sh`; `Cargo.toml` byte-identical (AC-3)
 - [ ] CONTRIBUTING.md content review against AC-4/AC-5 checklist
 - [ ] `cargo test -p terminusdb-client --lib` — existing tests green (AC-6)
+- [ ] `scripts/dx-benchmark-hyperfine.sh --no-bench` on a linker-less PATH — WARNING + suggestion, no block (AC-7)
 
 ## Open Risks
 
