@@ -318,3 +318,31 @@ Planned specs not yet created. Add requirements captured during development here
 **Verdict (roadmap fit):** reuse — thin surface (config + scripts + docs), no product behavior. Fold into frontend AGENTS.md.
 
 **Dependencies:** SPEC-020 (workspace layout), SPEC-018 (frontend conventions)
+
+## SPEC-023 (planned): Upstream Contribution Ladder — terminusdb-rs fork → ParaplouOU
+
+**Requirement (captured 2026-08-10, source: user request + brainstorm):** contribute the fork's verified v12/auth work back to upstream `ParaplouOU/terminusdb-rs` as small PRs, each branched from upstream `main`.
+
+**Brainstorm complete (2026-08-10) — decisions locked (rebuttal-accepted):**
+- **Trust ladder, three sequential PRs, never combined:**
+  - PR-1 = `Authorization-Remote` header-casing fix (one-liner, extracted from `3f04b24`)
+  - PR-2 = bearer/api-key auth (`3bd396d`) — the documented JS-client parity gap (SPEC-008)
+  - PR-3 = remaining v12 collaboration fixes + pruned v12-verification tests (`3f04b24` remainder + subset of `11d525b`)
+- **Excluded from any PR:** `580b840` (rustfmt sweep, 146 files), `13cb418` (local build tooling), fork-specific Rebase/Apply merge semantics
+- **Packaging discipline:** 10-min upstream duplicate check → branch from upstream `main` → cherry-pick → verify on upstream nightly + clippy → open PR with a 3-line v12 evidence note (changeset-sse 404, header casing, v12 push/pull paths)
+- No issue-first waiting — dup-check only
+
+**Dependencies:** SPEC-008 (archived — 7/7 AC verification evidence vs real v12.1), fork `dev` branch work (auth/collab/tests), RISK-004 (fork pin — upstream landing relaxes it)
+
+## SPEC-024 (planned): Multi-Version TerminusDB CI Matrix (docker + act)
+
+**Requirement (captured 2026-08-10, source: user request):** add a docker-based integration-test matrix to the fork's GitHub workflows covering `terminusdb/terminusdb-server` v12.x (latest tag = priority) and v11.x; runnable locally via `act` (act 0.2.89 installed); failures on non-latest versions are **report-only** — never fixed in code; generate a report artifact to open an issue manually.
+
+**Design elements to resolve in the spec:**
+- Matrix axes: `latest` (blocking, priority) + v12.x pin + v11.x pins (report-only, non-blocking)
+- act compatibility: container-based services; document `act -j <matrix-job>` local invocation
+- Report: markdown report artifact + job summary; NO auto-issue (manual `gh issue create`)
+- Runs **alongside** the existing embedded-server job (`tests.yml`, v12.1-rc-paraplu.1) — not replacing
+- Client is v12-only (v11 dropped during v12 upgrade) → v11 failures expected; that is the point of report-only
+
+**Dependencies:** fork `.github/workflows/tests.yml`, SPEC-023 (evidence + issue material), act local tooling
