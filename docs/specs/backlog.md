@@ -346,3 +346,16 @@ Planned specs not yet created. Add requirements captured during development here
 - Client is v12-only (v11 dropped during v12 upgrade) → v11 failures expected; that is the point of report-only
 
 **Dependencies:** fork `.github/workflows/tests.yml`, SPEC-023 (evidence + issue material), act local tooling
+
+## SPEC-025 (planned): Developer Experience — fast builds/tests + CONTRIBUTING.md
+
+**Requirement (captured 2026-08-10, source: user request):** improve DX for contributors by speeding up local build and test across environments (Linux, macOS, Windows). **Constraint (user):** must NOT impose `.cargo/config.toml` or dependency installs on new contributors — provide **guidelines (CONTRIBUTING.md)** instead for a convenient/fast dev environment.
+
+**Raw material (fork commit `13cb418` — excluded from PR-1..3 as dev-tooling, now the PR-4 basis):**
+- Cargo.toml dev-profile tweaks: `codegen-units = 256`, `opt-level = 0`, `debug = 1`, `[profile.dev.package."*"] opt-level = 2` — compile-time-only, safe to ship (no linker/toolchain imposition)
+- `.cargo/config.toml` contents (lld, `-Z share-generics`, `RUST_TEST_THREADS=1`, sccache wrapper) — **excluded from the PR** (imposes linker/nightly on contributors); move into CONTRIBUTING.md as optional guidance (env vars: `RUSTFLAGS`, `CARGO_PROFILE_DEV_*`)
+- `.mise.toml` — excluded; document as optional tooling
+
+**Upstream facts:** no CONTRIBUTING.md exists; workspace has only `[profile.release]` (lto, codegen-units=1 — slow release builds); per-OS deps (clang/libclang/protoc/libgmp/openssl; SWI-Prolog for embedded server — Windows-first-contribution guidance needed: client/schema crates work, embedded-server tests are Linux/macOS-first or WSL).
+
+**Dependencies:** SPEC-023 (ladder), SPEC-024 (CI matrix — CI speed is a separate axis), fork `13cb418`
