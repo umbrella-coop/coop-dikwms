@@ -3,6 +3,7 @@
 #![recursion_limit = "512"]
 
 pub mod git;
+pub mod insights;
 pub mod pipeline;
 pub mod retry;
 pub mod state;

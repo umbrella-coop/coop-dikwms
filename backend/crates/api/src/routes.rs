@@ -140,7 +140,11 @@ pub async fn bulk_entities(
     let existing = state.repo.property_index(&body.dedupe_key).await?;
 
     for entity in body.entities {
-        warnings.extend(git_v1_warnings(&state, &entity.set).await);
+        // Internal insight entities (git-insight-*) carry non-git properties —
+        // excluded from the git.v1 lint to keep organic warnings honest.
+        if !entity.idempotency_key.starts_with("git-insight-") {
+            warnings.extend(git_v1_warnings(&state, &entity.set).await);
+        }
         if let Some(existing_ids) = existing.get(&entity.idempotency_key) {
             results.push(bulk_result(
                 &entity,

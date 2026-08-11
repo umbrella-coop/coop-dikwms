@@ -18,6 +18,7 @@ use serde::{Deserialize, Serialize};
 use uuid::Uuid;
 
 use crate::git::GitCommit;
+use crate::insights;
 use crate::retry::{Backoff, CircuitBreaker};
 use crate::state::ImportState;
 
@@ -213,6 +214,40 @@ impl Importer {
         }
         self.state.save(&self.state_path)?;
         Ok(report)
+    }
+
+    /// Wisdom post-pass (REQ-010): compute dir-level insights and persist them
+    /// as a property set on a per-repo insight entity (idempotency key
+    /// `git-insight-<repo>-<since>`). `window_end` is the external staleness
+    /// anchor (import time). Returns the number of dirs analyzed.
+    pub async fn run_insights(
+        &self,
+        commits: &[GitCommit],
+        window_end: chrono::DateTime<chrono::FixedOffset>,
+    ) -> anyhow::Result<usize> {
+        let dir_insights = insights::compute_dir_insights(commits, window_end);
+        if dir_insights.is_empty() {
+            return Ok(0);
+        }
+        let key = format!("git-insight-{}-{}", self.state.repo, self.state.since);
+        let entity = BulkEntity {
+            kind: EntityKind::Node,
+            idempotency_key: key.clone(),
+            set: PropertySet::current(
+                Scope::Common,
+                1,
+                HashMap::from([
+                    ("hash".to_string(), serde_json::json!(key)),
+                    (
+                        "insights".to_string(),
+                        insights::insights_properties(&dir_insights),
+                    ),
+                ]),
+            ),
+        };
+        let batch = vec![entity];
+        self.client.bulk_entities("hash", &batch).await?;
+        Ok(dir_insights.len())
     }
 
     async fn apply_batch(

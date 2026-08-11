@@ -114,6 +114,9 @@ async fn main() -> anyhow::Result<()> {
 
     let report = importer.run(&commits).await?;
     report_summary(&report);
+    let window_end = chrono::Utc::now().fixed_offset();
+    let insight_dirs = importer.run_insights(&commits, window_end).await?;
+    println!("insights: {insight_dirs} dirs analyzed (wisdom post-pass)");
     if config.verify {
         println!("verify: runbook assertion step (examples/git-codebase-1/03-verify.sh)");
     }

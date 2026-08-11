@@ -19,6 +19,14 @@ use terminusdb_repository::Repository;
 use url::Url;
 use uuid::Uuid;
 
+/// Shared compose server — serialize the async tests (AGENTS.md transaction
+/// contention pattern, mirrors api/tests/spec_013_api.rs).
+static SERVER_LOCK: tokio::sync::Mutex<()> = tokio::sync::Mutex::const_new(());
+
+async fn guard() -> tokio::sync::MutexGuard<'static, ()> {
+    SERVER_LOCK.lock().await
+}
+
 /// Connect to the docker TerminusDB and boot the real API in-process on an
 /// ephemeral port. Returns (api base url, repository handle for assertions).
 async fn start_platform() -> anyhow::Result<(String, Repository)> {
@@ -130,6 +138,7 @@ fn tmp(name: &str) -> std::path::PathBuf {
 // ------------------------------------------------------------------
 #[tokio::test]
 async fn import_matches_window_and_populates_property_sets() -> anyhow::Result<()> {
+    let _g = guard().await;
     let dir = tmp("ac1");
     let _ = std::fs::remove_dir_all(&dir);
     std::fs::create_dir_all(&dir).unwrap();
@@ -180,6 +189,7 @@ async fn import_matches_window_and_populates_property_sets() -> anyhow::Result<(
 // ------------------------------------------------------------------
 #[tokio::test]
 async fn rerun_is_idempotent() -> anyhow::Result<()> {
+    let _g = guard().await;
     let dir = tmp("ac2");
     let _ = std::fs::remove_dir_all(&dir);
     std::fs::create_dir_all(&dir).unwrap();
@@ -222,6 +232,7 @@ async fn rerun_is_idempotent() -> anyhow::Result<()> {
 // ------------------------------------------------------------------
 #[tokio::test]
 async fn crash_before_checkpoint_resumes_without_duplicates() -> anyhow::Result<()> {
+    let _g = guard().await;
     let dir = tmp("ac3");
     let _ = std::fs::remove_dir_all(&dir);
     std::fs::create_dir_all(&dir).unwrap();
@@ -296,6 +307,71 @@ async fn bulk_endpoint_warns_on_git_v1_violations() -> anyhow::Result<()> {
         "entity persisted despite warnings"
     );
 
+    drop_db(&repo).await;
+    Ok(())
+}
+
+fn json_eq(a: &serde_json::Value, b: &serde_json::Value) -> bool {
+    match (a, b) {
+        (serde_json::Value::Number(x), serde_json::Value::Number(y)) => x.as_f64() == y.as_f64(),
+        (serde_json::Value::Object(x), serde_json::Value::Object(y)) => {
+            x.len() == y.len()
+                && x.iter()
+                    .all(|(k, v)| y.get(k).is_some_and(|w| json_eq(v, w)))
+        }
+        (serde_json::Value::Array(x), serde_json::Value::Array(y)) => {
+            x.len() == y.len() && x.iter().zip(y).all(|(v, w)| json_eq(v, w))
+        }
+        _ => a == b,
+    }
+}
+
+// ------------------------------------------------------------------
+// AC-10: insight post-pass stored; independently recomputed values match.
+// ------------------------------------------------------------------
+#[tokio::test]
+async fn insight_post_pass_matches_recomputation() -> anyhow::Result<()> {
+    let _g = guard().await;
+    let dir = tmp("ac10");
+    let _ = std::fs::remove_dir_all(&dir);
+    std::fs::create_dir_all(&dir).unwrap();
+    fixture(&dir)?;
+
+    let (api_base, repo) = start_platform().await?;
+
+    let since = cutoff_days_ago(250);
+    let commits = walk(&dir, since)?;
+    let state_path = tmp("ac10-state.json");
+    let _ = std::fs::remove_file(&state_path);
+
+    let state = ImportState::new("fixture", "main", "2025-08-11");
+    let mut importer = git_importer::pipeline::Importer::new(
+        git_importer::pipeline::PlatformClient::new(&api_base)?,
+        state,
+        state_path.clone(),
+    );
+    let report = importer.run(&commits).await?;
+    assert_eq!(report.imported, 5);
+    let window_end = chrono::DateTime::parse_from_rfc3339("2026-02-01T00:00:00+00:00").unwrap();
+    let insight_dirs = importer.run_insights(&commits, window_end).await?;
+    assert!(insight_dirs >= 2, "c2/c3/c4/c5/c2b touch distinct top dirs");
+
+    let key = format!("git-insight-fixture-{}", "2025-08-11");
+    let ids = repo.property_index("hash").await?;
+    let insight_ids = ids.get(&key).expect("insight entity persisted");
+    let ps = repo.load_property_sets(insight_ids[0]).await?;
+    let stored = ps[0].properties["insights"].clone();
+
+    let expected = git_importer::insights::insights_properties(
+        &git_importer::insights::compute_dir_insights(&commits, window_end),
+    );
+    assert!(
+        json_eq(&stored, &expected),
+        "stored insights == recomputed insights"
+    );
+
+    let _ = std::fs::remove_dir_all(&dir);
+    let _ = std::fs::remove_file(&state_path);
     drop_db(&repo).await;
     Ok(())
 }
