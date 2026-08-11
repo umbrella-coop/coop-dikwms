@@ -1,6 +1,6 @@
 [workspace]
 resolver = "2"
-members = ["crates/data-graph", "crates/terminusdb-repository", "crates/schema-registry", "crates/stream-api", "crates/api"]
+members = ["crates/data-graph", "crates/terminusdb-repository", "crates/schema-registry", "crates/stream-api", "crates/api", "crates/git-importer"]
 
 [workspace.package]
 edition = "2024"
