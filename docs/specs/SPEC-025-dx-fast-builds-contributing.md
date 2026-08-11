@@ -19,6 +19,7 @@
 ## Delta Record (2026-08-10)
 
 - **MODIFIED AC-2 (review-phase catch, 2026-08-10)**: AC-2 claimed the PR diff contains "no linker overrides" — false since the `.example` ships per-OS linker blocks by design. Reworded: no `-Z` flags and no *active* config in the PR; the linker overrides are opt-in via the example copy (without the copy, rustc defaults apply). See AC-2 below.
+- **ADDED Requirement "CI config generation (ci-gen)"** (user requirement 2026-08-10): new `scripts/ci-gen-cargo-config.sh` — a **generic, auto-discovering** generator (no runner/vendor knowledge; container-aware via cgroup v2/v1) used by `tests.yml` to generate the gitignored `.cargo/config.toml` (optional `[build]`/`[env]`/`[target]` sections) from the machine's cores/RAM/OS/linkers. This narrows the SPEC-024 axis split: the single minimal tests.yml step is in scope here; the multi-version matrix remains SPEC-024. See the requirement + AC-8 below.
 
 ## Delta Record (2026-08-10)
 
@@ -91,6 +92,25 @@ CONTRIBUTING.md SHALL document the test pattern: integration tests spawn real pe
 - **WHEN** the testing section is read
 - **THEN** it explains the embedded-server pattern and the single-threaded escape hatch
 
+### Requirement: CI config generation (ci-gen) *(ADDED 2026-08-10)*
+
+The PR SHALL ship **`scripts/ci-gen-cargo-config.sh`** — a **generic generator** that auto-discovers the machine's configuration at runtime (logical cores, RAM, OS, installed linkers) with **no knowledge of the runner or CI vendor** (GitHub-hosted, act containers, self-hosted), and SHALL be invoked by `tests.yml` before the first cargo command to write the gitignored `.cargo/config.toml`. Generated sections are optional and emitted only when discoverable/requested: `[build] jobs = min(cores, RAM_GB / 2.5)` (RAM-bound rustc), `[env] RUST_TEST_THREADS = cores` (override per invocation; `1` for shared-resource tests), per-OS `[target]` linker/rustflags **only if the linker is present** (mold/lld on Linux, lld on macOS, lld-link on Windows). On Linux the script SHALL be container-aware: cgroup v2 (`cpu.max`, `memory.max`) / v1 limits take precedence over host-reported `/proc` values (containers report host hardware otherwise). Flags: `--build|--env|--target` section selection (default all), `--jobs=`/`--threads=`/`--cores=`/`--ram=`/`--os=` overrides, `--out=`, `--dry-run`, `--force` (refuses to overwrite an existing config otherwise).
+
+#### Scenario: Any runner, no configuration
+- **GIVEN** a CI machine (or act container) with unknown topology
+- **WHEN** `scripts/ci-gen-cargo-config.sh` runs
+- **THEN** cores/RAM/OS/linkers are discovered at runtime and the generated `.cargo/config.toml` matches that machine — no runner name, image, or vendor assumption anywhere
+
+#### Scenario: Containerized runner respects limits
+- **GIVEN** a containerized runner (act/docker) whose cgroup allows fewer cores/RAM than the host
+- **WHEN** the script runs on Linux
+- **THEN** the cgroup limits (not `/proc/meminfo`/`nproc`) drive the generated sections
+
+#### Scenario: Missing linker → no target section
+- **GIVEN** a machine without mold/lld
+- **WHEN** the script runs
+- **THEN** no `[target]` section is emitted and the run succeeds (build/env still generated)
+
 ### Requirement: Hyperfine sweet-spot benchmark *(ADDED 2026-08-10)*
 
 The PR SHALL ship **`scripts/dx-benchmark-hyperfine.sh`** (hyperfine-based; `scripts/bench-dx.sh` renamed to `scripts/dx-benchmark-no-dep.sh`, behavior unchanged) that: (a) detects logical/physical cores and RAM per OS (macOS `sysctl`, Linux `nproc`/`lscpu`/`/proc/meminfo`, Windows best-effort) and suggests `.cargo/config.toml` starting values — `CARGO_BUILD_JOBS = min(logical cores, floor(RAM_GB / 2.5))` (rustc is RAM-bound: 1.5–4 GB per parallel compiler during LLVM codegen) and `RUST_TEST_THREADS` guidance (physical cores for CPU-bound unit tests; 1.5–2× logical for I/O-bound integration tests; `1` for shared-resource tests); (b) validates the candidates with hyperfine (jobs scaling — incremental by default, clean builds with `--full`; test-thread scaling — unit by default, integration with `--full`); (c) **if the linking dependencies (mold/lld) are not installed, emits a WARNING but does NOT block the benchmark**; (d) `--no-bench` prints the suggestion without hyperfine.
@@ -114,6 +134,7 @@ The PR SHALL ship **`scripts/dx-benchmark-hyperfine.sh`** (hyperfine-based; `scr
 - AC-5: Given CONTRIBUTING.md, when the testing section is read, then the embedded-server pattern and `RUST_TEST_THREADS=1` escape hatch are documented.
 - AC-6: Given the PR, when CI runs, then existing tests remain green (profiles are opt-in; CI does not copy the example). *(MODIFIED: previously "profiles are compile-time-only".)*
 - AC-7: Given the PR, when `scripts/dx-benchmark-hyperfine.sh --no-bench` runs on a machine without mold/lld, then a WARNING names the missing linker and the suggestion still prints (no block). *(ADDED 2026-08-10.)*
+- AC-8: Given any machine, when `scripts/ci-gen-cargo-config.sh` runs, then it auto-discovers cores/RAM/OS/linkers (no runner/vendor knowledge), emits only discoverable sections, and `tests.yml` invokes it before the first cargo command. *(ADDED 2026-08-10.)*
 
 ## Technical Design
 
@@ -133,15 +154,17 @@ The PR SHALL ship **`scripts/dx-benchmark-hyperfine.sh`** (hyperfine-based; `scr
 3. `CONTRIBUTING.md` (new) — sections: prerequisites per OS, first build, daily loop (check → test crate → targeted test), optional speed-ups (env-var based), per-developer cargo config workflow, testing patterns, troubleshooting, benchmarking.
 4. `scripts/dx-benchmark-no-dep.sh` (new, executable — renamed from `bench-dx.sh`) — rustc-native benchmark (full/incr-unchanged/incr-patched × wall/timings/self-profile). *(MODIFIED 2026-08-10: renamed; hyperfine script added as step 5.)*
 5. `scripts/dx-benchmark-hyperfine.sh` (new, executable) — hardware-guided sweet spot + hyperfine validation; linker-missing → WARNING only. *(ADDED 2026-08-10.)*
+6. `scripts/ci-gen-cargo-config.sh` (new, executable) — generic auto-discovering config generator for CI (build/env/target sections; container-aware). *(ADDED 2026-08-10.)*
+7. `.github/workflows/tests.yml` — one step invoking the generator before the first cargo command. *(ADDED 2026-08-10; the broader CI matrix stays SPEC-024.)*
 
 `Cargo.toml` is **untouched** (byte-identical to upstream). *(MODIFIED 2026-08-10: previously step 1 appended the profiles to `Cargo.toml`.)*
 
 ### Excluded content (explicit non-goals)
-- Active `.cargo/config.toml` — never committed; the gitignored local copy comes from `.cargo/config.toml.example` (the upstream-tracked `RUST_TEST_THREADS = "1"` config is removed by this PR)
+- Active `.cargo/config.toml` — never committed; the gitignored local copy comes from `.cargo/config.toml.example`, and CI generates its own via `ci-gen-cargo-config.sh` (the upstream-tracked `RUST_TEST_THREADS = "1"` config is removed by this PR)
 - `[profile.dev]` / `[profile.dev.package."*"]` in `Cargo.toml` — per-developer preferences (debugger UX; test-build behavior for everyone incl. CI), so they live in the example only
 - `.mise.toml` → mentioned as optional tooling
 - `580b840` rustfmt sweep — unrelated
-- CI/workflow changes — separate axis (SPEC-024); NOTE: upstream CI loses the tracked single-thread config — if contention surfaces, add `RUST_TEST_THREADS: "1"` to `tests.yml` under SPEC-024
+- CI/workflow changes beyond the single `ci-gen` step — separate axis (SPEC-024); NOTE: upstream CI loses the tracked single-thread config — the generated config sets threads from discovered cores; if contention surfaces, invoke `ci-gen-cargo-config.sh --threads 1` in `tests.yml` or move to SPEC-024
 
 ### Trade-off note for CONTRIBUTING
 `[profile.dev.package."*"] opt-level = 2` trades slightly longer first dependency build for much faster test runtime (the embedded server runs optimized). Documented so contributors aren't surprised.
@@ -155,6 +178,8 @@ The PR SHALL ship **`scripts/dx-benchmark-hyperfine.sh`** (hyperfine-based; `scr
 - [ ] CONTRIBUTING.md content review against AC-4/AC-5 checklist
 - [ ] `cargo test -p terminusdb-client --lib` — existing tests green (AC-6)
 - [ ] `scripts/dx-benchmark-hyperfine.sh --no-bench` on a linker-less PATH — WARNING + suggestion, no block (AC-7)
+- [ ] `scripts/ci-gen-cargo-config.sh --dry-run` on macOS + Linux-sim (`--os=linux`) — sections reflect discovery; linker-less run emits no `[target]` (AC-8)
+- [ ] tests.yml diff review — ci-gen step before first cargo invocation (AC-8)
 
 ## Open Risks
 
