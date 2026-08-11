@@ -1,7 +1,12 @@
 # SPEC-025 Feature: Developer Experience — Fast Local Builds/Tests + CONTRIBUTING.md
 
-<!-- status: Draft -->
-<!-- progress: raw material = fork dev commit 13cb418 (excluded from PR-1..3 as dev-tooling) -->
+<!-- status: Review -->
+<!-- progress: fork PR-12 = 8 commits, 6 files, opened 2026-08-10; backend adoption committed (5c4d35a/f395461/415410d); awaiting upstream merge -->
+<!-- approved: 2026-08-10 by orchestrator (retrospective — implementation preceded approval; see Delta Record) -->
+
+## Delta Record (2026-08-10)
+
+- **MODIFIED AC-2 (review-phase catch, 2026-08-10)**: AC-2 claimed the PR diff contains "no linker overrides" — false since the `.example` ships per-OS linker blocks by design. Reworded: no `-Z` flags and no *active* config in the PR; the linker overrides are opt-in via the example copy (without the copy, rustc defaults apply). See AC-2 below.
 
 ## Delta Record (2026-08-10)
 
@@ -91,7 +96,7 @@ The PR SHALL ship **`scripts/dx-benchmark-hyperfine.sh`** (hyperfine-based; `scr
 ## Acceptance Criteria
 
 - AC-1: Given a developer who copied `.cargo/config.toml.example` to a local gitignored `.cargo/config.toml`, when `cargo build -p terminusdb-client` runs on nightly without extra flags, then it succeeds with the fast dev profile. *(MODIFIED: profiles are in the example, not `Cargo.toml`; without the copy, stock rustc defaults apply.)*
-- AC-2: Given the PR diff, when inspected, then it contains no `-Z` flags or linker overrides (nightly remains required workspace-wide — `terminusdb-schema` uses `#![feature(specialization)]`; verified 2026-08-10 that stable fails there, pre-existing, not caused by this PR).
+- AC-2: Given the PR diff, when inspected, then it contains no `-Z` flags and no **active** config: linker overrides appear only inside `.cargo/config.toml.example` (opt-in — without the copy, rustc defaults apply and no linker override is active). Nightly remains required workspace-wide — `terminusdb-schema` uses `#![feature(specialization)]`; verified 2026-08-10 that stable fails there, pre-existing, not caused by this PR. *(MODIFIED 2026-08-10: previously claimed no linker overrides at all — contradicted the example.)*
 - AC-3: Given the PR branch, when its diff vs upstream `main` is inspected, then only `.cargo/config.toml.example`, `.gitignore`, `CONTRIBUTING.md`, `scripts/bench-dx.sh` appear, and **`Cargo.toml` is byte-identical to upstream** (no active `.cargo/config.toml`, no `.mise.toml`); `/.cargo/config.toml` is gitignored.
 - AC-4: Given CONTRIBUTING.md, when read, then it has Linux/macOS/Windows dependency sections and an optional speed-ups section (sccache, lld/mold, share-generics, test threads).
 - AC-5: Given CONTRIBUTING.md, when the testing section is read, then the embedded-server pattern and `RUST_TEST_THREADS=1` escape hatch are documented.
