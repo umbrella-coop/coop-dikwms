@@ -377,3 +377,23 @@ Planned specs not yet created. Add requirements captured during development here
 - Fork PRs may be needed for upstream fixes (SPEC-023 ladder pattern); upstream adoption tracked via RISK-004
 
 **Dependencies:** SPEC-008 (archived — v12.1 verification basis), SPEC-023 (archived — upstream ladder, RISK-004), SPEC-025 (archived — DX surface done; this spec is the functional-maturity axis)
+
+## SPEC-027 (planned): Git-Domain Speed Run — end-to-end proof (importer, explorer, insight)
+
+**Requirement (captured 2026-08-11, source: user request + brainstorm):** speed-run a **fully functional backend + frontend** for the git domain — first case: the `terminusdb/terminusdb` repository, **12-month window**. Prove the platform end-to-end (Data → Information → Knowledge → Wisdom): ingest real git history into generic graph primitives, navigate it in the G6 UI, and answer knowledge-risk questions.
+
+**Brainstorm complete (2026-08-11) — Recommended Set (all ✓ passed rebuttal):**
+- **C1'** importer as backend binary (`git-importer`, uses `terminusdb-repository` directly, ~100 commits/batch) + thin bulk-endpoint for HTTP parity
+- **U1'** time-travel explorer: timeline slider + author filters in the existing project console; node-drawer gains property-set history (resolve_at) view
+- **G1'** commit = entity; **hexsha→Uuid map owned by the importer** (EntityDoc ids are Uuids — discovered in durable review; map is REQUIRED state for hash-idempotency); author dedupe by normalized email
+- **A1'** importer publishes through the existing SSE stream (`/events?cursor=`, SPEC-004) — UI live-materializes the graph (debounced)
+- **U2'** search-first onboarding: client-side commit search (message/author/hash), deep-link to node
+- **G3'** `git.v1` namespace in schema-registry (`schemas/proto`); organic lint warnings expected (merge commits, empty messages)
+- **U3'** 3 decision-ready insight cards (Wisdom layer): dir-level ownership concentration, single-approver bottlenecks, stale-knowledge zones; user's 8 Cobase queries → documented future recipes
+- **S1'/S2'/S3'/C2'** durability guardrails: no file nodes (dir-level via touched-path properties), edge-persistence verification + adjacency-property v1, hash-idempotent re-runs, atomic resume cache
+
+**Durability design (durable review, 2026-08-11):** per-batch checkpoints (`examples/git-codebase-1/.import-state.json`, atomic write; DB commit log wins on reconciliation), retries with exp backoff + circuit breaker (≥50% failures/60s → halt), dead-letter for poison commits, rollback runbooks R1 (batch revert via `revert_property_set`) / R2 (full reset) / R3 (`resolve_at` inspection); append-only invariant throughout.
+
+**Delivery constraints (user, 2026-08-11):** coop-dikwms branches `speed-run-1/*` based on `main`; fork branches based on `dev`; small reviewable commits; single `speed-run-1` branch carries the functional version; all reproduction material under `examples/git-codebase-1/**`.
+
+**Dependencies:** SPEC-004 (stream/live materialization), SPEC-006 (persistence, resolve_at, revert), SPEC-009 (git.v1 namespace), SPEC-013 (API/edges gap: no edge CRUD, no bulk route), SPEC-016 (docs), SPEC-020 (frontend layout — views land in existing project/data-graph contexts), SPEC-011 (planned — batch ingestion overlap: this run proves the batch/importer pattern)

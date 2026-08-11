@@ -1,0 +1,130 @@
+# Feature: SPEC-027-git-domain-speed-run — Git-Domain Speed Run (end-to-end proof)
+
+<!-- status: Approved -->
+<!-- approved-date: 2026-08-11 -->
+<!-- approved-by: orchestrator -->
+<!-- created: 2026-08-11 -->
+<!-- source: backlog SPEC-027 (promoted — user request + brainstorm 2026-08-11) -->
+<!-- priority: P1 -->
+<!-- spec-type: feature -->
+
+> **Living document:** phased execution; status progresses Draft → Approved → Implemented → Archived via `## ADDED/MODIFIED` deltas. Phases: A (ingestion + durability), B (explorer UI + live materialization), C (wisdom insight cards).
+
+## Overview
+
+Speed-run a **fully functional backend + frontend** for the git domain — first case: the `terminusdb/terminusdb` repository, **12-month window with fixed cutoff date**. Proves the platform end-to-end across all four DIKW layers: ingest real git history into generic graph primitives (Data), navigate it in the G6 UI (Information), validate schemaless governance on real data (Knowledge), and answer knowledge-risk questions from computed insight (Wisdom).
+
+## Motivation
+
+Platform value is unproven — extensive specs, minimal runtime usage. The speed run is the adoption wedge: a credible, reproducible, end-to-end use case exercising every layer. Git history is the cheapest dense, familiar graph dataset available; the `terminusdb/terminusdb` repo is the canonical first case.
+
+## Requirements
+
+### Phase A — Ingestion & durability
+
+- REQ-001: The system SHALL provide a `git-importer` binary (new backend crate `crates/git-importer`) that walks a local git clone via `git2`, filters commits to the window `[since, HEAD]` where `--since` defaults to the **fixed cutoff date 2025-08-11** (reproducible imports), and persists each commit through `terminusdb-repository`.
+- REQ-002: The importer SHALL own a **`hexsha → Uuid` index** persisted in its checkpoint file — this is REQUIRED state (EntityDoc ids are Uuids, not custom strings), not a hint. Re-runs SHALL be idempotent: commits already in the index are skipped; entity existence is verified via the repository before writing.
+- REQ-003: The importer SHALL be durable: per-batch checkpoints (100 commits/batch) written atomically (tmp + fsync + rename) to `examples/git-codebase-1/.import-state.json`; `--resume` continues from the last checkpoint; reconciliation rule: the TerminusDB commit log wins over the state file; retries with exponential backoff (base 1s → max 30s, jitter, max 5); circuit breaker halts the import at ≥50% failures in a 60s window (TerminusDB down); poison commits (transform/serialization errors) are dead-lettered into the state file (`skipped[]` with reason) and never abort a batch; single-writer seriality (import is the only writer during a run).
+- REQ-004: The importer SHALL model: one Entity per commit (kind Node; property sets carry `hash`, `message`, `authored_at`, `author` ref, `parents` as adjacency-list properties, `paths` = touched paths); one Entity per author, deduplicated by normalized (lowercased) email; **no file nodes** — dir-level analytics derive from `paths` properties. Edge persistence verdict (S2'): verified in commit 1 (repository/API surface) and recorded in ADR-004; until then adjacency-property v1 is the wire format.
+- REQ-005: The importer SHALL publish its writes through the standard repository write paths so `ps:`/`ent:` commit tokens flow to the SSE stream (`/events?cursor=`, SPEC-004) — no bespoke event transport.
+- REQ-006: The system SHALL expose a thin `POST /bulk-entities` endpoint (HTTP parity for the same mapping path as the binary). Documented **dev-only** (RISK-001 linkage: the API is unauthenticated; the binary remains the primary ingest path).
+- REQ-007: The system SHALL register a `git.v1` namespace in the schema-registry (`schemas/proto` descriptor + seed registration, SPEC-009 pattern). Real terminusdb history contains organic violations (merge commits, empty messages) — the API SHALL return `api:warnings`, never reject (schemaless warn-not-fail).
+
+### Phase B — Explorer UI & live materialization
+
+- REQ-008: The frontend SHALL render the imported commit/author graph in the existing G6 canvas within the project console context: timeline slider (default window ≈ latest 200 commits, label offloading) + author filter chips; node-drawer SHALL show commit metadata plus a **property-set history view** (resolve_at time-travel). Follows SPEC-018 E2E conventions (`data-testid`, `data-state`, readiness flag).
+- REQ-009: The frontend SHALL live-materialize imports via the existing `use-data-graph-sse` hook: debounced batch apply + incremental graph updates while an import runs; reconnect replays genesis losslessly (cursor-based, SPEC-004).
+
+### Phase C — Wisdom insight cards
+
+- REQ-010: The importer SHALL run a **post-pass** computing three dir-level aggregates from commit `paths` data, stored as property sets on a per-repo insight entity (Wisdom = data, queryable):
+  1. **Ownership concentration** — contributor entropy per dir
+  2. **Stale-knowledge zones** — high-traffic dirs whose dominant authors are dormant (>12 months)
+  3. **Bus-factor risk** — dirs where ≥80% of commits come from one author with no recent activity
+  (Note: "single-approver bottleneck" from the brainstorm requires PR/review data that git history alone does not contain — replaced by bus-factor; PR data deferred.)
+- REQ-011: All reproduction material SHALL live under `examples/git-codebase-1/**`: clone/import/verify/serve runbook scripts, deterministic with the fixed cutoff date.
+
+## Technical Design
+
+### Crate layout
+
+```
+backend/crates/git-importer/       (NEW — bin + lib)
+├── src/lib.rs                     (import pipeline: walk → transform → persist → checkpoint; post-pass)
+├── src/state.rs                   (checkpoint file: hexsha→Uuid index, skipped[], counts — atomic write)
+├── src/retry.rs                   (exp backoff + circuit breaker)
+└── src/main.rs                    (thin CLI: --repo --since --resume --verify)
+```
+
+Depends on: `terminusdb-repository`, `data-graph`, `git2`, workspace `serde`/`serde_json`/`tokio`/`uuid`/`chrono`. No fork changes expected (if needed, SPEC-023 ladder).
+
+### API addition
+
+`api` crate: `POST /bulk-entities` — batched variant of the importer mapping path; validation warnings (git.v1) attached per response; dev-only documented in the OpenAPI (SPEC-016).
+
+### Checkpoint file (`.import-state.json`)
+
+```json
+{
+  "schema_version": 1,
+  "repo": "terminusdb/terminusdb",
+  "ref": "main",
+  "since": "2025-08-11",
+  "hexsha_index": { "<hexsha>": "<uuid>" },
+  "skipped": [{ "hexsha": "...", "reason": "..." }],
+  "counts": { "seen": 0, "imported": 0, "skipped": 0 }
+}
+```
+
+### Rollback runbooks (append-only invariant — nothing destructive)
+
+| RB | Trigger | Procedure |
+|----|---------|-----------|
+| R1 | one batch written wrong | `revert_property_set(entity, instance)` per affected commit (audit.rs) |
+| R2 | mapping bug throughout | delete importer-tagged entities (author `git-importer` / scope marker) + delete state file → clean re-import |
+| R3 | any doubt | `resolve_at(commit_id)` read-only inspection |
+
+### Frontend
+
+Explorer lands in the existing `ui/project` context (no new namespace — SPEC-020 reserved-context rule); drawer history view reuses the `resolve_at` API; SSE via existing hook.
+
+## Acceptance Criteria
+
+- AC-1: Given a local clone of `terminusdb/terminusdb` and the fixed cutoff `--since 2025-08-11`, When the importer runs, Then the imported commit count equals the git2 walk count for the window and every imported entity has ≥1 property set.
+- AC-2: Given a completed import, When the importer re-runs, Then zero new entities are created (index hit-rate 100%).
+- AC-3: Given an import killed mid-batch, When resumed with `--resume`, Then it completes with no duplicates and no missing commits.
+- AC-4: Given TerminusDB unavailable mid-run, When writes fail, Then retries back off exponentially and the circuit breaker halts the import with a clear message (≥50% failures / 60s); restarting the server + resume completes the import.
+- AC-5: Given a batch with a poison commit (e.g. serialization failure), When the importer runs, Then the commit is dead-lettered with reason in the state file and the batch completes.
+- AC-6: Given `POST /bulk-entities` with a valid batch payload, When posted, Then entities persist via the same mapping and git.v1 violations return `api:warnings`, never errors.
+- AC-7: Given the registered `git.v1` namespace, When importing real terminusdb history, Then organic lint warnings are produced (merge commits / empty messages) and import completes (warn-not-fail).
+- AC-8: Given a running import, When a client is connected to `/events?cursor=`, Then graph updates appear live without refresh; a fresh client replaying genesis converges to the same state.
+- AC-9: Given the explorer, When a user moves the timeline slider or toggles author chips, Then the canvas filters accordingly; clicking a commit opens the drawer with metadata and its property-set history (resolve_at).
+- AC-10: Given a completed import, When the insight post-pass has run, Then the 3 insight cards render from stored data and independently recomputed aggregates match.
+- AC-11: Given a clean checkout, When `examples/git-codebase-1/` runbook executes (clone → import → verify → serve), Then it completes deterministically (fixed cutoff) and `npm run check` + `cargo check -p git-importer` pass.
+
+## Test Plan
+
+- **Unit (git-importer):** window filter, hexsha→Uuid index, checkpoint atomicity (tmp+rename), retry/breaker state machine, author normalization dedupe
+- **Integration (real embedded TerminusDB server, `TerminusDBServer::test_instance()`):** full import of a small fixture repo, idempotent re-run, crash-resume, dead-letter, bulk endpoint warnings, SSE event flow (spec_027 pattern, serialized per AGENTS.md)
+- **Frontend specs (vitest):** slider/filter interactions, drawer history view, SSE debounce/incremental apply
+- **E2E:** deferred (SPEC-021 held); manual orchestrator walkthrough via runbook
+
+## Open Risks
+
+- RISK-001 linkage: `POST /bulk-entities` unauthenticated (dev-only documented; no new auth scope)
+- RISK-002 (TerminusDB persistence unverified): actively mitigated by this spec's integration tests
+- RISK-005 (sparse unit tests): importer is the first crate with a full unit-test layer
+- git2 crate on nightly toolchain: verify in commit 1 (fallback: shell `git log` subprocess parsing)
+- 12-month terminusdb window ≈ 2-3k commits; canvas windowing (AC-9) is the UI perf risk
+
+## Dependencies
+
+- SPEC-004 (SSE stream / event tokens), SPEC-006 (persistence, `resolve_at`, `revert_property_set`), SPEC-009 (git.v1 namespace), SPEC-013 (API surface), SPEC-016 (OpenAPI docs for bulk endpoint), SPEC-018 (frontend E2E conventions), SPEC-020 (frontend context layout)
+- Backlog SPEC-011 (batch ingestion pipelines — this speed run proves the importer pattern; overlap noted)
+
+## Delivery Constraints (user, 2026-08-11)
+
+- coop-dikwms branches `speed-run-1/*` based on `main`; fork branches (only if needed) based on `dev`
+- Small reviewable commits; single `speed-run-1` branch carries the functional version
+- All reproduction material under `examples/git-codebase-1/**`
+- P2 (deferred): search-first onboarding (U2'), real edge persistence (beyond ADR-004 verdict), tags=promotions (G2)
