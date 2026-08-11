@@ -1,8 +1,9 @@
 # SPEC-023 Feature: Upstream Contribution Ladder — terminusdb-rs fork → ParaplouOU
 
-<!-- status: Implemented -->
-<!-- progress: 3/3 PRs opened (2026-08-10) — #9 casing, #10 auth, #11 collab+tests; awaiting upstream merge -->
+<!-- status: Archived -->
+<!-- progress: 3/3 PRs opened (2026-08-10) — #9 casing, #10 auth, #11 collab+tests; still OPEN upstream as of 2026-08-11 -->
 <!-- approved: 2026-08-10 by orchestrator (retrospective — implementation preceded approval) -->
+<!-- archived: 2026-08-11 by orchestrator (Completed — fork-side ACs satisfied; upstream adoption tracked via RISK-004) -->
 
 ## Verification Record (2026-08-10)
 
@@ -14,6 +15,15 @@
 - AC-6 ✅ — opened in order #9 → #10 → #11 (sequential ladder satisfied)
 
 **Verdict**: 4/6 PASS, 2 PARTIAL (upstream-side, documented) → Implemented. **Not archived**: awaiting upstream review/merge (R-23); archive when all three PRs land.
+
+## ARCHIVED (2026-08-11)
+
+**Verdict**: Completed — all fork-side ACs satisfied (4/6 PASS, 2 PARTIAL both upstream-side and documented). Archived by orchestrator decision on 2026-08-11.
+
+- **Status change:** Implemented → Archived.
+- **Upstream adoption note (verified 2026-08-11):** PRs [#9](https://github.com/ParapluOU/terminusdb-rs/pull/9), [#10](https://github.com/ParapluOU/terminusdb-rs/pull/10), [#11](https://github.com/ParapluOU/terminusdb-rs/pull/11) remain **OPEN** — the merge gate (R-23) is NOT met. The fork repo was recreated (renamed `gustavorps/terminusdb-client-rs`) and its GitHub PR history is gone (0 PRs); the ladder's deliverable now lives in upstream's review queue.
+- **Tracking:** upstream adoption (landing of #9/#10/#11) is tracked via **RISK-004** (fork drift — upstream landing is the durable mitigation), not via this spec.
+- Re-check (spec-vs-code convergence) if touched by future work.
 
 ## Overview
 

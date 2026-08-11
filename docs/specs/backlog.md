@@ -50,6 +50,8 @@ Planned specs not yet created. Add requirements captured during development here
 
 > **PROMOTED (2026-08-08):** frontend portion created as docs/specs/SPEC-020-dikwms-frontend-reorg.md — entry kept for provenance. Backend portion (`data-graph` → `data-graph` crate rename) remains deferred here.
 
+> **ARCHIVED (2026-08-11):** SPEC-020 (frontend portion) archived as Completed (9/9 AC green, orchestrator). Reserved contexts (`iam`, `data-graph-governance`, `data-schema-registry`) and future view types (`tabular`, `geographic`) remain future work — created on first component, tracked via backlog. Backend crate-rename portion still deferred here.
+
 **Requirement (captured 2026-08-07, source: orchestrator DDD review):**
 - Rename backend crate `data-graph` → **`data-graph`** (bounded context: Data Graph)
 - Frontend moves (via `bit move`, never re-create):
@@ -321,6 +323,8 @@ Planned specs not yet created. Add requirements captured during development here
 
 ## SPEC-023 (planned): Upstream Contribution Ladder — terminusdb-rs fork → ParaplouOU
 
+> **ARCHIVED (2026-08-11):** spec archived as Completed (fork-side ACs satisfied). PRs #9/#10/#11 still OPEN upstream (verified 2026-08-11); fork repo recreated with no GitHub PR history. Upstream adoption tracked via RISK-004. Entry kept for provenance.
+
 **Requirement (captured 2026-08-10, source: user request + brainstorm):** contribute the fork's verified v12/auth work back to upstream `ParaplouOU/terminusdb-rs` as small PRs, each branched from upstream `main`.
 
 **Brainstorm complete (2026-08-10) — decisions locked (rebuttal-accepted):**
@@ -349,6 +353,8 @@ Planned specs not yet created. Add requirements captured during development here
 
 ## SPEC-025 (planned): Developer Experience — fast builds/tests + CONTRIBUTING.md
 
+> **ARCHIVED (2026-08-11):** spec archived as Completed (DX scope verified 6/7; AC-6 gate superseded — PR #12 gone with the recreated fork). Client-maturity parity work (vs terminusdb-client-js/python) deferred to backlog SPEC-026. Entry kept for provenance.
+
 **Requirement (captured 2026-08-10, source: user request):** improve DX for contributors by speeding up local build and test across environments (Linux, macOS, Windows). **Constraint (user):** must NOT impose `.cargo/config.toml` or dependency installs on new contributors — provide **guidelines (CONTRIBUTING.md)** instead for a convenient/fast dev environment.
 
 **Raw material (fork commit `13cb418` — excluded from PR-1..3 as dev-tooling, now the PR-4 basis):**
@@ -359,3 +365,15 @@ Planned specs not yet created. Add requirements captured during development here
 **Upstream facts:** no CONTRIBUTING.md exists; workspace has only `[profile.release]` (lto, codegen-units=1 — slow release builds); per-OS deps (clang/libclang/protoc/libgmp/openssl; SWI-Prolog for embedded server — Windows-first-contribution guidance needed: client/schema crates work, embedded-server tests are Linux/macOS-first or WSL).
 
 **Dependencies:** SPEC-023 (ladder), SPEC-024 (CI matrix — CI speed is a separate axis), fork `13cb418`
+
+## SPEC-026 (planned): terminusdb-client maturity parity — JS/Python parity
+
+**Requirement (captured 2026-08-11, source: user request):** bring the Rust `terminusdb-client` crate's maturity in line with the reference clients `terminusdb-client-js` and `terminusdb-client-python` — API-surface parity (endpoints, options, error shapes), documentation coverage, and test depth. Context: SPEC-025's DX surface (build speed, CONTRIBUTING) is complete and archived; the client itself still lags the JS/Python clients in maturity, and that gap is a distinct scope from build-speed DX.
+
+**Design elements to resolve in the spec:**
+- Gap analysis first: enumerate the JS/Python client API surface vs the Rust crate (auth flows, query/stream endpoints, collaboration ops, error contracts) — a parity matrix is the deliverable of the DISCUSS phase
+- Wire-compat is a hard constraint (protobuf tags immutable); parity targets behavior, not internal representation
+- Follow the SPEC-008 verification pattern (evidence vs real v12.1 via `TerminusDBServer::test_instance()`) for every parity claim
+- Fork PRs may be needed for upstream fixes (SPEC-023 ladder pattern); upstream adoption tracked via RISK-004
+
+**Dependencies:** SPEC-008 (archived — v12.1 verification basis), SPEC-023 (archived — upstream ladder, RISK-004), SPEC-025 (archived — DX surface done; this spec is the functional-maturity axis)

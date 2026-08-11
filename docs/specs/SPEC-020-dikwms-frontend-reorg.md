@@ -1,6 +1,7 @@
 # Feature: SPEC-020-dikwms-frontend-reorg — dikwms Frontend Context Reorganization (Iterative)
 
-<!-- status: Implemented -->
+<!-- status: Archived -->
+<!-- archived: 2026-08-11 by orchestrator (Completed — 9/9 AC green) -->
 <!-- approved-date: 2026-08-08 -->
 <!-- approved-by: orchestrator -->
 <!-- created: 2026-08-08 -->
@@ -187,3 +188,22 @@ Iterative + opportunistic (SPEC-020 policy): each move rides on the next touch o
   decomposed into 7 components (frame, header-title, mega-menu, search,
   header-actions, user-menu, menu-footer) on antd 6 primitives (ProLayout
   requires antd ^5 — rejected; native parity). `layout` context whitelisted.
+
+---
+
+## ARCHIVED (2026-08-11)
+
+**Verdict**: Completed — all 9 ACs verified green (2026-08-08 record); the
+iterative reorg process ran to completion. Realized layout: scope
+`coop-codes.dikwms`, dir `frontend/dikwms/`, contexts `{app, hook, type, ui}`
+with `data-graph-antv-g6` (rendering engine), `organization`, `workspace`,
+`project`, `layout`; `frontend/scripts/check-layout.mjs` v2 green;
+`docs/ddd/bounded-contexts.md` + `frontend/AGENTS.md` + ADR-002 reflect the
+codebase (AC-7).
+
+- **Status change:** Implemented → Archived (orchestrator decision, 2026-08-11).
+- **Reserved contexts** (`iam`, `data-graph-governance`, `data-schema-registry`)
+  and future view types (`tabular`, `geographic`) are **not** part of this
+  spec's completion — they are created on first component, tracked via the
+  backlog.
+- Re-check (spec-vs-code convergence) if touched by future work.

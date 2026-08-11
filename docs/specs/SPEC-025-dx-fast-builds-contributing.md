@@ -1,8 +1,9 @@
 # SPEC-025 Feature: Developer Experience — Fast Local Builds/Tests + CONTRIBUTING.md
 
-<!-- status: Implemented -->
-<!-- progress: fork PR-12 = 8 commits, 6 files, opened 2026-08-10; backend adoption committed (5c4d35a/f395461/415410d); awaiting upstream merge -->
+<!-- status: Archived -->
+<!-- progress: fork PR-12 = 8 commits, 6 files, opened 2026-08-10; backend adoption committed (5c4d35a/f395461/415410d); PR no longer present on the recreated fork (2026-08-11) -->
 <!-- approved: 2026-08-10 by orchestrator (retrospective — implementation preceded approval; see Delta Record) -->
+<!-- archived: 2026-08-11 by orchestrator (Completed — DX scope verified; AC-6 gate superseded, see ARCHIVED note) -->
 
 ## Verification Record (2026-08-10)
 
@@ -15,6 +16,14 @@
 - AC-7 ✅ — linker-less PATH run: `WARNING: lld not found…` and the run continues (suggestion printed)
 
 **Verdict**: 6/7 PASS, 1 PENDING (upstream CI) → Implemented. **Not archived**: PR #12 awaiting upstream review/merge; re-verify AC-6 and archive on landing.
+
+## ARCHIVED (2026-08-11)
+
+**Verdict**: Completed — the DX scope (dev-profile example, CONTRIBUTING.md, ci-gen, benchmark scripts, backend adoption) is verified 6/7 PASS; AC-6 (upstream CI) is **unresolved**: PR #12 no longer exists on GitHub — the fork repo was recreated (renamed `gustavorps/terminusdb-client-rs`) and carries 0 PRs, so the upstream CI gate can never run on it. Archived by orchestrator decision on 2026-08-11 with the gate superseded.
+
+- **Status change:** Implemented → Archived.
+- **Follow-up (backlog SPEC-026):** the terminusdb-client crate still needs substantial work to match the maturity of `terminusdb-client-js` / `terminusdb-client-python` — API-surface parity, docs, tests. That work is **out of scope** for this spec (build-speed DX); tracked as backlog SPEC-026 (planned).
+- Re-check (spec-vs-code convergence) if touched by future work.
 
 ## Delta Record (2026-08-10)
 
