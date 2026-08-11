@@ -5,7 +5,7 @@
 
 ## Delta Record (2026-08-10)
 
-- **ADDED Requirement "Fork drift watch + rebase tooling"** (user requirement 2026-08-10, CI axis): a weekly `fork-drift-watch` workflow in the client fork compares `ParapluOU/terminusdb` `v12.1-main` against upstream `terminusdb/terminusdb` `12.1-rc` (behind/ahead via GitHub compare API) and opens/updates a `[fork-drift]` issue when `behind_by > 30` or when upstream tags a **v12.1 GA** release (the signal to stop rc-tracking). Backing tooling: `scripts/fork-drift-check.sh` (local + workflow) and `scripts/rebase-server-fork.sh` (fetch → rebase → tag `v12.1-rc-paraplu.N` → optional push), documented in `docs/server-fork-rebasing.md`. Rationale: measured 2026-08-11 the fork was 189 commits behind (last sync 2026-07-13); without an alarm, drift accumulates silently and the embedded-server pin diverges from released images. This is the CI/detection axis; the actual rebase remains a manual, gate-checked operation.
+- **ADDED Requirement "Fork drift watch + rebase tooling"** (user requirement 2026-08-10, CI axis): a weekly `fork-drift-watch` workflow in the client fork compares `ParapluOU/terminusdb` `v12.1-main` against upstream `terminusdb/terminusdb` `12.1-rc` (behind/ahead via GitHub compare API) and opens/updates a `[fork-drift]` issue when `behind_by > 30` or when upstream publishes a **`v<major>.<minor>-rc` tag** (e.g. `v12.1-rc`, `v12.12-rc` — the signal to rebase onto the tag and stop branch-tracking). Backing tooling: `scripts/fork-drift-check.sh` (local + workflow) and `scripts/rebase-server-fork.sh` (fetch → rebase → tag `v12.1-rc-paraplu.N` → optional push), documented in `docs/server-fork-rebasing.md`. Rationale: measured 2026-08-11 the fork was 189 commits behind (last sync 2026-07-13); without an alarm, drift accumulates silently and the embedded-server pin diverges from released images. This is the CI/detection axis; the actual rebase remains a manual, gate-checked operation.
 
 ## Overview
 
@@ -60,17 +60,17 @@ The job SHALL be runnable locally with `act` (container-based services, no `sudo
 
 ### Requirement: Fork drift watch + rebase tooling *(ADDED 2026-08-10)*
 
-The client fork SHALL ship a scheduled **`fork-drift-watch`** workflow (weekly cron + `workflow_dispatch`) that compares the server fork (`ParapluOU/terminusdb` `v12.1-main`) against upstream `12.1-rc` via the GitHub compare API and opens/updates a `[fork-drift]` issue when `behind_by > 30` or when an upstream **v12.1 GA tag** is detected. Backing it: `scripts/fork-drift-check.sh` (reusable locally; exit 2 = action needed) and `scripts/rebase-server-fork.sh` (fetch → rebase `v12.1-main` → immutable tag `v12.1-rc-paraplu.N` → optional push; prints the `build.rs` `TERMINUSDB_VERSION` bump steps). The procedure is documented in `docs/server-fork-rebasing.md`.
+The client fork SHALL ship a scheduled **`fork-drift-watch`** workflow (weekly cron + `workflow_dispatch`) that compares the server fork (`ParapluOU/terminusdb` `v12.1-main`) against upstream `12.1-rc` via the GitHub compare API and opens/updates a `[fork-drift]` issue when `behind_by > 30` or when an upstream **`v<major>.<minor>-rc` tag** is detected (e.g. `v12.1-rc`, `v12.12-rc`). Backing it: `scripts/fork-drift-check.sh` (reusable locally; exit 2 = action needed) and `scripts/rebase-server-fork.sh` (fetch → rebase `v12.1-main` → immutable tag `v12.1-rc-paraplu.N` → optional push; prints the `build.rs` `TERMINUSDB_VERSION` bump steps). The procedure is documented in `docs/server-fork-rebasing.md`.
 
 #### Scenario: Drift above threshold raises an issue
 - **GIVEN** the fork behind upstream `12.1-rc` by more than 30 commits
 - **WHEN** the weekly workflow runs
 - **THEN** a `[fork-drift]` issue is created (or updated) with behind/ahead counts and the merge-base date
 
-#### Scenario: Upstream GA tag detected
-- **GIVEN** upstream tags `v12.1` (GA)
+#### Scenario: Upstream rc tag detected
+- **GIVEN** upstream publishes a `v<major>.<minor>-rc` tag (e.g. `v12.1-rc`, `v12.12-rc`)
 - **WHEN** the workflow runs
-- **THEN** the issue reports the GA tag and the stable-rebase path (stop rc-tracking)
+- **THEN** the issue reports the rc tag and the rebase-onto-the-tag path (stop branch-tracking)
 
 ## Acceptance Criteria
 
