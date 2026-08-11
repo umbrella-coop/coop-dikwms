@@ -76,7 +76,7 @@ The system SHALL store scoped property sets as JSON documents (via `terminusdb-s
 
 ```text
 backend/crates/
-  knowledge-domain/        # pure domain (existing — unchanged)
+  data-graph/        # pure domain (existing — unchanged)
   terminusdb-repository/   # NEW: persistence adapter (hexagonal "infrastructure" port)
     - repository.rs        # implements domain repository port
     - models.rs            # #[derive(TerminusDBModel)] maps (closes SPEC-001 R-2)

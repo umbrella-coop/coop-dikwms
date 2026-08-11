@@ -7,13 +7,13 @@
 This is the authoritative context map for the **dikwms** codebase. It guides:
 - where new code lands (frontend + backend),
 - how existing code is moved/renamed (SPEC-020, opportunistic),
-- how the backend refactor (crate `knowledge-domain` → `data-graph`) proceeds.
+- how the backend refactor (crate `data-graph` → `data-graph`) proceeds.
 
 ## 1. Context Map (v2)
 
 | Bounded context | Backend container | Frontend namespace | Status | Responsibilities |
 |---|---|---|---|---|
-| **Data Graph** | `data-graph` (rename from `knowledge-domain` — pending, SPEC-020) | `ui/data-graph/` (node-drawer) + `ui/data-graph-antv-g6/` (canvas, layout-select — G6 rendering engine) + `hook/use-data-graph-sse` | **active** | entities, scoped property sets, resolve (nearest-wins), G6 rendering, live-event consumption (SSE via `stream-api`) |
+| **Data Graph** | `data-graph` (rename from `data-graph` — pending, SPEC-020) | `ui/data-graph/` (node-drawer) + `ui/data-graph-antv-g6/` (canvas, layout-select — G6 rendering engine) + `hook/use-data-graph-sse` | **active** | entities, scoped property sets, resolve (nearest-wins), G6 rendering, live-event consumption (SSE via `stream-api`) |
 | **Governance** | moderation + audit logic (co-located in `data-graph` + `terminusdb-repository` today) | `ui/data-graph-governance/` | reserved | change requests, decisions, promotion ladder, moderation ledger, audit trail, correlation, revert |
 | **IAM** | Policy ACL (co-located in `data-graph` today) | `ui/iam/` | reserved | scope instances, principals, ACL enforcement |
 | **Data Schema Registry** | `schema-registry` (standalone ✓) | `ui/data-schema-registry/` | reserved | namespaces, additionalType, versioned schema docs |
@@ -109,7 +109,7 @@ documentation).
 
 ```
 backend/crates/
-├── data-graph/            (← knowledge-domain — rename)
+├── data-graph/            (← data-graph — rename)
 ├── schema-registry/       (unchanged ✓)
 ├── stream-api/            (unchanged — Data Graph transport)
 ├── terminusdb-repository/ (unchanged — shared persistence infra, NOT a context)
@@ -120,29 +120,29 @@ backend/crates/
 
 | Current module | Owning context | Action |
 |---|---|---|
-| `knowledge-domain` entity/scope/resolve | Data Graph | **rename** crate → `data-graph` |
-| `knowledge-domain` moderation (change requests, promotion ladder) | Governance | co-located today; extract to `data-graph-governance` crate when volume justifies (reserved) |
-| `knowledge-domain` Policy ACL | IAM | co-located today; extract to `iam` crate when volume justifies (reserved) |
+| `data-graph` entity/scope/resolve | Data Graph | **rename** crate → `data-graph` |
+| `data-graph` moderation (change requests, promotion ladder) | Governance | co-located today; extract to `data-graph-governance` crate when volume justifies (reserved) |
+| `data-graph` Policy ACL | IAM | co-located today; extract to `iam` crate when volume justifies (reserved) |
 | `terminusdb-repository` audit ledger, ps-token property sets, `resolve_at` | Governance rules / shared infra | stays (infra implements context persistence) |
 | `schema-registry` | Data Schema Registry | stays ✓ |
 | `stream-api` SSE | Data Graph transport | stays |
 | `api` routes/auth | App Shell | stays ✓ |
 
-### 4.3 Rename mechanics: `knowledge-domain` → `data-graph`
+### 4.3 Rename mechanics: `data-graph` → `data-graph`
 
 Touch list (exact, verified):
 
-- `backend/Cargo.toml` — workspace `members`: `crates/knowledge-domain` → `crates/data-graph`
-- `backend/crates/knowledge-domain/` → `backend/crates/data-graph/`; in its `Cargo.toml`: `name = "data-graph"`
+- `backend/Cargo.toml` — workspace `members`: `crates/data-graph` → `crates/data-graph`
+- `backend/crates/data-graph/` → `backend/crates/data-graph/`; in its `Cargo.toml`: `name = "data-graph"`
 - Dependency refs in `api/Cargo.toml`, `stream-api/Cargo.toml`, `terminusdb-repository/Cargo.toml` (path + package name)
-- Rust imports `use knowledge_domain::…` → `use data_graph::…` in:
+- Rust imports `use data_graph::…` → `use data_graph::…` in:
   - `backend/crates/api/src/routes.rs`
   - `backend/crates/terminusdb-repository/src/lib.rs`, `src/audit.rs`
   - tests: `api/tests/*` (via routes), `stream-api/tests/spec_004_sse.rs`, `terminusdb-repository/tests/{spec_001,spec_004,spec_006,spec_012}*.rs`
-- `knowledge-domain/tests/{spec_001,spec_002,spec_003}.rs` move with the crate (they are its tests)
+- `data-graph/tests/{spec_001,spec_002,spec_003}.rs` move with the crate (they are its tests)
 - Docs referencing the crate name as *current layout* (AGENTS.md, this doc's §1) — spec references in **archived** specs (SPEC-001/002/003) are historical and stay untouched
 
-Verification: `RUSTUP_TOOLCHAIN=nightly cargo check -p data-graph --tests` then full crate test pass; grep audit for zero residual `knowledge_domain`.
+Verification: `RUSTUP_TOOLCHAIN=nightly cargo check -p data-graph --tests` then full crate test pass; grep audit for zero residual `data_graph`.
 
 ### 4.4 Dependency direction (invariant)
 

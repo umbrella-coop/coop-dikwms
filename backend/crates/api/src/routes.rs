@@ -3,7 +3,7 @@
 use axum::extract::{Path, Query, State};
 use axum::routing::{get, post};
 use axum::{Json, Router};
-use knowledge_domain::{PropertySet, Scope, Status};
+use data_graph::{PropertySet, Scope, Status};
 use serde::Deserialize;
 use serde_json::{Value, json};
 use uuid::Uuid;
@@ -43,9 +43,9 @@ pub async fn create_entity(
     Json(body): Json<CreateEntityBody>,
 ) -> Result<Json<Value>, ApiError> {
     let kind = match body.kind.as_str() {
-        "Node" => knowledge_domain::EntityKind::Node,
-        "Edge" => knowledge_domain::EntityKind::Edge,
-        "Combo" => knowledge_domain::EntityKind::Combo,
+        "Node" => data_graph::EntityKind::Node,
+        "Edge" => data_graph::EntityKind::Edge,
+        "Combo" => data_graph::EntityKind::Combo,
         other => return Err(ApiError::bad_request(format!("unknown kind: {other}"))),
     };
     let id = state.repo.create_entity_as(kind, &principal).await?;

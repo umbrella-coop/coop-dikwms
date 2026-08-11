@@ -88,7 +88,7 @@ The system SHALL expose an `authorize(principal, scope_id, permission)` function
 
 ## Technical Design
 
-### Domain additions (knowledge-domain crate)
+### Domain additions (data-graph crate)
 
 ```rust
 pub enum Level { Org, Workspace, Project }
@@ -167,7 +167,7 @@ pub fn entities_in_scope(&self, scope_id: Uuid) -> Vec<Uuid>;
 ## ARCHIVED (2026-08-07)
 
 - **Verification commit:** `d01ccb4`
-- **Evidence:** backend/crates/knowledge-domain/tests/spec_003_scope_hierarchy_acl.rs
+- **Evidence:** backend/crates/data-graph/tests/spec_003_scope_hierarchy_acl.rs
 - **ACs:** 8/8 verified green against real TerminusDB 12.1 (TerminusDBServer pattern)
 - **Status change:** Implemented → Archived. Re-check (spec-vs-code convergence) if touched by future work.
 
@@ -177,6 +177,6 @@ pub fn entities_in_scope(&self, scope_id: Uuid) -> Vec<Uuid>;
 ## ARCHIVED (2026-08-07)
 
 - **Verification commit:** `d01ccb4`
-- **Evidence:** backend/crates/knowledge-domain/tests/spec_003_scope_hierarchy_acl.rs
+- **Evidence:** backend/crates/data-graph/tests/spec_003_scope_hierarchy_acl.rs
 - **ACs:** 8/8 verified green against real TerminusDB 12.1 (TerminusDBServer pattern)
 - **Status change:** → Archived. Re-check (spec-vs-code convergence) if touched by future work.

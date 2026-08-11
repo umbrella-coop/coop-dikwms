@@ -19,5 +19,5 @@ tracing = "0.1"
 
 [dev-dependencies]
 terminusdb-bin = { path = "../../../third-party/terminusdb-client-rs/crates/bin" }
-knowledge-domain = { path = "../knowledge-domain" }
+data-graph = { path = "../data-graph" }
 reqwest = { version = "0.12", features = ["stream"] }

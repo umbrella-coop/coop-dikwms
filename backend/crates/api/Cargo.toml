@@ -5,7 +5,7 @@ edition.workspace = true
 rust-version.workspace = true
 
 [dependencies]
-knowledge-domain = { path = "../knowledge-domain" }
+data-graph = { path = "../data-graph" }
 terminusdb-repository = { path = "../terminusdb-repository" }
 schema-registry = { path = "../schema-registry" }
 stream-api = { path = "../stream-api" }

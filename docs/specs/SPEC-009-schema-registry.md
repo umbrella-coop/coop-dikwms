@@ -4,7 +4,7 @@
 
 ## Overview
 
-A multi-namespace, versioned **schema registry** stored in TerminusDB: namespaces (Protobuf `package`s with immutable field tags) are registered with their compiled `FileDescriptorSet`, versioned with **tag-immutability linting**, and used to validate `additionalType` references. `knowledge-domain` ships the **core namespace** (`core.v1`) — Thing-based kinds (Node, Edge, Combo, CreativeWork, MediaObject, Action) with schema.org's minimal property set. **schema.org is the second seeded namespace** (`org.schema.v1`, curated subset).
+A multi-namespace, versioned **schema registry** stored in TerminusDB: namespaces (Protobuf `package`s with immutable field tags) are registered with their compiled `FileDescriptorSet`, versioned with **tag-immutability linting**, and used to validate `additionalType` references. `data-graph` ships the **core namespace** (`core.v1`) — Thing-based kinds (Node, Edge, Combo, CreativeWork, MediaObject, Action) with schema.org's minimal property set. **schema.org is the second seeded namespace** (`org.schema.v1`, curated subset).
 
 **v1 scope (per DISCUSS):** registry storage, tag-immutability lint, `additionalType` validation, core proto definitions. **Deferred:** protoc/prost codegen chain into Rust models, per-workspace/project namespace selection, web console, multi-namespace tooling (explicit RISK per brainstorm).
 

@@ -6,7 +6,7 @@
 
 #![recursion_limit = "512"]
 
-use knowledge_domain::{EntityKind, PropertySet, Scope};
+use data_graph::{EntityKind, PropertySet, Scope};
 use terminusdb_bin::TerminusDBServer;
 use terminusdb_client::{
     DocumentInsertArgs, MigrationOperation, MigrationOptions, TerminusDBModel,

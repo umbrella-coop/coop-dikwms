@@ -4,7 +4,7 @@
 
 ## Overview
 
-Add the request-to-change moderation process and the promotion ladder to the knowledge graph platform. Any change to a scope's property set (SPEC-001) must flow through a **change request** (submitted → approved/rejected), and a **child scope's** version may be **promoted to its parent scope** through the same process. Applied promotions record **provenance** (source scope, source version, request, reviewer). This spec is pure domain logic in the `knowledge-domain` crate — no storage dependency (TerminusDB verification remains the SPEC-001 gate).
+Add the request-to-change moderation process and the promotion ladder to the knowledge graph platform. Any change to a scope's property set (SPEC-001) must flow through a **change request** (submitted → approved/rejected), and a **child scope's** version may be **promoted to its parent scope** through the same process. Applied promotions record **provenance** (source scope, source version, request, reviewer). This spec is pure domain logic in the `data-graph` crate — no storage dependency (TerminusDB verification remains the SPEC-001 gate).
 
 ## Motivation
 
@@ -82,7 +82,7 @@ The system SHALL record and expose provenance for every applied change: request 
 
 ## Technical Design
 
-### Domain additions (knowledge-domain crate)
+### Domain additions (data-graph crate)
 
 ```rust
 pub enum ChangeRequestStatus { Submitted, UnderReview, Approved, Rejected, Applied }
@@ -163,7 +163,7 @@ Two children promoting incompatible versions of the same property to the parent 
 ## ARCHIVED (2026-08-07)
 
 - **Verification commit:** `9c55296`
-- **Evidence:** backend/crates/knowledge-domain/tests/spec_002_moderation_promotion.rs
+- **Evidence:** backend/crates/data-graph/tests/spec_002_moderation_promotion.rs
 - **ACs:** 6/6 verified green against real TerminusDB 12.1 (TerminusDBServer pattern)
 - **Status change:** Implemented → Archived. Re-check (spec-vs-code convergence) if touched by future work.
 
@@ -173,6 +173,6 @@ Two children promoting incompatible versions of the same property to the parent 
 ## ARCHIVED (2026-08-07)
 
 - **Verification commit:** `9c55296`
-- **Evidence:** backend/crates/knowledge-domain/tests/spec_002_moderation_promotion.rs
+- **Evidence:** backend/crates/data-graph/tests/spec_002_moderation_promotion.rs
 - **ACs:** 6/6 verified green against real TerminusDB 12.1 (TerminusDBServer pattern)
 - **Status change:** → Archived. Re-check (spec-vs-code convergence) if touched by future work.

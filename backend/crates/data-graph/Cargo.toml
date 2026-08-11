@@ -1,5 +1,5 @@
 [package]
-name = "knowledge-domain"
+name = "data-graph"
 version = "0.1.0"
 edition.workspace = true
 rust-version.workspace = true

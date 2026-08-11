@@ -6,7 +6,7 @@
 
 use std::collections::HashMap;
 
-use knowledge_domain::{COMMON_INSTANCE, EntityKind, Graph, PropertySet, Scope};
+use data_graph::{COMMON_INSTANCE, EntityKind, Graph, PropertySet, Scope};
 use serde_json::json;
 use uuid::Uuid;
 

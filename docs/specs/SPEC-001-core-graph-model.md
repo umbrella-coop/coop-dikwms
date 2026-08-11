@@ -128,6 +128,6 @@ The system SHALL model entities from a **single source schema** based on schema.
 ## ARCHIVED (2026-08-07)
 
 - **Verification commit:** `2ac3c4f`
-- **Evidence:** backend/crates/terminusdb-repository/tests/spec_001_persistence.rs + knowledge-domain tests
+- **Evidence:** backend/crates/terminusdb-repository/tests/spec_001_persistence.rs + data-graph tests
 - **ACs:** 6/6 verified green against real TerminusDB 12.1 (TerminusDBServer pattern)
 - **Status change:** Implemented → Archived. Re-check (spec-vs-code convergence) if touched by future work.

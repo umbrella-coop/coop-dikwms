@@ -3,7 +3,7 @@
 > Generated: 2026-08-07 · BQS v1 · Panel `[degraded]` (single-context) · Rebuttal: all accepted (a)
 
 ## Problem Statement
-`knowledge-domain` ships only the **core schemas**; everything domain-specific lives in a **multi-namespace versioned schema registry** stored in TerminusDB, added via API/web console in **Protobuf** (package-directive namespaces, immutable field tags). **schema.org is the first namespace package**; core kinds are node/edge/combo + creative work, media object, action.
+`data-graph` ships only the **core schemas**; everything domain-specific lives in a **multi-namespace versioned schema registry** stored in TerminusDB, added via API/web console in **Protobuf** (package-directive namespaces, immutable field tags). **schema.org is the first namespace package**; core kinds are node/edge/combo + creative work, media object, action.
 
 ## HMW Questions
 1. Minimal core yet sufficient for all platform features?

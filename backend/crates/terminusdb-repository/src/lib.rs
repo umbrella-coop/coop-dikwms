@@ -11,7 +11,7 @@
 
 use std::collections::HashMap;
 
-use knowledge_domain::{EntityKind, PropertySet, Scope, Status};
+use data_graph::{EntityKind, PropertySet, Scope, Status};
 use terminusdb_client::{
     BranchSpec, DocumentInsertArgs, LogOpts, TerminusDBHttpClient, TerminusDBModel,
 };
@@ -20,7 +20,7 @@ use terminusdb_schema_derive::{FromTDBInstance, TerminusDBModel};
 use uuid::Uuid;
 
 /// Sentinel instance id for the global `common` truth layer (mirrors
-/// knowledge-domain's COMMON_INSTANCE).
+/// data-graph's COMMON_INSTANCE).
 pub const COMMON_INSTANCE: Uuid = Uuid::nil();
 
 #[derive(Clone, Debug, PartialEq, TerminusDBModel, FromTDBInstance)]

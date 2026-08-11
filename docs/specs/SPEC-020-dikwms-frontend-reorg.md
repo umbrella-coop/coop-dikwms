@@ -89,7 +89,7 @@ frontend/dikwms/                      (Bit scope: coop-codes.dikwms)
 | A1 | `canva` in the directive was a typo for `canvas` | REQ-004 | confirmed with orchestrator | Verified |
 | A2 | New scope id is `coop-codes.dikwms` (org prefix stays) | REQ-001 | confirmed with orchestrator | Verified |
 | A3 | Hooks live at `hook/` (singular) with context in the name | REQ-003 | confirmed with orchestrator | Verified |
-| A4 | Backend `knowledge-domain` → `data-graph` rename stays out of scope (deferred in backlog) | REQ-008 | confirmed with orchestrator | Verified |
+| A4 | Backend `data-graph` → `data-graph` rename stays out of scope (deferred in backlog) | REQ-008 | confirmed with orchestrator | Verified |
 | A5 | testid renames (`entity-*` → `node-*`, five testids verified in code) are cheap now, before SPEC-021 E2E exists | REQ-005 | E2E not implemented | Verified |
 | A6 | Component ids follow Bit convention `coop-codes.dikwms/<path>/<name>` | all | bit status clean check | Unverified → AC-1 |
 

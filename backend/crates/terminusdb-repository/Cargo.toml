@@ -5,7 +5,7 @@ edition.workspace = true
 rust-version.workspace = true
 
 [dependencies]
-knowledge-domain = { path = "../knowledge-domain" }
+data-graph = { path = "../data-graph" }
 terminusdb-client = { path = "../../../third-party/terminusdb-client-rs/crates/client" }
 terminusdb-schema = { path = "../../../third-party/terminusdb-client-rs/crates/schema" }
 terminusdb-schema-derive = { path = "../../../third-party/terminusdb-client-rs/crates/schema/derive" }

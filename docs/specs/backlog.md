@@ -26,7 +26,7 @@ Planned specs not yet created. Add requirements captured during development here
   - Regeneration/derivation rule: features derive from spec ACs (`/derive bdd`); changes flow spec → feature → step definitions → implementation (forward-derivation single spine)
   - Feature files tagged `@SPEC-NNN @AC-N` (already the convention) + a drift check runnable in CI (SPEC-007 gauntlet)
 - **DDD bounded-context organization:** the flat `features/SPEC-*.feature` + per-crate tests organized by bounded context mirroring `backend/crates/*`:
-  - `features/knowledge-domain/`, `features/moderation/`, `features/access/`, `features/registry/`, `features/stream/`, `features/api/`
+  - `features/data-graph/`, `features/moderation/`, `features/access/`, `features/registry/`, `features/stream/`, `features/api/`
   - Each bounded context owns its feature files, step definitions, and test slices; specs stay global (SPEC-NNN) with a Context mapping
   - Cross-context scenarios (promotion → audit) explicitly marked or placed in the owning context with references
 - **Context map:** docs section mapping bounded contexts → crates → spec slices → feature dirs (AI-navigability)
@@ -48,10 +48,10 @@ Planned specs not yet created. Add requirements captured during development here
 
 ## SPEC-020 (planned): Context Reorganization — data-graph rename & namespace moves
 
-> **PROMOTED (2026-08-08):** frontend portion created as docs/specs/SPEC-020-dikwms-frontend-reorg.md — entry kept for provenance. Backend portion (`knowledge-domain` → `data-graph` crate rename) remains deferred here.
+> **PROMOTED (2026-08-08):** frontend portion created as docs/specs/SPEC-020-dikwms-frontend-reorg.md — entry kept for provenance. Backend portion (`data-graph` → `data-graph` crate rename) remains deferred here.
 
 **Requirement (captured 2026-08-07, source: orchestrator DDD review):**
-- Rename backend crate `knowledge-domain` → **`data-graph`** (bounded context: Data Graph)
+- Rename backend crate `data-graph` → **`data-graph`** (bounded context: Data Graph)
 - Frontend moves (via `bit move`, never re-create):
   - `ui/graph` → `ui/data-graph/canvas`
   - `ui/select-layout` (extracted from graph) → `ui/data-graph/select-layout`
@@ -262,11 +262,11 @@ Planned specs not yet created. Add requirements captured during development here
 
 ## SPEC-009 (planned): Multi-Namespace Versioned Schema Registry
 
-**Requirement (captured 2026-08-06):** a multi-namespace, versioned schema registry managed by knowledge-domain, stored in TerminusDB; core schemas only in code; schema.org as the first namespace; namespaces added via API/web console using Protocol Buffers (package-directive namespaces, immutable field tags).
+**Requirement (captured 2026-08-06):** a multi-namespace, versioned schema registry managed by data-graph, stored in TerminusDB; core schemas only in code; schema.org as the first namespace; namespaces added via API/web console using Protocol Buffers (package-directive namespaces, immutable field tags).
 
 **Brainstorm complete (docs/brainstorm/schema-registry-core-set.md, 2026-08-07) — decisions locked:**
 
-**Core schema set (ships in knowledge-domain, protobuf):**
+**Core schema set (ships in data-graph, protobuf):**
 - 5 kinds via discriminated field + Thing-minimal properties: Node, Edge, Combo, CreativeWork, MediaObject, Action
 - Edge = Thing + `subject`/`object`/`relationship`; Combo = Thing + members
 - Everything IS a schema.org `Thing`; `additionalType` (registry-validated) is the extension seam

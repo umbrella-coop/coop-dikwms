@@ -4,7 +4,7 @@
 
 use std::collections::HashMap;
 
-use knowledge_domain::{
+use data_graph::{
     Authorization, COMMON_INSTANCE, EntityKind, Graph, Level, Permission, Policy, PolicyError,
     PropertySet, Scope,
 };

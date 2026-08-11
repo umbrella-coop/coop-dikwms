@@ -56,8 +56,8 @@ dependencies = [
  "anyhow",
  "axum",
  "chrono",
+ "data-graph",
  "http-body-util",
- "knowledge-domain",
  "schema-registry",
  "serde",
  "serde_json",
@@ -528,6 +528,16 @@ dependencies = [
  "lock_api",
  "once_cell",
  "parking_lot_core",
+]
+
+[[package]]
+name = "data-graph"
+version = "0.1.0"
+dependencies = [
+ "chrono",
+ "serde",
+ "serde_json",
+ "uuid",
 ]
 
 [[package]]
@@ -1472,16 +1482,6 @@ dependencies = [
  "cfg-if",
  "futures-util",
  "wasm-bindgen",
-]
-
-[[package]]
-name = "knowledge-domain"
-version = "0.1.0"
-dependencies = [
- "chrono",
- "serde",
- "serde_json",
- "uuid",
 ]
 
 [[package]]
@@ -2693,8 +2693,8 @@ version = "0.1.0"
 dependencies = [
  "anyhow",
  "axum",
+ "data-graph",
  "futures",
- "knowledge-domain",
  "reqwest",
  "serde",
  "serde_json",
@@ -2916,7 +2916,7 @@ version = "0.1.0"
 dependencies = [
  "anyhow",
  "chrono",
- "knowledge-domain",
+ "data-graph",
  "serde",
  "serde_json",
  "terminusdb-bin",

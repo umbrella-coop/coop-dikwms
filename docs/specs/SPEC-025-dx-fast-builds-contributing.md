@@ -6,7 +6,7 @@
 
 ## Verification Record (2026-08-10)
 
-- AC-1 ✅ — `cargo config get` resolves the example; `cargo check -p knowledge-domain` passes with the copy applied (dev profile from config)
+- AC-1 ✅ — `cargo config get` resolves the example; `cargo check -p data-graph` passes with the copy applied (dev profile from config)
 - AC-2 ✅ — PR #12 diff: no `-Z` flags; linker overrides exist only in the example; tracked `.cargo/config.toml` deleted
 - AC-3 ✅ — PR #12 diff vs `main` = exactly `.cargo/config.toml` (del), `.cargo/config.toml.example`, `.gitignore`, `CONTRIBUTING.md`, `scripts/dx-benchmark-{no-dep,hyperfine}.sh`; `Cargo.toml` byte-identical
 - AC-4 ✅ — CONTRIBUTING: Linux/macOS/Windows deps table + opt-in speed-ups section (sccache, mold/lld, per-developer config, profile overrides, CARGO_TARGET_DIR, RUST_TEST_THREADS)

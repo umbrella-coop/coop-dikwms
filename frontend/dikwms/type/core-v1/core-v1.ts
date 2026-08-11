@@ -1,6 +1,6 @@
 /**
  * Data Graph primitives (DIKW Data layer) — shared wire-agnostic types.
- * Parity: backend `knowledge-domain` EntityKind { Node, Edge, Combo }.
+ * Parity: backend `data-graph` EntityKind { Node, Edge, Combo }.
  * Schemaless: `kind` stays loose (string), like the wire.
  */
 export type DataGraphNode = { id: string; kind: string; name?: string };

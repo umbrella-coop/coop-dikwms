@@ -5,7 +5,7 @@
 
 #![recursion_limit = "512"]
 
-use knowledge_domain::{EntityKind, PropertySet, Scope};
+use data_graph::{EntityKind, PropertySet, Scope};
 use terminusdb_bin::TerminusDBServer;
 use terminusdb_repository::{Repository, resolve_at};
 use uuid::Uuid;
@@ -49,7 +49,7 @@ async fn entity_and_property_sets_round_trip_with_versions_intact() -> anyhow::R
     let set = loaded[0].to_property_set();
     assert_eq!(set.version, 1);
     assert_eq!(set.scope, Scope::Org);
-    assert_eq!(set.status, knowledge_domain::Status::Current);
+    assert_eq!(set.status, data_graph::Status::Current);
 
     Ok(())
 }

@@ -10,7 +10,7 @@ use uuid::Uuid;
 
 use crate::stream::{self, CommitCursor};
 use crate::{Repository, resolve_at};
-use knowledge_domain::PropertySet;
+use data_graph::PropertySet;
 
 #[derive(
     Clone,
@@ -262,7 +262,7 @@ impl Repository {
         let restored = PropertySet {
             scope: as_of.scope,
             version: current_version + 1,
-            status: knowledge_domain::Status::Current,
+            status: data_graph::Status::Current,
             properties: as_of.properties,
         };
         let msg = format!("{reason}|rev:{target_commit}");
