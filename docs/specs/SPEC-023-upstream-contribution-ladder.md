@@ -1,8 +1,8 @@
 # SPEC-023 Feature: Upstream Contribution Ladder — terminusdb-rs fork → ParaplouOU
 
-<!-- status: Review -->
+<!-- status: Approved -->
 <!-- progress: 3/3 PRs opened (2026-08-10) — #9 casing, #10 auth, #11 collab+tests; awaiting upstream merge -->
-<!-- approved: 2026-08-10 by orchestrator (retrospective — implementation preceded approval; see Delta Record) -->
+<!-- approved: 2026-08-10 by orchestrator (retrospective — implementation preceded approval) -->
 
 ## Overview
 
