@@ -48,7 +48,7 @@ You are an expert software engineer assistant. Follow these project standards.
 1. **`cargo check` before `cargo test`** — catches compile errors in seconds without the full codegen/link pass. Run `cargo check -p <crate> --tests` before any test run.
 2. **Target only the crate being changed** — `-p <crate>`, never the whole workspace (the `terminusdb-bin` dev-dep compiles TerminusDB from source; full builds are slow).
 3. **TDD order:** write the failing test first, run it (red), implement, run again (green).
-4. **Integration tests use `TerminusDBServer::test_instance()`** (real per-process v12.1 server) — never mocks for persistence. Heavy concurrent tests against the shared server may hit transaction contention: serialize with a global mutex (see `api/tests/spec_013_api.rs`) or `RUST_TEST_THREADS=1`.
+4. **Integration tests use `TerminusDBServer::test_instance()`** (real per-process server, official `terminusdb/terminusdb` @ stable `v12.0.7` — user directive 2026-08-11; override `TERMINUSDB_VERSION`) — never mocks for persistence. Heavy concurrent tests against the shared server may hit transaction contention: serialize with a global mutex (see `api/tests/spec_013_api.rs`) or `RUST_TEST_THREADS=1`.
 5. **Clean up after aborted test runs:** orphaned servers (`pkill -f "serve --memory root"`) pile up and hang subsequent builds.
 6. **Quality gates before commit:** `cargo fmt` (via nightly) + `cargo clippy --all-targets` — fix warnings in your crates; pre-existing fork warnings are not yours.
 7. **Token discipline:** commit messages carry structured tokens (`ps:`, `ent:`, `corr:`, `rev:`) — never rename or reorder them without updating `stream::decode_entry` and `resolve_at`.
