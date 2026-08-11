@@ -16,6 +16,7 @@ pub fn router() -> Router<AppState> {
     Router::new()
         .route("/entities", post(create_entity))
         .route("/bulk-entities", post(bulk_entities))
+        .route("/graph/snapshot", get(graph_snapshot))
         .route("/entities/{id}/property-sets", post(save_property_set))
         .route("/entities/{id}/property-sets", get(list_property_sets))
         .route("/entities/{id}/resolve", get(resolve_chain))
@@ -102,6 +103,21 @@ pub async fn save_property_set(
     Ok(Json(
         json!({ "@type": "api:Ok", "entity": id, "instance": body.instance_id, "version": body.version }),
     ))
+}
+
+/// Full graph projection for UI bootstrap (SPEC-027 REQ-008; dev-only).
+pub async fn graph_snapshot(State(state): State<AppState>) -> Result<Json<Value>, ApiError> {
+    let snapshot = state.repo.graph_snapshot().await?;
+    Ok(Json(json!({
+        "@type": "api:Graph",
+        "entities": snapshot.entities.iter().map(|e| {
+            json!({
+                "id": e.id,
+                "kind": e.kind,
+                "property_sets": e.property_sets,
+            })
+        }).collect::<Vec<_>>(),
+    })))
 }
 
 // ------------------------------------------------------------------

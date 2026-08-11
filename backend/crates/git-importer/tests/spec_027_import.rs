@@ -376,6 +376,58 @@ async fn insight_post_pass_matches_recomputation() -> anyhow::Result<()> {
     Ok(())
 }
 
+// ------------------------------------------------------------------
+// REQ-008 bootstrap: GET /graph/snapshot returns the full projection.
+// ------------------------------------------------------------------
+#[tokio::test]
+async fn graph_snapshot_lists_imported_entities() -> anyhow::Result<()> {
+    let dir = tmp("snap");
+    let _ = std::fs::remove_dir_all(&dir);
+    std::fs::create_dir_all(&dir).unwrap();
+    fixture(&dir)?;
+
+    let (api_base, repo) = start_platform().await?;
+
+    let since = cutoff_days_ago(250);
+    let commits = walk(&dir, since)?;
+    let state_path = tmp("snap-state.json");
+    let _ = std::fs::remove_file(&state_path);
+
+    let state = ImportState::new("fixture", "main", "2025-08-11");
+    let mut importer = git_importer::pipeline::Importer::new(
+        git_importer::pipeline::PlatformClient::new(&api_base)?,
+        state,
+        state_path.clone(),
+    );
+    importer.run(&commits).await?;
+    let window_end = chrono::DateTime::parse_from_rfc3339("2026-02-01T00:00:00+00:00").unwrap();
+    importer.run_insights(&commits, window_end).await?;
+
+    let resp: serde_json::Value = reqwest::Client::new()
+        .get(format!("{api_base}/graph/snapshot"))
+        .send()
+        .await?
+        .json()
+        .await?;
+    let entities = resp["entities"].as_array().expect("entities array");
+    // 5 commits + 2 authors + 1 insight entity
+    assert_eq!(entities.len(), 8, "full projection incl. insight entity");
+    let commit_entities = entities
+        .iter()
+        .filter(|e| {
+            e["property_sets"][0]["properties"]["hash"]
+                .as_str()
+                .is_some_and(|h| !h.starts_with("git-insight-"))
+        })
+        .count();
+    assert_eq!(commit_entities, 5);
+
+    let _ = std::fs::remove_dir_all(&dir);
+    let _ = std::fs::remove_file(&state_path);
+    drop_db(&repo).await;
+    Ok(())
+}
+
 #[test]
 fn normalize_email_handles_variants() {
     assert_eq!(normalize_email("Alice@Example.COM "), "alice@example.com");

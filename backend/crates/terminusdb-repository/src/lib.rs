@@ -245,6 +245,83 @@ impl Repository {
         }
         Ok(out)
     }
+
+    /// Full graph projection (SPEC-027 REQ-008 bootstrap): every entity with
+    /// its kind and property sets, from two unfolded scans.
+    pub async fn graph_snapshot(&self) -> anyhow::Result<GraphSnapshot> {
+        let entity_docs = self
+            .client
+            .get_documents(
+                vec![],
+                &self.spec,
+                terminusdb_client::GetOpts {
+                    unfold: true,
+                    type_filter: Some("EntityDoc".to_string()),
+                    ..Default::default()
+                },
+            )
+            .await?;
+        let ps_docs = self
+            .client
+            .get_documents(
+                vec![],
+                &self.spec,
+                terminusdb_client::GetOpts {
+                    unfold: true,
+                    type_filter: Some("PropertySetDoc".to_string()),
+                    ..Default::default()
+                },
+            )
+            .await?;
+
+        let mut kinds: HashMap<Uuid, String> = HashMap::new();
+        for doc in entity_docs {
+            if let (Some(id), Some(kind)) = (
+                doc["id"]
+                    .as_str()
+                    .and_then(|s| {
+                        s.strip_prefix("EntityDoc/E:")
+                            .or_else(|| s.strip_prefix("E:"))
+                    })
+                    .and_then(|s| s.parse::<Uuid>().ok()),
+                doc["kind"].as_str(),
+            ) {
+                kinds.insert(id, kind.to_string());
+            }
+        }
+        let mut property_sets: HashMap<Uuid, Vec<serde_json::Value>> = HashMap::new();
+        for doc in ps_docs {
+            if let Some(entity) = doc["entity_id"]
+                .as_str()
+                .and_then(|s| s.parse::<Uuid>().ok())
+            {
+                property_sets.entry(entity).or_default().push(doc);
+            }
+        }
+        let mut entities = Vec::with_capacity(kinds.len());
+        for (id, kind) in kinds {
+            entities.push(EntitySummary {
+                id,
+                kind,
+                property_sets: property_sets.remove(&id).unwrap_or_default(),
+            });
+        }
+        entities.sort_by_key(|e| e.id);
+        Ok(GraphSnapshot { entities })
+    }
+}
+
+/// Full graph projection (SPEC-027 REQ-008): all entities + property sets.
+#[derive(Debug, Clone)]
+pub struct GraphSnapshot {
+    pub entities: Vec<EntitySummary>,
+}
+
+#[derive(Debug, Clone)]
+pub struct EntitySummary {
+    pub id: Uuid,
+    pub kind: String,
+    pub property_sets: Vec<serde_json::Value>,
 }
 
 /// Resolve the effective property set for `entity_id` at a scope chain as of
