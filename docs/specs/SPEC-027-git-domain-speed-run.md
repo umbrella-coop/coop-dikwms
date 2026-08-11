@@ -1,6 +1,7 @@
 # Feature: SPEC-027-git-domain-speed-run — Git-Domain Speed Run (end-to-end proof)
 
-<!-- status: Approved -->
+<!-- status: Implemented -->
+<!-- implemented-date: 2026-08-11 -->
 <!-- approved-date: 2026-08-11 -->
 <!-- approved-by: orchestrator -->
 <!-- created: 2026-08-11 -->
@@ -130,3 +131,33 @@ Explorer lands in the existing `ui/project` context (no new namespace — SPEC-0
 - Small reviewable commits; single `speed-run-1` branch carries the functional version
 - All reproduction material under `examples/git-codebase-1/**`
 - P2 (deferred): search-first onboarding (U2'), real edge persistence (beyond ADR-004 verdict), tags=promotions (G2)
+
+## Implementation Record (2026-08-11)
+
+Phases A (ingestion + durability) and C (wisdom insights) complete; Phase B
+(explorer) shipped with SSE live materialization pending a stream-property
+extension (AC-8 partial). Verified end-to-end against the real
+`terminusdb/terminusdb` repo (12-month window, fixed cutoff 2025-08-11).
+
+| AC | Status | Evidence |
+|----|--------|----------|
+| AC-1 | ✅ PASS | IT `import_matches_window_and_populates_property_sets`; real run: **898/898 commits**, entities + property sets populated |
+| AC-2 | ✅ PASS | IT `rerun_is_idempotent`; real re-run: `imported=0` (server-side dedupe by key) |
+| AC-3 | ✅ PASS | IT `crash_before_checkpoint_resumes_without_duplicates` (fresh state + server dedupe) |
+| AC-4 | ◐ PARTIAL | breaker/backoff unit-tested; no integration server-down test (documented in `pipeline.rs` retry module) |
+| AC-5 | ◐ PARTIAL | dead-letter path unit-level; poison-commit IT deferred |
+| AC-6 | ✅ PASS | IT `bulk_endpoint_warns_on_git_v1_violations` + real 898-commit import via `POST /bulk-entities` |
+| AC-7 | ✅ PASS | git.v1 seeded; IT warnings fire on crafted violations; real data organically clean (0/898 empty messages, verified) |
+| AC-8 | ◐ PARTIAL | explorer bootstraps from `/graph/snapshot`; SSE live-import rendering needs stream events to carry properties (hook stores id/kind only) |
+| AC-9 | ✅ PASS | `git-explorer.spec.tsx` (5 specs): slider/filter/drawer/history; `bit build app` + dev server 200 |
+| AC-10 | ✅ PASS | IT `insight_post_pass_matches_recomputation`; real run: **22 dirs** analyzed, insight entity persisted |
+| AC-11 | ✅ PASS | runbook scripts run end-to-end; verify script passes; `cargo check` + `npm run check` green |
+
+**Notable implementation deltas vs the spec text** (all recorded in commits on
+`speed-run-1/git-domain`): importer is an HTTP client of the data-graph API
+(`git-import → data-graph API → terminusdb` — user directive); idempotency is
+server-side by `dedupe_key` (reconcile removed); `data-graph` types gained
+serde derives (wire contract); embedded TerminusDB default switched to
+official `v12.0.7` (docker for integration tests — user directive); insight
+entity idempotency key `git-insight-<repo>-<since>`; `GET /graph/snapshot`
+added for UI bootstrap.
