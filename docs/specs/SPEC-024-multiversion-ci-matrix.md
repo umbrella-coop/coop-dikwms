@@ -5,7 +5,7 @@
 
 ## Delta Record (2026-08-10)
 
-- **ADDED Requirement "Server release watch (official repo)"** (user requirement 2026-08-10/11, CI axis): the embedded-server default moved from the `ParapluOU/terminusdb` fork to the **official `terminusdb/terminusdb`** repo with `TERMINUSDB_VERSION = "auto-rc"` — the highest versioned `-rc` branch (e.g. `12.1-rc`), resolved at build time in `crates/bin/build.rs` (see SPEC-025/026-adjacent branch `pr/official-server`). A weekly **`server-release-watch`** workflow in the client fork reports what auto-rc resolves to and any `v<major>.<minor>-rc` tags, and opens/updates a `[release-watch]` issue when the rc line moved past the expected baseline or a pin-worthy rc tag appeared. Backing tooling: `scripts/server-release-watch.sh` (local + workflow). Rationale: the fork drifted silently (189 commits behind, measured 2026-08-11); with the official repo + auto-rc pattern there is no fork to drift — only the rc-line movement and tag-pin signals. This is the CI/detection axis; pinning `TERMINUSDB_VERSION` to a fixed tag for reproducible builds remains a manual decision.
+- **ADDED Requirement "Server release watch (official repo)"** (user requirement 2026-08-10/11, CI axis): the embedded-server default moved from the `ParapluOU/terminusdb` fork to the **official `terminusdb/terminusdb`** repo with `TERMINUSDB_CODE_SOURCE = "https://github.com/terminusdb/terminusdb" (auto)` — the highest versioned `-rc` branch (e.g. `12.1-rc`), resolved at build time in `crates/bin/build.rs` (see SPEC-025/026-adjacent branch `pr/official-server`). A weekly **`server-release-watch`** workflow in the client fork reports what auto-rc resolves to and any `v<major>.<minor>-rc` tags, and opens/updates a `[release-watch]` issue when the rc line moved past the expected baseline or a pin-worthy rc tag appeared. Backing tooling: `scripts/server-release-watch.sh` (local + workflow). Rationale: the fork drifted silently (189 commits behind, measured 2026-08-11); with the official repo + auto-rc pattern there is no fork to drift — only the rc-line movement and tag-pin signals. This is the CI/detection axis; pinning `TERMINUSDB_CODE_SOURCE` to a /tree/<ref> URL for reproducible builds remains a manual decision.
 
 ## Overview
 
@@ -70,7 +70,7 @@ The client fork SHALL ship a scheduled **`server-release-watch`** workflow (week
 #### Scenario: rc tag published
 - **GIVEN** upstream publishes a `v<major>.<minor>-rc` tag (e.g. `v12.1-rc`)
 - **WHEN** the workflow runs
-- **THEN** the issue reports the tag and the pin-`TERMINUSDB_VERSION` path for reproducible builds
+- **THEN** the issue reports the tag and the pin-`TERMINUSDB_CODE_SOURCE` (`.../tree/<tag>`) path for reproducible builds
 
 ## Acceptance Criteria
 
