@@ -1,6 +1,6 @@
 # Risk Register — dikwms (coop-graph-network)
 
-**Last Updated**: 2026-08-10
+**Last Updated**: 2026-08-11
 **Source**: Phase-0 project discovery (`/discover`, 2026-08-10)
 **Conventions**: risk IDs cross-reference spec Open Risks where they exist (R-1/R-2 in SPEC-001, R-18/R-20 in SPEC-013). NEW risks get sequential IDs.
 
@@ -15,6 +15,7 @@
 | RISK-007 | Process | Uncommitted work at discovery time (`frontend/dikwms/app/app.tsx` layout wiring) | Low | Low | Low | @orchestrator | Committed 2026-08-10 | Resolved |
 | RISK-008 | Security | No rate limiting/quotas on API (SPEC-013 R-20) | Low | Medium | Medium | @backend | Deferred to SPEC-014 or SPEC-007 gates | Open |
 | RISK-009 | Dependencies | Frontend deps Bit-managed per scope — version drift risk across `ui/` components | Medium | Low | Medium | @frontend | `bit install --add-missing-deps` + pnpm-lock discipline | Open |
+| RISK-010 | Dependencies | Server-fork drift: embedded-server pin `ParapluOU/terminusdb` `v12.1-rc-paraplu.1` was **189 commits behind** upstream `12.1-rc` (measured 2026-08-11, last sync 2026-07-13) — silent divergence from released images (Docker `latest` = v12.0.7) | High | Medium | High | @backend | `fork-drift-watch` weekly workflow (SPEC-024 delta) + `scripts/rebase-server-fork.sh` + docs/server-fork-rebasing.md; monthly rebase cadence; GA-tag watch for the stable rebase | Mitigating |
 
 ## Status Lifecycle
 
