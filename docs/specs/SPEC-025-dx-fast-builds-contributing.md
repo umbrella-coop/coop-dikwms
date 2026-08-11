@@ -1,8 +1,20 @@
 # SPEC-025 Feature: Developer Experience — Fast Local Builds/Tests + CONTRIBUTING.md
 
-<!-- status: Approved -->
+<!-- status: Implemented -->
 <!-- progress: fork PR-12 = 8 commits, 6 files, opened 2026-08-10; backend adoption committed (5c4d35a/f395461/415410d); awaiting upstream merge -->
 <!-- approved: 2026-08-10 by orchestrator (retrospective — implementation preceded approval; see Delta Record) -->
+
+## Verification Record (2026-08-10)
+
+- AC-1 ✅ — `cargo config get` resolves the example; `cargo check -p knowledge-domain` passes with the copy applied (dev profile from config)
+- AC-2 ✅ — PR #12 diff: no `-Z` flags; linker overrides exist only in the example; tracked `.cargo/config.toml` deleted
+- AC-3 ✅ — PR #12 diff vs `main` = exactly `.cargo/config.toml` (del), `.cargo/config.toml.example`, `.gitignore`, `CONTRIBUTING.md`, `scripts/dx-benchmark-{no-dep,hyperfine}.sh`; `Cargo.toml` byte-identical
+- AC-4 ✅ — CONTRIBUTING: Linux/macOS/Windows deps table + opt-in speed-ups section (sccache, mold/lld, per-developer config, profile overrides, CARGO_TARGET_DIR, RUST_TEST_THREADS)
+- AC-5 ✅ — CONTRIBUTING testing section documents `TerminusDBServer::test_instance()` + `RUST_TEST_THREADS=1` escape hatch
+- AC-6 ⚠️ PENDING — no CI checks reported on `pr/dx` (fork PR on upstream CI hasn't triggered); re-verify post-merge
+- AC-7 ✅ — linker-less PATH run: `WARNING: lld not found…` and the run continues (suggestion printed)
+
+**Verdict**: 6/7 PASS, 1 PENDING (upstream CI) → Implemented. **Not archived**: PR #12 awaiting upstream review/merge; re-verify AC-6 and archive on landing.
 
 ## Delta Record (2026-08-10)
 
