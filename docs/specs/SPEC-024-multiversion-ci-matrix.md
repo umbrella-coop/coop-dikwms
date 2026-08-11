@@ -5,7 +5,7 @@
 
 ## Delta Record (2026-08-10)
 
-- **ADDED Requirement "Fork drift watch + rebase tooling"** (user requirement 2026-08-10, CI axis): a weekly `fork-drift-watch` workflow in the client fork compares `ParapluOU/terminusdb` `v12.1-main` against upstream `terminusdb/terminusdb` `12.1-rc` (behind/ahead via GitHub compare API) and opens/updates a `[fork-drift]` issue when `behind_by > 30` or when upstream publishes a **`v<major>.<minor>-rc` tag** (e.g. `v12.1-rc`, `v12.12-rc` — the signal to rebase onto the tag and stop branch-tracking). Backing tooling: `scripts/fork-drift-check.sh` (local + workflow) and `scripts/rebase-server-fork.sh` (fetch → rebase → tag `v12.1-rc-paraplu.N` → optional push), documented in `docs/server-fork-rebasing.md`. Rationale: measured 2026-08-11 the fork was 189 commits behind (last sync 2026-07-13); without an alarm, drift accumulates silently and the embedded-server pin diverges from released images. This is the CI/detection axis; the actual rebase remains a manual, gate-checked operation.
+- **ADDED Requirement "Server release watch (official repo)"** (user requirement 2026-08-10/11, CI axis): the embedded-server default moved from the `ParapluOU/terminusdb` fork to the **official `terminusdb/terminusdb`** repo with `TERMINUSDB_VERSION = "auto-rc"` — the highest versioned `-rc` branch (e.g. `12.1-rc`), resolved at build time in `crates/bin/build.rs` (see SPEC-025/026-adjacent branch `pr/official-server`). A weekly **`server-release-watch`** workflow in the client fork reports what auto-rc resolves to and any `v<major>.<minor>-rc` tags, and opens/updates a `[release-watch]` issue when the rc line moved past the expected baseline or a pin-worthy rc tag appeared. Backing tooling: `scripts/server-release-watch.sh` (local + workflow). Rationale: the fork drifted silently (189 commits behind, measured 2026-08-11); with the official repo + auto-rc pattern there is no fork to drift — only the rc-line movement and tag-pin signals. This is the CI/detection axis; pinning `TERMINUSDB_VERSION` to a fixed tag for reproducible builds remains a manual decision.
 
 ## Overview
 
@@ -58,19 +58,19 @@ The job SHALL be runnable locally with `act` (container-based services, no `sudo
 - **WHEN** the documented act invocation runs the matrix job
 - **THEN** the matrix executes against the same docker tags and produces the same report behavior
 
-### Requirement: Fork drift watch + rebase tooling *(ADDED 2026-08-10)*
+### Requirement: Server release watch (official repo) *(ADDED 2026-08-10, reworked 2026-08-11)*
 
-The client fork SHALL ship a scheduled **`fork-drift-watch`** workflow (weekly cron + `workflow_dispatch`) that compares the server fork (`ParapluOU/terminusdb` `v12.1-main`) against upstream `12.1-rc` via the GitHub compare API and opens/updates a `[fork-drift]` issue when `behind_by > 30` or when an upstream **`v<major>.<minor>-rc` tag** is detected (e.g. `v12.1-rc`, `v12.12-rc`). Backing it: `scripts/fork-drift-check.sh` (reusable locally; exit 2 = action needed) and `scripts/rebase-server-fork.sh` (fetch → rebase `v12.1-main` → immutable tag `v12.1-rc-paraplu.N` → optional push; prints the `build.rs` `TERMINUSDB_VERSION` bump steps). The procedure is documented in `docs/server-fork-rebasing.md`.
+The client fork SHALL ship a scheduled **`server-release-watch`** workflow (weekly cron + `workflow_dispatch`) that resolves the highest versioned `-rc` branch on the **official `terminusdb/terminusdb`** repo (the same rule as the `auto-rc` default in `crates/bin/build.rs`) and lists `v<major>.<minor>-rc` tags, opening/updating a `[release-watch]` issue when the rc line moved past the expected baseline (repo-var configurable) or when a pin-worthy rc tag appeared. Backing it: `scripts/server-release-watch.sh` (reusable locally; exit 2 = action needed). *(MODIFIED 2026-08-11: replaced the ParapluOU fork-drift watcher + rebase tooling — the fork is no longer used; the embedded server now defaults to the official repo with the auto-rc pattern.)*
 
-#### Scenario: Drift above threshold raises an issue
-- **GIVEN** the fork behind upstream `12.1-rc` by more than 30 commits
+#### Scenario: rc line moved past baseline
+- **GIVEN** the official repo's highest `-rc` branch differs from the expected baseline (e.g. `12.2-rc` vs `12.1-rc`)
 - **WHEN** the weekly workflow runs
-- **THEN** a `[fork-drift]` issue is created (or updated) with behind/ahead counts and the merge-base date
+- **THEN** a `[release-watch]` issue is created (or updated) naming both branches and the re-run/pin guidance
 
-#### Scenario: Upstream rc tag detected
-- **GIVEN** upstream publishes a `v<major>.<minor>-rc` tag (e.g. `v12.1-rc`, `v12.12-rc`)
+#### Scenario: rc tag published
+- **GIVEN** upstream publishes a `v<major>.<minor>-rc` tag (e.g. `v12.1-rc`)
 - **WHEN** the workflow runs
-- **THEN** the issue reports the rc tag and the rebase-onto-the-tag path (stop branch-tracking)
+- **THEN** the issue reports the tag and the pin-`TERMINUSDB_VERSION` path for reproducible builds
 
 ## Acceptance Criteria
 
