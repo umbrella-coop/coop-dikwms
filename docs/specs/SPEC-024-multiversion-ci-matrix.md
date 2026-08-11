@@ -1,6 +1,7 @@
 # SPEC-024 Feature: Multi-Version TerminusDB CI Matrix (docker + act)
 
-<!-- status: Draft -->
+<!-- status: Review -->
+<!-- approved: 2026-08-10 by orchestrator (retrospective — no implementation yet) -->
 
 ## Overview
 
