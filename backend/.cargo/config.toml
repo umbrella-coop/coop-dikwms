@@ -1,9 +1,0 @@
-# Fast macOS builds (workspace requires nightly for the fork dependency).
-[target.aarch64-apple-darwin]
-rustflags = [
-    "-C", "link-arg=-fuse-ld=lld",
-    "-Z", "share-generics=y",
-]
-
-[build]
-rustc-wrapper = "sccache"
