@@ -8,3 +8,7 @@ backend/.cargo/config.toml
 frontend/node_modules/
 frontend/**/node_modules/
 frontend/network-graph/**/dist/
+
+# SPEC-027 speed-run generated artifacts
+examples/git-codebase-1/.cache/
+examples/git-codebase-1/.import-state.json
