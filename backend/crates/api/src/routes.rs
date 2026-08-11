@@ -15,6 +15,7 @@ use crate::error::ApiError;
 pub fn router() -> Router<AppState> {
     Router::new()
         .route("/entities", post(create_entity))
+        .route("/bulk-entities", post(bulk_entities))
         .route("/entities/{id}/property-sets", post(save_property_set))
         .route("/entities/{id}/property-sets", get(list_property_sets))
         .route("/entities/{id}/resolve", get(resolve_chain))
@@ -101,6 +102,99 @@ pub async fn save_property_set(
     Ok(Json(
         json!({ "@type": "api:Ok", "entity": id, "instance": body.instance_id, "version": body.version }),
     ))
+}
+
+// ------------------------------------------------------------------
+// Bulk ingestion (SPEC-027 REQ-006)
+// ------------------------------------------------------------------
+
+#[derive(Deserialize)]
+pub struct BulkEntity {
+    kind: data_graph::EntityKind,
+    /// Value of the dedupe key (e.g. commit hexsha, normalized email) —
+    /// server-side idempotency: entities whose property set already carries
+    /// `dedupe_key` = this value are skipped, not duplicated.
+    idempotency_key: String,
+    /// data-graph domain model as the wire contract: scope/version/status/
+    /// properties arrive typed, no manual string mapping.
+    set: data_graph::PropertySet,
+}
+
+#[derive(Deserialize)]
+pub struct BulkEntitiesBody {
+    /// Property key to dedupe on ("hash" | "email").
+    dedupe_key: String,
+    entities: Vec<BulkEntity>,
+}
+
+/// Batch create entities + property sets with server-side idempotency
+/// (SPEC-027 REQ-006; dev-only — RISK-001). OpenAPI schema deferred.
+pub async fn bulk_entities(
+    State(state): State<AppState>,
+    Principal(principal): Principal,
+    Json(body): Json<BulkEntitiesBody>,
+) -> Result<Json<Value>, ApiError> {
+    let mut results = Vec::with_capacity(body.entities.len());
+    let warnings: Vec<Value> = Vec::new();
+
+    let existing = state.repo.property_index(&body.dedupe_key).await?;
+
+    for entity in body.entities {
+        if let Some(existing_ids) = existing.get(&entity.idempotency_key) {
+            results.push(bulk_result(
+                &entity,
+                existing_ids.first().copied(),
+                "skipped",
+                "already imported",
+            ));
+            continue;
+        }
+        let entity_id = match state.repo.create_entity_as(entity.kind, &principal).await {
+            Ok(id) => id,
+            Err(e) => {
+                results.push(bulk_result(&entity, None, "skipped", &format!("{e:#}")));
+                continue;
+            }
+        };
+        match state
+            .repo
+            .save_property_set(
+                entity_id,
+                terminusdb_repository::COMMON_INSTANCE,
+                &entity.set,
+                &principal,
+                "bulk-import",
+            )
+            .await
+        {
+            Ok(()) => {
+                results.push(bulk_result(&entity, Some(entity_id), "imported", ""));
+            }
+            Err(e) => {
+                results.push(bulk_result(&entity, None, "skipped", &format!("{e:#}")));
+            }
+        }
+    }
+
+    Ok(Json(json!({
+        "@type": "api:BulkResult",
+        "results": results,
+        "warnings": warnings,
+    })))
+}
+
+fn bulk_result(entity: &BulkEntity, entity_id: Option<Uuid>, status: &str, reason: &str) -> Value {
+    let mut v = json!({
+        "idempotency_key": entity.idempotency_key,
+        "status": status,
+    });
+    if let Some(id) = entity_id {
+        v["entity_id"] = json!(id);
+    }
+    if !reason.is_empty() {
+        v["reason"] = json!(reason);
+    }
+    v
 }
 
 #[utoipa::path(get, path = "/entities/{id}/property-sets")]

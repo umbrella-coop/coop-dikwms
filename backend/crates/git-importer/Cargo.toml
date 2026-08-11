@@ -12,7 +12,13 @@ chrono.workspace = true
 anyhow = "1"
 git2 = { version = "0.21", features = ["vendored-libgit2"] }
 data-graph = { path = "../data-graph" }
-terminusdb-repository = { path = "../terminusdb-repository" }
-terminusdb-client = { path = "../../../third-party/terminusdb-client-rs/crates/client" }
 tokio = { workspace = true, features = ["time"] }
+reqwest = { version = "0.12", features = ["json"] }
+
+[dev-dependencies]
+api = { path = "../api" }
+schema-registry = { path = "../schema-registry" }
+terminusdb-client = { path = "../../../third-party/terminusdb-client-rs/crates/client" }
+terminusdb-repository = { path = "../terminusdb-repository" }
+axum = { version = "0.8" }
 url = "2"

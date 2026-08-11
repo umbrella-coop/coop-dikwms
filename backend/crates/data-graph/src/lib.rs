@@ -5,13 +5,14 @@
 use std::collections::HashMap;
 
 use chrono::{DateTime, Utc};
+use serde::{Deserialize, Serialize};
 use serde_json::Value;
 use uuid::Uuid;
 
 /// Sentinel instance id for the global `common` truth layer.
 pub const COMMON_INSTANCE: Uuid = Uuid::nil();
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
 pub enum Scope {
     Common,
     Org,
@@ -19,21 +20,21 @@ pub enum Scope {
     Project,
 }
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
 pub enum EntityKind {
     Node,
     Edge,
     Combo,
 }
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
 pub enum Status {
     Candidate,
     Current,
     Retired,
 }
 
-#[derive(Debug, Clone, PartialEq)]
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct PropertySet {
     pub scope: Scope,
     pub version: u64,

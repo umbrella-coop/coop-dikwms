@@ -15,15 +15,17 @@ use url::Url;
 async fn main() -> anyhow::Result<()> {
     tracing_subscriber::fmt()
         .with_env_filter(
-            tracing_subscriber::EnvFilter::try_from_default_env()
-                .unwrap_or_else(|_| "info".into()),
+            tracing_subscriber::EnvFilter::try_from_default_env().unwrap_or_else(|_| "info".into()),
         )
         .init();
 
     let endpoint = env::var("TERMINUSDB_URL").unwrap_or_else(|_| "http://localhost:6363".into());
     let db = env::var("TERMINUSDB_DB").unwrap_or_else(|_| "platform".into());
     let pass = env::var("TERMINUSDB_ADMIN_PASS").unwrap_or_else(|_| "root".into());
-    let port: u16 = env::var("PORT").ok().and_then(|p| p.parse().ok()).unwrap_or(8080);
+    let port: u16 = env::var("PORT")
+        .ok()
+        .and_then(|p| p.parse().ok())
+        .unwrap_or(8080);
 
     let client = terminusdb_client::TerminusDBHttpClient::new(
         Url::parse(&endpoint)?,

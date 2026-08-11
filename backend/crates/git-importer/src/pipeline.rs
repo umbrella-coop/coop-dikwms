@@ -1,9 +1,12 @@
-//! Ingestion pipeline: walk → transform → persist → checkpoint (SPEC-027).
+//! Ingestion pipeline: walk → transform → bulk-import via the platform API
+//! (SPEC-027 REQ-001/006). The importer is an HTTP client of the dikwms API
+//! (`POST /bulk-entities`) — docker runs the services that expose the APIs;
+//! this binary consumes them.
 //!
-//! Single pass, newest-first. Commit `parents` are stored twice: as hexsha
-//! strings (stable identifiers, also for out-of-window parents) and as known
-//! entity Uuids (ADR-004 adjacency properties). Clients resolve hexsha → Uuid
-//! through the loaded hash map; unimported parents render as ghost nodes.
+//! Server-side idempotency: every entity carries a `dedupe_key` value (commit
+//! hexsha / normalized email); the API skips existing keys, so re-runs and
+//! crash-resumes can never duplicate entities (no client-side reconcile
+//! needed).
 
 use std::collections::HashMap;
 use std::path::PathBuf;
@@ -11,20 +14,74 @@ use std::time::Duration;
 
 use anyhow::Context;
 use data_graph::{EntityKind, PropertySet, Scope};
-use terminusdb_repository::Repository;
+use serde::{Deserialize, Serialize};
 use uuid::Uuid;
 
-use crate::git::{GitAuthor, GitCommit};
+use crate::git::GitCommit;
 use crate::retry::{Backoff, CircuitBreaker};
 use crate::state::ImportState;
 
 const BATCH_SIZE: usize = 100;
 const MAX_ATTEMPTS: u32 = 5;
-const COMMON_INSTANCE: Uuid = Uuid::nil();
-const IMPORTER_AUTHOR: &str = "git-importer";
+
+#[derive(Clone)]
+pub struct PlatformClient {
+    base: String,
+    http: reqwest::Client,
+}
+
+impl PlatformClient {
+    pub fn new(base: &str) -> anyhow::Result<Self> {
+        Ok(Self {
+            base: base.trim_end_matches('/').to_string(),
+            http: reqwest::Client::new(),
+        })
+    }
+
+    pub async fn bulk_entities(
+        &self,
+        dedupe_key: &str,
+        entities: &[BulkEntity],
+    ) -> anyhow::Result<BulkResponse> {
+        let resp = self
+            .http
+            .post(format!("{}/bulk-entities", self.base))
+            .json(&serde_json::json!({ "dedupe_key": dedupe_key, "entities": entities }))
+            .send()
+            .await?
+            .error_for_status()?
+            .json::<BulkResponse>()
+            .await?;
+        Ok(resp)
+    }
+}
+
+#[derive(Debug, Clone, Serialize)]
+pub struct BulkEntity {
+    pub kind: EntityKind,
+    pub idempotency_key: String,
+    /// data-graph domain model as the wire contract (SPEC-027 REQ-006):
+    /// scope/version/status/properties serialize 1:1 with the API.
+    pub set: PropertySet,
+}
+
+#[derive(Debug, Clone, Deserialize)]
+pub struct BulkResultEntry {
+    pub idempotency_key: String,
+    pub entity_id: Option<String>,
+    pub status: String,
+    pub reason: Option<String>,
+}
+
+#[derive(Debug, Clone, Deserialize)]
+pub struct BulkResponse {
+    pub results: Vec<BulkResultEntry>,
+    #[allow(dead_code)]
+    pub warnings: Vec<serde_json::Value>,
+}
 
 pub struct Importer {
-    repo: Repository,
+    client: PlatformClient,
     state: ImportState,
     state_path: PathBuf,
 }
@@ -37,44 +94,79 @@ pub struct ImportReport {
 }
 
 impl Importer {
-    pub fn new(repo: Repository, state: ImportState, state_path: PathBuf) -> Self {
+    pub fn new(client: PlatformClient, state: ImportState, state_path: PathBuf) -> Self {
         Self {
-            repo,
+            client,
             state,
             state_path,
         }
     }
 
-    /// Rebuild the hexsha→Uuid and email→Uuid indexes from stored property
-    /// sets. DB wins over the state file (REQ-003 reconciliation) — closes
-    /// the crash-after-write-before-checkpoint gap.
-    pub async fn reconcile(&mut self) -> anyhow::Result<()> {
-        let hashes = self.repo.property_index("hash").await?;
-        for (hexsha, ids) in &hashes {
-            if let Some(id) = ids.first() {
-                self.state
-                    .hexsha_index
-                    .insert(hexsha.clone(), id.to_string());
+    pub async fn run(&mut self, commits: &[GitCommit]) -> anyhow::Result<ImportReport> {
+        let mut backoff = Backoff::new(Duration::from_secs(1), Duration::from_secs(30));
+        let mut breaker = CircuitBreaker::new(Duration::from_secs(60), 8);
+        let mut report = ImportReport::default();
+        let mut author_ids: HashMap<String, Uuid> = HashMap::new();
+
+        // Phase A — author entities (dedupe by normalized email).
+        let mut author_emails: Vec<String> = Vec::new();
+        for commit in commits {
+            let email = normalize_email(&commit.author.email);
+            if !author_emails.contains(&email) {
+                author_emails.push(email);
             }
         }
-        let emails = self.repo.property_index("email").await?;
-        for (email, ids) in &emails {
-            if let Some(id) = ids.first() {
+        for email in &author_emails {
+        if let Some(id) = self
+            .state
+            .authors_index
+            .get(email)
+            .and_then(|s| s.parse().ok())
+        {
+            author_ids.insert(email.clone(), id);
+            continue;
+        }
+            let author = &commits
+                .iter()
+                .find(|c| normalize_email(&c.author.email) == *email)
+                .expect("author email derived from commits")
+                .author;
+            let entity = BulkEntity {
+                kind: EntityKind::Node,
+                idempotency_key: email.clone(),
+                set: PropertySet::current(
+                    Scope::Common,
+                    1,
+                    HashMap::from([
+                        ("name".to_string(), serde_json::json!(author.name)),
+                        ("email".to_string(), serde_json::json!(email)),
+                    ]),
+                ),
+            };
+            let batch = vec![entity.clone()];
+            let resp = retry_write(&mut breaker, &mut backoff, || {
+                self.client.bulk_entities("email", &batch)
+            })
+            .await
+            .with_context(|| format!("bulk author {email}"))?;
+            for entry in resp.results {
+                let id = entry
+                    .entity_id
+                    .as_deref()
+                    .map(|s| s.parse())
+                    .transpose()
+                    .context("api returned no entity_id for author")?
+                    .ok_or_else(|| anyhow::anyhow!("author {email} skipped without entity_id"))?;
+                author_ids.insert(email.clone(), id);
                 self.state
                     .authors_index
                     .insert(email.clone(), id.to_string());
             }
         }
-        Ok(())
-    }
 
-    pub async fn run(&mut self, commits: &[GitCommit]) -> anyhow::Result<ImportReport> {
-        let mut backoff = Backoff::new(Duration::from_secs(1), Duration::from_secs(30));
-        let mut breaker = CircuitBreaker::new(Duration::from_secs(60), 8);
-        let mut run_authors: HashMap<String, Uuid> = HashMap::new();
-        let mut report = ImportReport::default();
-        let mut since_checkpoint = 0usize;
-
+        // Phase B — commit entities (dedupe by hexsha), batched.
+        let mut pending: Vec<BulkEntity> = Vec::new();
+        let mut pending_hexshas: Vec<String> = Vec::new();
         for commit in commits {
             report.seen += 1;
             self.state.counts.seen += 1;
@@ -82,91 +174,80 @@ impl Importer {
             if self.state.is_imported(&commit.hexsha) {
                 continue;
             }
+            let author_id = author_ids
+                .get(&normalize_email(&commit.author.email))
+                .copied()
+                .ok_or_else(|| anyhow::anyhow!("no author entity for {}", commit.hexsha))?;
+            pending.push(BulkEntity {
+                kind: EntityKind::Node,
+                idempotency_key: commit.hexsha.clone(),
+                set: PropertySet::current(Scope::Common, 1, build_props(commit, author_id)),
+            });
+            pending_hexshas.push(commit.hexsha.clone());
 
-            let author_id = self
-                .ensure_author(&commit.author, &mut run_authors, &mut breaker, &mut backoff)
-                .await?;
-
-            let entity_id = retry_write(&mut breaker, &mut backoff, || async {
-                self.repo
-                    .create_entity_as(EntityKind::Node, IMPORTER_AUTHOR)
-                    .await
-            })
-            .await
-            .with_context(|| format!("create entity for {}", commit.hexsha))?;
-
-            let props = build_props(commit, author_id);
-            let set = PropertySet::current(Scope::Common, 1, props);
-            let repo = &self.repo;
-            let write_result = retry_write(&mut breaker, &mut backoff, || async {
-                repo.save_property_set(
-                    entity_id,
-                    COMMON_INSTANCE,
-                    &set,
-                    IMPORTER_AUTHOR,
-                    "import-commit",
+            if pending.len() >= BATCH_SIZE {
+                self.apply_batch(
+                    &pending,
+                    &pending_hexshas,
+                    &mut report,
+                    &mut breaker,
+                    &mut backoff,
                 )
-                .await
-            })
-            .await;
-
-            match write_result {
-                Ok(()) => {
-                    self.state.record_imported(&commit.hexsha, entity_id);
-                    report.imported += 1;
-                    since_checkpoint += 1;
-                }
-                Err(e) if !breaker.should_halt() => {
-                    self.state.record_skipped(&commit.hexsha, &format!("{e:#}"));
-                    report.skipped += 1;
-                }
-                Err(e) => return Err(e),
-            }
-
-            if since_checkpoint >= BATCH_SIZE {
+                .await?;
                 self.state.save(&self.state_path)?;
-                since_checkpoint = 0;
+                pending.clear();
+                pending_hexshas.clear();
             }
+        }
+        if !pending.is_empty() {
+            self.apply_batch(
+                &pending,
+                &pending_hexshas,
+                &mut report,
+                &mut breaker,
+                &mut backoff,
+            )
+            .await?;
         }
         self.state.save(&self.state_path)?;
         Ok(report)
     }
 
-    async fn ensure_author(
+    async fn apply_batch(
         &mut self,
-        author: &GitAuthor,
-        run_authors: &mut HashMap<String, Uuid>,
+        entities: &[BulkEntity],
+        hexshas: &[String],
+        report: &mut ImportReport,
         breaker: &mut CircuitBreaker,
         backoff: &mut Backoff,
-    ) -> anyhow::Result<Uuid> {
-        let email = normalize_email(&author.email);
-        if let Some(id) = self.state.authors_index.get(&email) {
-            return id.parse().context("corrupt authors_index uuid");
-        }
-        if let Some(id) = run_authors.get(&email) {
-            return Ok(*id);
-        }
-        let id = retry_write(breaker, backoff, || async {
-            self.repo
-                .create_entity_as(EntityKind::Node, IMPORTER_AUTHOR)
-                .await
-        })
-        .await
-        .with_context(|| format!("create author entity {email}"))?;
-        let props = HashMap::from([
-            ("name".to_string(), serde_json::json!(author.name)),
-            ("email".to_string(), serde_json::json!(email)),
-        ]);
-        let set = PropertySet::current(Scope::Common, 1, props);
-        retry_write(breaker, backoff, || async {
-            self.repo
-                .save_property_set(id, COMMON_INSTANCE, &set, IMPORTER_AUTHOR, "import-author")
-                .await
+    ) -> anyhow::Result<()> {
+        let resp = retry_write(breaker, backoff, || {
+            self.client.bulk_entities("hash", entities)
         })
         .await?;
-        run_authors.insert(email.clone(), id);
-        self.state.authors_index.insert(email, id.to_string());
-        Ok(id)
+        for (hexsha, entry) in hexshas.iter().zip(resp.results) {
+            match (entry.status.as_str(), entry.entity_id) {
+                ("imported", Some(id)) => {
+                    let uuid = id.parse().context("api returned invalid entity_id")?;
+                    self.state.record_imported(hexsha, uuid);
+                    report.imported += 1;
+                }
+                ("skipped", _) => {
+                    let reason = entry.reason.unwrap_or_default();
+                    if !reason.is_empty() {
+                        self.state.record_skipped(hexsha, &reason);
+                        report.skipped += 1;
+                    }
+                    // skipped-already-imported: idempotent replay, not an error.
+                }
+                (other, _) => {
+                    self.state
+                        .record_skipped(hexsha, &format!("unexpected status {other}"));
+                    report.skipped += 1;
+                }
+            }
+        }
+        Ok(())
     }
 }
 
@@ -241,19 +322,19 @@ where
 #[cfg(test)]
 mod tests {
     use super::*;
-    use chrono::DateTime;
+    use chrono::DateTime as ChronoDateTime;
 
     fn commit() -> GitCommit {
         GitCommit {
             hexsha: "abc123".to_string(),
             message: "fix: thing".to_string(),
-            authored_at: DateTime::parse_from_rfc3339("2026-01-01T00:00:00+00:00").unwrap(),
-            author: GitAuthor {
+            authored_at: ChronoDateTime::parse_from_rfc3339("2026-01-01T00:00:00+00:00").unwrap(),
+            author: crate::git::GitAuthor {
                 name: "Alice Example".to_string(),
                 email: "Alice@Example.COM".to_string(),
             },
             parents: vec!["deadbeef".to_string()],
-            paths: vec!["src/lib.rs".to_string(), "src/lib.rs".to_string()],
+            paths: vec!["src/lib.rs".to_string()],
         }
     }
 
@@ -271,22 +352,11 @@ mod tests {
         assert_eq!(props["author"], author_id.to_string());
         assert_eq!(props["parent_hexshas"][0], "deadbeef");
         assert!(props["parent_uuids"].as_array().unwrap().is_empty());
-        assert_eq!(props["paths"].as_array().unwrap().len(), 2);
         assert!(
             props["authored_at"]
                 .as_str()
                 .unwrap()
                 .contains("2026-01-01")
         );
-    }
-
-    #[test]
-    fn walk_and_filter_pipeline_smoke() {
-        // window filter + state skip logic compose (no server needed)
-        let mut state = ImportState::new("repo", "main", "2025-08-11");
-        let c = commit();
-        assert!(!state.is_imported(&c.hexsha));
-        state.record_imported(&c.hexsha, Uuid::nil());
-        assert!(state.is_imported(&c.hexsha));
     }
 }

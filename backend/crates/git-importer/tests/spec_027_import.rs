@@ -1,5 +1,6 @@
 //! SPEC-027 integration tests (AC-1, AC-2, AC-3, author dedupe).
-//! Run against the compose-hosted official TerminusDB server (v12.0.7):
+//! Full path, no mocks: importer (HTTP) → in-process axum API → repository →
+//! compose-hosted official TerminusDB v12.0.7.
 //!   docker compose up -d terminusdb
 //! Env: TERMINUSDB_URL (default http://localhost:6363), TERMINUSDB_ADMIN_PASS (default root).
 
@@ -8,16 +9,19 @@
 use std::env;
 use std::path::Path;
 
+use api::router;
 use chrono::{TimeZone, Utc};
 use git_importer::git::walk;
-use git_importer::pipeline::{Importer, normalize_email};
+use git_importer::pipeline::{Importer, PlatformClient, normalize_email};
 use git_importer::state::ImportState;
+use schema_registry::SchemaRegistry;
 use terminusdb_repository::Repository;
 use url::Url;
 use uuid::Uuid;
 
-/// Connect to the compose server and provision a unique database per test.
-async fn docker_repo() -> anyhow::Result<Repository> {
+/// Connect to the docker TerminusDB and boot the real API in-process on an
+/// ephemeral port. Returns (api base url, repository handle for assertions).
+async fn start_platform() -> anyhow::Result<(String, Repository)> {
     let endpoint = env::var("TERMINUSDB_URL").unwrap_or_else(|_| "http://localhost:6363".into());
     let pass = env::var("TERMINUSDB_ADMIN_PASS").unwrap_or_else(|_| "root".into());
     let client = terminusdb_client::TerminusDBHttpClient::new(
@@ -28,7 +32,15 @@ async fn docker_repo() -> anyhow::Result<Repository> {
     )
     .await?;
     let db = format!("git_importer_it_{}", Uuid::now_v7().simple());
-    Repository::new(client, db).await
+    let repo = Repository::new(client.clone(), db.clone()).await?;
+    let registry = SchemaRegistry::init(client, format!("{db}_registry")).await?;
+    let app = router(repo.clone(), registry);
+    let listener = tokio::net::TcpListener::bind("127.0.0.1:0").await?;
+    let addr = listener.local_addr()?;
+    tokio::spawn(async move {
+        axum::serve(listener, app).await.expect("api server");
+    });
+    Ok((format!("http://{addr}"), repo))
 }
 
 async fn drop_db(repo: &Repository) {
@@ -123,7 +135,7 @@ async fn import_matches_window_and_populates_property_sets() -> anyhow::Result<(
     std::fs::create_dir_all(&dir).unwrap();
     fixture(&dir)?;
 
-    let repo = docker_repo().await?;
+    let (api_base, repo) = start_platform().await?;
 
     let since = cutoff_days_ago(250);
     let commits = walk(&dir, since)?;
@@ -132,7 +144,7 @@ async fn import_matches_window_and_populates_property_sets() -> anyhow::Result<(
     let state_path = tmp("ac1-state.json");
     let _ = std::fs::remove_file(&state_path);
     let state = ImportState::new("fixture", "main", "2025-08-11");
-    let mut importer = Importer::new(repo.clone(), state, state_path.clone());
+    let mut importer = Importer::new(PlatformClient::new(&api_base)?, state, state_path.clone());
     let report = importer.run(&commits).await?;
     assert_eq!(report.imported, 5);
     assert_eq!(report.skipped, 0);
@@ -164,7 +176,7 @@ async fn import_matches_window_and_populates_property_sets() -> anyhow::Result<(
 }
 
 // ------------------------------------------------------------------
-// AC-2: re-run creates zero new entities.
+// AC-2: re-run creates zero new entities (server-side idempotency).
 // ------------------------------------------------------------------
 #[tokio::test]
 async fn rerun_is_idempotent() -> anyhow::Result<()> {
@@ -173,7 +185,7 @@ async fn rerun_is_idempotent() -> anyhow::Result<()> {
     std::fs::create_dir_all(&dir).unwrap();
     fixture(&dir)?;
 
-    let repo = docker_repo().await?;
+    let (api_base, repo) = start_platform().await?;
 
     let since = cutoff_days_ago(250);
     let commits = walk(&dir, since)?;
@@ -181,7 +193,7 @@ async fn rerun_is_idempotent() -> anyhow::Result<()> {
     let _ = std::fs::remove_file(&state_path);
 
     let state = ImportState::new("fixture", "main", "2025-08-11");
-    let mut importer = Importer::new(repo.clone(), state, state_path.clone());
+    let mut importer = Importer::new(PlatformClient::new(&api_base)?, state, state_path.clone());
     let first = importer.run(&commits).await?;
     assert_eq!(first.imported, 5);
 
@@ -189,7 +201,7 @@ async fn rerun_is_idempotent() -> anyhow::Result<()> {
     assert_eq!(before.len(), 5);
 
     let loaded = ImportState::load(&state_path)?.expect("checkpoint persisted");
-    let mut importer2 = Importer::new(repo.clone(), loaded, state_path.clone());
+    let mut importer2 = Importer::new(PlatformClient::new(&api_base)?, loaded, state_path.clone());
     let second = importer2.run(&commits).await?;
     assert_eq!(second.imported, 0, "re-run must import nothing");
 
@@ -206,7 +218,7 @@ async fn rerun_is_idempotent() -> anyhow::Result<()> {
 }
 
 // ------------------------------------------------------------------
-// AC-3: crash before checkpoint — reconcile (DB wins) resumes cleanly.
+// AC-3: crash before checkpoint — resume re-sends; server dedupes.
 // ------------------------------------------------------------------
 #[tokio::test]
 async fn crash_before_checkpoint_resumes_without_duplicates() -> anyhow::Result<()> {
@@ -215,7 +227,7 @@ async fn crash_before_checkpoint_resumes_without_duplicates() -> anyhow::Result<
     std::fs::create_dir_all(&dir).unwrap();
     fixture(&dir)?;
 
-    let repo = docker_repo().await?;
+    let (api_base, repo) = start_platform().await?;
 
     let since = cutoff_days_ago(250);
     let commits = walk(&dir, since)?;
@@ -224,16 +236,16 @@ async fn crash_before_checkpoint_resumes_without_duplicates() -> anyhow::Result<
 
     // Crash simulation: import only the first 2 commits with a FRESH state.
     let state = ImportState::new("fixture", "main", "2025-08-11");
-    let mut crashed = Importer::new(repo.clone(), state, state_path.clone());
+    let mut crashed = Importer::new(PlatformClient::new(&api_base)?, state, state_path.clone());
     let partial = crashed.run(&commits[..2]).await?;
     assert_eq!(partial.imported, 2);
     let partial_state = ImportState::load(&state_path)?.expect("final checkpoint saved");
     assert_eq!(partial_state.counts.imported, 2);
 
-    // Resume with fresh state + reconcile: DB index wins, remaining 3 import.
+    // Resume with a FRESH state: no client-side index — the API dedupes by
+    // hash/email, so only the remaining 3 commits import.
     let fresh = ImportState::new("fixture", "main", "2025-08-11");
-    let mut resumed = Importer::new(repo.clone(), fresh, state_path.clone());
-    resumed.reconcile().await?;
+    let mut resumed = Importer::new(PlatformClient::new(&api_base)?, fresh, state_path.clone());
     let report = resumed.run(&commits).await?;
     assert_eq!(report.imported, 3, "remaining commits imported");
 
@@ -241,7 +253,7 @@ async fn crash_before_checkpoint_resumes_without_duplicates() -> anyhow::Result<
     assert_eq!(hashes.len(), 5, "no duplicates after crash-resume");
 
     let emails = repo.property_index("email").await?;
-    assert_eq!(emails.len(), 2, "authors not duplicated by reconcile");
+    assert_eq!(emails.len(), 2, "authors not duplicated by server dedupe");
 
     let _ = std::fs::remove_dir_all(&dir);
     let _ = std::fs::remove_file(&state_path);
