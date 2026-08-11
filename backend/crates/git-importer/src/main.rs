@@ -77,8 +77,8 @@ fn parse_args(args: &[String]) -> anyhow::Result<Config> {
 
 fn report_summary(report: &ImportReport) {
     println!(
-        "import done: seen={} imported={} skipped={}",
-        report.seen, report.imported, report.skipped
+        "import done: seen={} imported={} skipped={} warnings={}",
+        report.seen, report.imported, report.skipped, report.warnings
     );
 }
 

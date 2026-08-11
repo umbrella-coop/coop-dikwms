@@ -132,6 +132,38 @@ pub fn org_schema_v1() -> FileDescriptorSet {
     }
 }
 
+/// `git.v1`: git-domain kinds (SPEC-027 REQ-007). Field names mirror the
+/// importer's property keys exactly — the bulk-endpoint lint compares
+/// entity properties against these message fields (warn-not-fail).
+pub fn git_v1() -> FileDescriptorSet {
+    let author = msg(
+        "Author",
+        vec![f("name", 1, Type::String), f("email", 2, Type::String)],
+    );
+    let commit = msg(
+        "Commit",
+        vec![
+            f("hash", 1, Type::String),
+            f("message", 2, Type::String),
+            f("authored_at", 3, Type::String),
+            f("author", 4, Type::String),
+            f("author_name", 5, Type::String),
+            f("author_email", 6, Type::String),
+            f("parent_hexshas", 7, Type::String).label_repeated(),
+            f("parent_uuids", 8, Type::String).label_repeated(),
+            f("paths", 9, Type::String).label_repeated(),
+        ],
+    );
+    FileDescriptorSet {
+        file: vec![FileDescriptorProto {
+            name: Some("git/v1/git.proto".into()),
+            package: Some("git.v1".into()),
+            message_type: vec![author, commit],
+            ..Default::default()
+        }],
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -191,6 +223,38 @@ mod tests {
             "EndorseAction",
         ] {
             assert!(names.contains(t), "missing {t}");
+        }
+    }
+
+    #[test]
+    fn git_v1_defines_author_and_commit() {
+        let git = git_v1();
+        let author = descriptor::message(&git, "Author").expect("Author");
+        assert_eq!(
+            descriptor::field_tags(author),
+            vec![("name".to_string(), 1), ("email".to_string(), 2)]
+        );
+        let commit = descriptor::message(&git, "Commit").expect("Commit");
+        let tags: HashSet<String> = descriptor::field_tags(commit)
+            .into_iter()
+            .map(|(n, _)| n)
+            .collect();
+        for field in [
+            "hash",
+            "message",
+            "authored_at",
+            "author",
+            "author_name",
+            "author_email",
+            "parent_hexshas",
+            "parent_uuids",
+            "paths",
+        ] {
+            assert!(tags.contains(field), "Commit missing {field}");
+        }
+        let mut seen = HashSet::new();
+        for (_, tag) in descriptor::field_tags(commit) {
+            assert!(seen.insert(tag), "tag {tag} reused in Commit");
         }
     }
 }

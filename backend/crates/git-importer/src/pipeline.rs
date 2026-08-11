@@ -91,6 +91,7 @@ pub struct ImportReport {
     pub seen: usize,
     pub imported: usize,
     pub skipped: usize,
+    pub warnings: usize,
 }
 
 impl Importer {
@@ -117,15 +118,15 @@ impl Importer {
             }
         }
         for email in &author_emails {
-        if let Some(id) = self
-            .state
-            .authors_index
-            .get(email)
-            .and_then(|s| s.parse().ok())
-        {
-            author_ids.insert(email.clone(), id);
-            continue;
-        }
+            if let Some(id) = self
+                .state
+                .authors_index
+                .get(email)
+                .and_then(|s| s.parse().ok())
+            {
+                author_ids.insert(email.clone(), id);
+                continue;
+            }
             let author = &commits
                 .iter()
                 .find(|c| normalize_email(&c.author.email) == *email)
@@ -149,6 +150,7 @@ impl Importer {
             })
             .await
             .with_context(|| format!("bulk author {email}"))?;
+            report.warnings += resp.warnings.len();
             for entry in resp.results {
                 let id = entry
                     .entity_id
@@ -225,6 +227,7 @@ impl Importer {
             self.client.bulk_entities("hash", entities)
         })
         .await?;
+        report.warnings += resp.warnings.len();
         for (hexsha, entry) in hexshas.iter().zip(resp.results) {
             match (entry.status.as_str(), entry.entity_id) {
                 ("imported", Some(id)) => {

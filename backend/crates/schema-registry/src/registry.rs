@@ -78,17 +78,22 @@ impl SchemaRegistry {
             db,
         };
         // Seeds are idempotent: a persisted db may already hold them.
-        let _ = match reg.register(&core::core_v1(), "core.v1", "1").await {
-            Ok(()) => Ok(()),
-            Err(RegistryError::AlreadyRegistered { .. }) => Ok(()),
-            Err(e) => Err(e),
-        }?;
-        let _ = match reg.register(&core::org_schema_v1(), "org.schema.v1", "1").await {
-            Ok(()) => Ok(()),
-            Err(RegistryError::AlreadyRegistered { .. }) => Ok(()),
-            Err(e) => Err(e),
-        }?;
+        Self::seed(&reg, core::core_v1(), "core.v1", "1").await?;
+        Self::seed(&reg, core::org_schema_v1(), "org.schema.v1", "1").await?;
+        Self::seed(&reg, core::git_v1(), "git.v1", "1").await?;
         Ok(reg)
+    }
+
+    async fn seed(
+        reg: &Self,
+        fds: prost_types::FileDescriptorSet,
+        package: &str,
+        version: &str,
+    ) -> anyhow::Result<()> {
+        match reg.register(&fds, package, version).await {
+            Ok(()) | Err(RegistryError::AlreadyRegistered { .. }) => Ok(()),
+            Err(e) => Err(e.into()),
+        }
     }
 
     pub fn client(&self) -> &TerminusDBHttpClient {

@@ -135,11 +135,12 @@ pub async fn bulk_entities(
     Json(body): Json<BulkEntitiesBody>,
 ) -> Result<Json<Value>, ApiError> {
     let mut results = Vec::with_capacity(body.entities.len());
-    let warnings: Vec<Value> = Vec::new();
+    let mut warnings: Vec<Value> = Vec::new();
 
     let existing = state.repo.property_index(&body.dedupe_key).await?;
 
     for entity in body.entities {
+        warnings.extend(git_v1_warnings(&state, &entity.set).await);
         if let Some(existing_ids) = existing.get(&entity.idempotency_key) {
             results.push(bulk_result(
                 &entity,
@@ -195,6 +196,57 @@ fn bulk_result(entity: &BulkEntity, entity_id: Option<Uuid>, status: &str, reaso
         v["reason"] = json!(reason);
     }
     v
+}
+
+/// git.v1 schemaless lint (SPEC-027 REQ-007, AC-7): compare entity properties
+/// against the registered `git.v1` message fields — warn, never reject.
+/// Organic real-data violations (unknown/extra properties, empty messages)
+/// surface as `api:warnings`.
+async fn git_v1_warnings(state: &AppState, set: &data_graph::PropertySet) -> Vec<Value> {
+    let Ok(Some(doc)) = state.registry.latest_for_package("git.v1").await else {
+        return Vec::new();
+    };
+    let Ok(fds) = doc.descriptor() else {
+        return Vec::new();
+    };
+    let message_name = if set.properties.contains_key("hash") {
+        "Commit"
+    } else if set.properties.contains_key("email") {
+        "Author"
+    } else {
+        return Vec::new();
+    };
+    let Some(message) = schema_registry::descriptor::message(&fds, message_name) else {
+        return Vec::new();
+    };
+    let known: std::collections::HashSet<String> = schema_registry::descriptor::field_tags(message)
+        .iter()
+        .map(|(name, _)| name.clone())
+        .collect();
+    let mut warnings = Vec::new();
+    for key in set.properties.keys() {
+        if !known.contains(key) {
+            warnings.push(json!({
+                "@type": "api:Warning",
+                "message": format!("git.v1: unknown property {key} on {message_name}"),
+                "property": key,
+            }));
+        }
+    }
+    if message_name == "Commit"
+        && set
+            .properties
+            .get("message")
+            .and_then(|v| v.as_str())
+            .map(str::trim)
+            .is_some_and(str::is_empty)
+    {
+        warnings.push(json!({
+            "@type": "api:Warning",
+            "message": "git.v1: Commit.message is empty",
+        }));
+    }
+    warnings
 }
 
 #[utoipa::path(get, path = "/entities/{id}/property-sets")]

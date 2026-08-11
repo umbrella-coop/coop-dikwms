@@ -261,6 +261,45 @@ async fn crash_before_checkpoint_resumes_without_duplicates() -> anyhow::Result<
     Ok(())
 }
 
+// ------------------------------------------------------------------
+// AC-7: git.v1 registered; organic violations warn, never reject.
+// ------------------------------------------------------------------
+#[tokio::test]
+async fn bulk_endpoint_warns_on_git_v1_violations() -> anyhow::Result<()> {
+    let (api_base, repo) = start_platform().await?;
+
+    let client = git_importer::pipeline::PlatformClient::new(&api_base)?;
+    let entity = git_importer::pipeline::BulkEntity {
+        kind: data_graph::EntityKind::Node,
+        idempotency_key: "warn-1".to_string(),
+        set: data_graph::PropertySet::current(
+            data_graph::Scope::Common,
+            1,
+            std::collections::HashMap::from([
+                ("hash".to_string(), serde_json::json!("warn-1")),
+                ("message".to_string(), serde_json::json!("")),
+                ("bogus".to_string(), serde_json::json!("x")),
+            ]),
+        ),
+    };
+    let resp = client.bulk_entities("hash", &[entity]).await?;
+    assert_eq!(resp.results.len(), 1);
+    assert_eq!(resp.results[0].status, "imported", "warn-not-fail");
+    assert!(
+        !resp.warnings.is_empty(),
+        "git.v1 lint must warn on unknown property + empty message"
+    );
+
+    let hashes = repo.property_index("hash").await?;
+    assert!(
+        hashes.contains_key("warn-1"),
+        "entity persisted despite warnings"
+    );
+
+    drop_db(&repo).await;
+    Ok(())
+}
+
 #[test]
 fn normalize_email_handles_variants() {
     assert_eq!(normalize_email("Alice@Example.COM "), "alice@example.com");
