@@ -4,7 +4,7 @@
 
 ## Overview
 
-Make the **forked Rust TerminusDB client** (`third_party/terminusdb-rs` → https://github.com/gustavorps/terminusdb-client-rs, git submodule) the production dependency of the knowledge platform backend: verify the already-implemented parity features against a real server, and implement the one remaining JS-client feature gap — **advanced authentication** (API-key / token / OAuth).
+Make the **forked Rust TerminusDB client** (`third-party/terminusdb-client-rs` → https://github.com/gustavorps/terminusdb-client-rs, git submodule) the production dependency of the knowledge platform backend: verify the already-implemented parity features against a real server, and implement the one remaining JS-client feature gap — **advanced authentication** (API-key / token / OAuth).
 
 ## Motivation
 
@@ -29,7 +29,7 @@ Backlog SPEC-008: the Rust client's "Future Development" list (branch management
 The fork SHALL build without warnings/errors under the project toolchain (Rust 1.97.1) and pass its test suite.
 
 #### Scenario: Workspace builds
-- **GIVEN** the fork checked out at `third_party/terminusdb-rs`
+- **GIVEN** the fork checked out at `third-party/terminusdb-client-rs`
 - **WHEN** `cargo build --workspace && cargo clippy --workspace`
 - **THEN** the build succeeds with zero errors
 
@@ -73,15 +73,15 @@ The client SHALL support API-key and bearer-token authentication in addition to 
 ## Technical Design
 
 ### Repo wiring
-- `third_party/terminusdb-rs` (submodule) — fork repo; implementation work committed **in the fork** (separate git history)
-- Platform backend depends on the fork via path dependency: `terminusdb-client = { path = "../../third_party/terminusdb-rs/crates/client" }` (future crates: `terminusdb-repository`)
+- `third-party/terminusdb-client-rs` (submodule) — fork repo; implementation work committed **in the fork** (separate git history)
+- Platform backend depends on the fork via path dependency: `terminusdb-client = { path = "../../third-party/terminusdb-client-rs/crates/client" }` (future crates: `terminusdb-repository`)
 
 ### Implementation scope (fork)
 1. **Advanced auth** (AC-6): add `AuthMethod::{Basic, ApiKey, Bearer}` to the client's connection config; wire `Authorization` header construction; add integration test against server with API key enabled (Docker env `TERMINUSDB_ADMIN_PASS` + API-key config)
 2. Verification tests (AC-2..AC-5, AC-7): Docker-composed test fixture (server on 6363; second server on 6364 for collaboration tests), executed in the fork's test suite
 
 ### Verification harness
-- `third_party/terminusdb-rs/docker/` — compose file for dual-server setup (existing `docker/` dir)
+- `third-party/terminusdb-client-rs/docker/` — compose file for dual-server setup (existing `docker/` dir)
 - CI: `cargo test` with compose up/down
 
 ## Test Plan
@@ -114,6 +114,6 @@ The client SHALL support API-key and bearer-token authentication in addition to 
 ## ARCHIVED (2026-08-07)
 
 - **Verification commit:** `edc87e9`
-- **Evidence:** third_party/terminusdb-rs fork commits 3bd396d..11d525b
+- **Evidence:** third-party/terminusdb-client-rs fork commits 3bd396d..11d525b
 - **ACs:** 7/7 verified green against real TerminusDB 12.1 (TerminusDBServer pattern)
 - **Status change:** Implemented → Archived. Re-check (spec-vs-code convergence) if touched by future work.

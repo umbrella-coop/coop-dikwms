@@ -1,6 +1,7 @@
-[submodule "third_party/terminusdb-rs"]
-	path = third_party/terminusdb-rs
-	# Renamed 2026-08-11: gustavorps/terminusdb-rs → gustavorps/terminusdb-client-rs (GitHub redirects the old URL).
+[submodule "third-party/terminusdb-client-rs"]
+	path = third-party/terminusdb-client-rs
+	# Renamed 2026-08-11: third_party/terminusdb-rs → third-party/terminusdb-client-rs
+	# (fork repo also renamed gustavorps/terminusdb-rs → terminusdb-client-rs).
 	url = https://github.com/gustavorps/terminusdb-client-rs
 	# Pin: fork branch dev (2026-08-10). WIP — no release tag yet.
 	# Drift = commits past origin/dev; follow via `git submodule update --remote`.

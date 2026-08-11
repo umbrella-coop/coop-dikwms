@@ -6,9 +6,9 @@ rust-version.workspace = true
 
 [dependencies]
 knowledge-domain = { path = "../knowledge-domain" }
-terminusdb-client = { path = "../../../third_party/terminusdb-rs/crates/client" }
-terminusdb-schema = { path = "../../../third_party/terminusdb-rs/crates/schema" }
-terminusdb-schema-derive = { path = "../../../third_party/terminusdb-rs/crates/schema/derive" }
+terminusdb-client = { path = "../../../third-party/terminusdb-client-rs/crates/client" }
+terminusdb-schema = { path = "../../../third-party/terminusdb-client-rs/crates/schema" }
+terminusdb-schema-derive = { path = "../../../third-party/terminusdb-client-rs/crates/schema/derive" }
 anyhow = "1"
 tracing = "0.1"
 uuid.workspace = true
@@ -18,4 +18,4 @@ chrono.workspace = true
 tokio.workspace = true
 
 [dev-dependencies]
-terminusdb-bin = { path = "../../../third_party/terminusdb-rs/crates/bin" }
+terminusdb-bin = { path = "../../../third-party/terminusdb-client-rs/crates/bin" }

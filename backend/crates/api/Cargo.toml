@@ -9,7 +9,7 @@ knowledge-domain = { path = "../knowledge-domain" }
 terminusdb-repository = { path = "../terminusdb-repository" }
 schema-registry = { path = "../schema-registry" }
 stream-api = { path = "../stream-api" }
-terminusdb-client = { path = "../../../third_party/terminusdb-rs/crates/client" }
+terminusdb-client = { path = "../../../third-party/terminusdb-client-rs/crates/client" }
 axum = { version = "0.8", features = ["query", "json", "macros"] }
 tokio = { version = "1", features = ["full"] }
 serde.workspace = true
@@ -25,6 +25,6 @@ utoipa = { version = "5", features = ["uuid"] }
 utoipa-swagger-ui = { version = "9", features = ["axum"] }
 
 [dev-dependencies]
-terminusdb-bin = { path = "../../../third_party/terminusdb-rs/crates/bin" }
+terminusdb-bin = { path = "../../../third-party/terminusdb-client-rs/crates/bin" }
 tower = { version = "0.5", features = ["util"] }
 http-body-util = "0.1"

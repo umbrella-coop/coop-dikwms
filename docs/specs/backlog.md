@@ -258,7 +258,7 @@ Planned specs not yet created. Add requirements captured during development here
 - Unblocks SPEC-006 R-9 (branch-per-scope promotion mapping) and SPEC-004 (streaming)
 - Reduces SPEC-006 R-7 (Rust client maturity risk) — forked dependency, in-repo
 
-**Workflow:** add submodule (e.g. `third_party/terminusdb-rs`) → spec per feature (SDD) → TDD against the real server (Docker) or recorded fixtures
+**Workflow:** add submodule (e.g. `third-party/terminusdb-client-rs`) → spec per feature (SDD) → TDD against the real server (Docker) or recorded fixtures
 
 ## SPEC-009 (planned): Multi-Namespace Versioned Schema Registry
 

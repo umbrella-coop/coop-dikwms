@@ -5,9 +5,9 @@ edition.workspace = true
 rust-version.workspace = true
 
 [dependencies]
-terminusdb-client = { path = "../../../third_party/terminusdb-rs/crates/client" }
-terminusdb-schema = { path = "../../../third_party/terminusdb-rs/crates/schema" }
-terminusdb-schema-derive = { path = "../../../third_party/terminusdb-rs/crates/schema/derive" }
+terminusdb-client = { path = "../../../third-party/terminusdb-client-rs/crates/client" }
+terminusdb-schema = { path = "../../../third-party/terminusdb-client-rs/crates/schema" }
+terminusdb-schema-derive = { path = "../../../third-party/terminusdb-client-rs/crates/schema/derive" }
 prost-types = "0.13"
 prost = "0.13"
 base64 = "0.22"
@@ -19,5 +19,5 @@ tokio.workspace = true
 tracing = "0.1"
 
 [dev-dependencies]
-terminusdb-bin = { path = "../../../third_party/terminusdb-rs/crates/bin" }
+terminusdb-bin = { path = "../../../third-party/terminusdb-client-rs/crates/bin" }
 prost = "0.13"

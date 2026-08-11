@@ -53,7 +53,7 @@ You are an expert software engineer assistant. Follow these project standards.
 6. **Quality gates before commit:** `cargo fmt` (via nightly) + `cargo clippy --all-targets` — fix warnings in your crates; pre-existing fork warnings are not yours.
 7. **Token discipline:** commit messages carry structured tokens (`ps:`, `ent:`, `corr:`, `rev:`) — never rename or reorder them without updating `stream::decode_entry` and `resolve_at`.
 8. **Specs govern:** every change maps to a spec/AC (see Spec Intake Rule); new behavior without a spec or delta is a violation.
-9. Respect `third_party/terminusdb-rs/CLAUDE.md` when touching the fork — it has its own test patterns (`with_db_schema`, `TerminusDBServer` idioms).
+9. Respect `third-party/terminusdb-client-rs/CLAUDE.md` when touching the fork — it has its own test patterns (`with_db_schema`, `TerminusDBServer` idioms).
 
 ## Conversation Language
 All responses should be in **English**.

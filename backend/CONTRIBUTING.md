@@ -2,7 +2,7 @@
 
 Thanks for contributing! The backend is a Rust workspace (API server, stream
 API, knowledge domain, schema registry, TerminusDB repository adapter) that
-depends on the `terminusdb-rs` fork in `third_party/terminusdb-rs` — including
+depends on the `terminusdb-rs` fork in `third-party/terminusdb-client-rs` — including
 the embedded-server test harness (`terminusdb-bin`). This guide keeps your
 first build fast and your daily loop pleasant — everything here is **optional
 guidance**, not imposed configuration.

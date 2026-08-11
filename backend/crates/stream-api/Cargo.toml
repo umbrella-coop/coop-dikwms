@@ -6,7 +6,7 @@ rust-version.workspace = true
 
 [dependencies]
 terminusdb-repository = { path = "../terminusdb-repository" }
-terminusdb-client = { path = "../../../third_party/terminusdb-rs/crates/client" }
+terminusdb-client = { path = "../../../third-party/terminusdb-client-rs/crates/client" }
 axum = "0.8"
 tokio = { version = "1", features = ["time", "net", "sync", "macros", "rt-multi-thread"] }
 tokio-stream = "0.1"
@@ -18,6 +18,6 @@ anyhow = "1"
 tracing = "0.1"
 
 [dev-dependencies]
-terminusdb-bin = { path = "../../../third_party/terminusdb-rs/crates/bin" }
+terminusdb-bin = { path = "../../../third-party/terminusdb-client-rs/crates/bin" }
 knowledge-domain = { path = "../knowledge-domain" }
 reqwest = { version = "0.12", features = ["stream"] }
