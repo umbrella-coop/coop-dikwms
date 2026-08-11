@@ -11,3 +11,8 @@ serde_json.workspace = true
 chrono.workspace = true
 anyhow = "1"
 git2 = { version = "0.21", features = ["vendored-libgit2"] }
+data-graph = { path = "../data-graph" }
+terminusdb-repository = { path = "../terminusdb-repository" }
+terminusdb-client = { path = "../../../third-party/terminusdb-client-rs/crates/client" }
+tokio = { workspace = true, features = ["time"] }
+url = "2"

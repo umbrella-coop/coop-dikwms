@@ -31,6 +31,9 @@ pub struct ImportState {
     pub r#ref: String,
     pub since: String,
     pub hexsha_index: HashMap<String, String>,
+    /// Normalized email → author entity Uuid (REQ-002: re-runs must not
+    /// duplicate author entities either).
+    pub authors_index: HashMap<String, String>,
     pub skipped: Vec<Skipped>,
     pub counts: Counts,
 }
@@ -45,6 +48,7 @@ impl ImportState {
             r#ref: r#ref.to_string(),
             since: since.to_string(),
             hexsha_index: HashMap::new(),
+            authors_index: HashMap::new(),
             skipped: Vec::new(),
             counts: Counts::default(),
         }

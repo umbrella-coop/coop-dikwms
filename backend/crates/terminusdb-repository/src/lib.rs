@@ -12,9 +12,7 @@
 use std::collections::HashMap;
 
 use data_graph::{EntityKind, PropertySet, Scope, Status};
-use terminusdb_client::{
-    BranchSpec, DocumentInsertArgs, LogOpts, TerminusDBHttpClient, TerminusDBModel,
-};
+use terminusdb_client::{BranchSpec, DocumentInsertArgs, LogOpts, TerminusDBHttpClient};
 use terminusdb_schema::{EntityIDFor, ToTDBInstance};
 use terminusdb_schema_derive::{FromTDBInstance, TerminusDBModel};
 use uuid::Uuid;
@@ -214,6 +212,38 @@ impl Repository {
 
     pub async fn log(&self) -> anyhow::Result<Vec<terminusdb_client::LogEntry>> {
         self.client.log(&self.spec, LogOpts::default()).await
+    }
+
+    /// One-scan property index: maps `properties[key]` string values to the
+    /// entities carrying them (SPEC-027 REQ-002 — hash/email idempotency
+    /// reconciliation on resume).
+    pub async fn property_index(&self, key: &str) -> anyhow::Result<HashMap<String, Vec<Uuid>>> {
+        let docs = self
+            .client
+            .get_documents(
+                vec![],
+                &self.spec,
+                terminusdb_client::GetOpts {
+                    unfold: true,
+                    type_filter: Some("PropertySetDoc".to_string()),
+                    ..Default::default()
+                },
+            )
+            .await?;
+        let mut out: HashMap<String, Vec<Uuid>> = HashMap::new();
+        for doc in docs {
+            let Some(value) = doc["properties"][key].as_str() else {
+                continue;
+            };
+            let Some(entity) = doc["entity_id"]
+                .as_str()
+                .and_then(|s| s.parse::<Uuid>().ok())
+            else {
+                continue;
+            };
+            out.entry(value.to_string()).or_default().push(entity);
+        }
+        Ok(out)
     }
 }
 

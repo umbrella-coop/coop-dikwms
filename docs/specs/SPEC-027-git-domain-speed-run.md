@@ -105,9 +105,11 @@ Explorer lands in the existing `ui/project` context (no new namespace — SPEC-0
 ## Test Plan
 
 - **Unit (git-importer):** window filter, hexsha→Uuid index, checkpoint atomicity (tmp+rename), retry/breaker state machine, author normalization dedupe
-- **Integration (real embedded TerminusDB server, `TerminusDBServer::test_instance()`):** full import of a small fixture repo, idempotent re-run, crash-resume, dead-letter, bulk endpoint warnings, SSE event flow (spec_027 pattern, serialized per AGENTS.md)
+- **Integration (compose-hosted official `terminusdb/terminusdb-server` v12.0.7, `docker compose up -d terminusdb`):** full import of a fixture repo (window match, merge parents), idempotent re-run (AC-2), crash-before-checkpoint + reconcile resume (AC-3), author dedupe across email-case variants — each test provisions a unique database and drops it after
 - **Frontend specs (vitest):** slider/filter interactions, drawer history view, SSE debounce/incremental apply
 - **E2E:** deferred (SPEC-021 held); manual orchestrator walkthrough via runbook
+
+> **Note (2026-08-11, user directive):** git-importer integration tests use the **compose-hosted server** (official image) instead of the embedded `TerminusDBServer::test_instance()` source build (heavy; upstream v12.0.7 build hits a nested-cargo resolver panic). The embedded path remains the fork's convention for other crates; the fork build script was updated to the official repo + v12.0.7 default.
 
 ## Open Risks
 

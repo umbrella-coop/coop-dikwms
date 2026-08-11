@@ -1,0 +1,256 @@
+//! SPEC-027 integration tests (AC-1, AC-2, AC-3, author dedupe).
+//! Run against the compose-hosted official TerminusDB server (v12.0.7):
+//!   docker compose up -d terminusdb
+//! Env: TERMINUSDB_URL (default http://localhost:6363), TERMINUSDB_ADMIN_PASS (default root).
+
+#![recursion_limit = "512"]
+
+use std::env;
+use std::path::Path;
+
+use chrono::{TimeZone, Utc};
+use git_importer::git::walk;
+use git_importer::pipeline::{Importer, normalize_email};
+use git_importer::state::ImportState;
+use terminusdb_repository::Repository;
+use url::Url;
+use uuid::Uuid;
+
+/// Connect to the compose server and provision a unique database per test.
+async fn docker_repo() -> anyhow::Result<Repository> {
+    let endpoint = env::var("TERMINUSDB_URL").unwrap_or_else(|_| "http://localhost:6363".into());
+    let pass = env::var("TERMINUSDB_ADMIN_PASS").unwrap_or_else(|_| "root".into());
+    let client = terminusdb_client::TerminusDBHttpClient::new(
+        Url::parse(&endpoint)?,
+        "admin",
+        &pass,
+        "admin",
+    )
+    .await?;
+    let db = format!("git_importer_it_{}", Uuid::now_v7().simple());
+    Repository::new(client, db).await
+}
+
+async fn drop_db(repo: &Repository) {
+    let _ = repo.client().delete_database(repo.db()).await;
+}
+
+fn sig(name: &str, email: &str, days: i64) -> git2::Signature<'static> {
+    git2::Signature::new(name, email, &git2::Time::new(days_ago(days), 0)).unwrap()
+}
+
+fn days_ago(days: i64) -> i64 {
+    Utc::now().timestamp() - days * 86_400
+}
+
+fn cutoff_days_ago(days: i64) -> chrono::DateTime<chrono::FixedOffset> {
+    Utc.timestamp_opt(days_ago(days), 0).unwrap().fixed_offset()
+}
+
+/// 6-commit fixture with a merge (2 parents):
+///   c0 (Alice, 400d) ← c1 (Alice, 300d) ← c2 (Alice, 200d) ← c3 (Bob, 150d) ← c4 (Bob, 100d)
+///                                        └─ c2b (Bob, 120d) ←┐
+///                                                          merge c5 (Alice, 90d)
+/// Authors use email-case variants to exercise dedupe.
+fn fixture(dir: &Path) -> anyhow::Result<git2::Repository> {
+    let repo = git2::Repository::init(dir)?;
+    let commit = |repo: &git2::Repository,
+                  index: &mut git2::Index,
+                  file: &str,
+                  days: i64,
+                  parents: &[String]|
+     -> anyhow::Result<String> {
+        std::fs::write(dir.join(file), format!("content {file}\n"))?;
+        index.add_path(Path::new(file))?;
+        index.write()?;
+        let tree_id = index.write_tree()?;
+        let tree = repo.find_tree(tree_id)?;
+        let author = match file.contains("bob") {
+            true => ("Bob", "BOB@example.com"),
+            false => ("Alice", "Alice@Example.COM"),
+        };
+        let parents: Vec<git2::Commit> = parents
+            .iter()
+            .map(|hex| repo.find_commit(git2::Oid::from_str(hex).unwrap()))
+            .collect::<Result<_, _>>()?;
+        let parent_refs: Vec<&git2::Commit> = parents.iter().collect();
+        repo.commit(
+            Some("HEAD"),
+            &sig(author.0, author.1, days),
+            &sig(author.0, author.1, days),
+            file,
+            &tree,
+            &parent_refs,
+        )
+        .map(|oid| oid.to_string())
+        .map_err(Into::into)
+    };
+
+    let mut index = repo.index()?;
+    let c0 = commit(&repo, &mut index, "c0.txt", 400, &[])?;
+    let c1 = commit(&repo, &mut index, "c1.txt", 300, &[c0])?;
+    let c2 = commit(&repo, &mut index, "c2.txt", 200, &[c1])?;
+    {
+        let c2_commit = repo.find_commit(git2::Oid::from_str(&c2)?)?;
+        let _side = repo.branch("side", &c2_commit, false)?;
+    }
+    repo.set_head("refs/heads/side")?;
+    let c2b = commit(
+        &repo,
+        &mut index,
+        "c2b-bob.txt",
+        120,
+        std::slice::from_ref(&c2),
+    )?;
+    repo.set_head("refs/heads/main")?;
+    let c3 = commit(&repo, &mut index, "c3.txt", 150, &[c2])?;
+    let c4 = commit(&repo, &mut index, "c4.txt", 100, &[c3])?;
+    let _c5 = commit(&repo, &mut index, "c5-merge.txt", 90, &[c4, c2b])?;
+    Ok(repo)
+}
+
+fn tmp(name: &str) -> std::path::PathBuf {
+    std::env::temp_dir().join(format!("git-importer-it-{name}"))
+}
+
+// ------------------------------------------------------------------
+// AC-1: imported count == window walk count; property sets populated.
+// ------------------------------------------------------------------
+#[tokio::test]
+async fn import_matches_window_and_populates_property_sets() -> anyhow::Result<()> {
+    let dir = tmp("ac1");
+    let _ = std::fs::remove_dir_all(&dir);
+    std::fs::create_dir_all(&dir).unwrap();
+    fixture(&dir)?;
+
+    let repo = docker_repo().await?;
+
+    let since = cutoff_days_ago(250);
+    let commits = walk(&dir, since)?;
+    assert_eq!(commits.len(), 5, "window = c2,c2b,c3,c4,c5");
+
+    let state_path = tmp("ac1-state.json");
+    let _ = std::fs::remove_file(&state_path);
+    let state = ImportState::new("fixture", "main", "2025-08-11");
+    let mut importer = Importer::new(repo.clone(), state, state_path.clone());
+    let report = importer.run(&commits).await?;
+    assert_eq!(report.imported, 5);
+    assert_eq!(report.skipped, 0);
+
+    let hashes = repo.property_index("hash").await?;
+    assert_eq!(hashes.len(), 5, "every window commit persisted");
+
+    let newest = &commits[0]; // c5 merge — 2 parents
+    let ids = hashes.get(&newest.hexsha).expect("c5 indexed");
+    let ps = repo.load_property_sets(ids[0]).await?;
+    assert_eq!(ps.len(), 1);
+    assert_eq!(ps[0].properties["hash"].as_str().unwrap(), newest.hexsha);
+    assert_eq!(
+        ps[0].properties["message"].as_str().unwrap(),
+        "c5-merge.txt"
+    );
+    let parent_hexshas = ps[0].properties["parent_hexshas"].as_array().unwrap();
+    assert_eq!(parent_hexshas.len(), 2, "merge parents stored");
+
+    let emails = repo.property_index("email").await?;
+    assert_eq!(emails.len(), 2, "authors deduped by normalized email");
+    assert!(emails.contains_key("alice@example.com"));
+    assert!(emails.contains_key("bob@example.com"));
+
+    let _ = std::fs::remove_dir_all(&dir);
+    let _ = std::fs::remove_file(&state_path);
+    drop_db(&repo).await;
+    Ok(())
+}
+
+// ------------------------------------------------------------------
+// AC-2: re-run creates zero new entities.
+// ------------------------------------------------------------------
+#[tokio::test]
+async fn rerun_is_idempotent() -> anyhow::Result<()> {
+    let dir = tmp("ac2");
+    let _ = std::fs::remove_dir_all(&dir);
+    std::fs::create_dir_all(&dir).unwrap();
+    fixture(&dir)?;
+
+    let repo = docker_repo().await?;
+
+    let since = cutoff_days_ago(250);
+    let commits = walk(&dir, since)?;
+    let state_path = tmp("ac2-state.json");
+    let _ = std::fs::remove_file(&state_path);
+
+    let state = ImportState::new("fixture", "main", "2025-08-11");
+    let mut importer = Importer::new(repo.clone(), state, state_path.clone());
+    let first = importer.run(&commits).await?;
+    assert_eq!(first.imported, 5);
+
+    let before = repo.property_index("hash").await?;
+    assert_eq!(before.len(), 5);
+
+    let loaded = ImportState::load(&state_path)?.expect("checkpoint persisted");
+    let mut importer2 = Importer::new(repo.clone(), loaded, state_path.clone());
+    let second = importer2.run(&commits).await?;
+    assert_eq!(second.imported, 0, "re-run must import nothing");
+
+    let after = repo.property_index("hash").await?;
+    assert_eq!(after.len(), 5, "no duplicate entities");
+
+    let emails_after = repo.property_index("email").await?;
+    assert_eq!(emails_after.len(), 2);
+
+    let _ = std::fs::remove_dir_all(&dir);
+    let _ = std::fs::remove_file(&state_path);
+    drop_db(&repo).await;
+    Ok(())
+}
+
+// ------------------------------------------------------------------
+// AC-3: crash before checkpoint — reconcile (DB wins) resumes cleanly.
+// ------------------------------------------------------------------
+#[tokio::test]
+async fn crash_before_checkpoint_resumes_without_duplicates() -> anyhow::Result<()> {
+    let dir = tmp("ac3");
+    let _ = std::fs::remove_dir_all(&dir);
+    std::fs::create_dir_all(&dir).unwrap();
+    fixture(&dir)?;
+
+    let repo = docker_repo().await?;
+
+    let since = cutoff_days_ago(250);
+    let commits = walk(&dir, since)?;
+    let state_path = tmp("ac3-state.json");
+    let _ = std::fs::remove_file(&state_path);
+
+    // Crash simulation: import only the first 2 commits with a FRESH state.
+    let state = ImportState::new("fixture", "main", "2025-08-11");
+    let mut crashed = Importer::new(repo.clone(), state, state_path.clone());
+    let partial = crashed.run(&commits[..2]).await?;
+    assert_eq!(partial.imported, 2);
+    let partial_state = ImportState::load(&state_path)?.expect("final checkpoint saved");
+    assert_eq!(partial_state.counts.imported, 2);
+
+    // Resume with fresh state + reconcile: DB index wins, remaining 3 import.
+    let fresh = ImportState::new("fixture", "main", "2025-08-11");
+    let mut resumed = Importer::new(repo.clone(), fresh, state_path.clone());
+    resumed.reconcile().await?;
+    let report = resumed.run(&commits).await?;
+    assert_eq!(report.imported, 3, "remaining commits imported");
+
+    let hashes = repo.property_index("hash").await?;
+    assert_eq!(hashes.len(), 5, "no duplicates after crash-resume");
+
+    let emails = repo.property_index("email").await?;
+    assert_eq!(emails.len(), 2, "authors not duplicated by reconcile");
+
+    let _ = std::fs::remove_dir_all(&dir);
+    let _ = std::fs::remove_file(&state_path);
+    drop_db(&repo).await;
+    Ok(())
+}
+
+#[test]
+fn normalize_email_handles_variants() {
+    assert_eq!(normalize_email("Alice@Example.COM "), "alice@example.com");
+    assert_eq!(normalize_email("bob@example.com"), "bob@example.com");
+}

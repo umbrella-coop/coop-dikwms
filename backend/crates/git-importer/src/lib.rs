@@ -1,6 +1,9 @@
 //! git-importer: SPE-027 Phase A ingestion pipeline (durable primitives).
 
+#![recursion_limit = "512"]
+
 pub mod git;
+pub mod pipeline;
 pub mod retry;
 pub mod state;
 
