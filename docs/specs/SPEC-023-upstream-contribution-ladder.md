@@ -1,8 +1,19 @@
 # SPEC-023 Feature: Upstream Contribution Ladder — terminusdb-rs fork → ParaplouOU
 
-<!-- status: Approved -->
+<!-- status: Implemented -->
 <!-- progress: 3/3 PRs opened (2026-08-10) — #9 casing, #10 auth, #11 collab+tests; awaiting upstream merge -->
 <!-- approved: 2026-08-10 by orchestrator (retrospective — implementation preceded approval) -->
+
+## Verification Record (2026-08-10)
+
+- AC-1 ✅ — PR [#9](https://github.com/ParapluOU/terminusdb-rs/pull/9) OPEN, mergeable; commits `9b7b3e6` + `7cbdb6f`; diff = 1 file, 3 unit tests
+- AC-2 ✅ — PR [#10](https://github.com/ParapluOU/terminusdb-rs/pull/10) OPEN, mergeable; commits `3846ebc` + `513f428`; Basic unchanged
+- AC-3 ✅ — diff inspection on all three branches: no `580b840`/`13cb418` content
+- AC-4 ⚠️ PARTIAL — new code clippy-clean; upstream `main` carries 77 pre-existing lib warnings (verified via stash)
+- AC-5 ⚠️ PARTIAL — 3-line evidence note in #9/#11; #10 carries grounding notes (parity gap, DFRNT PAT flow)
+- AC-6 ✅ — opened in order #9 → #10 → #11 (sequential ladder satisfied)
+
+**Verdict**: 4/6 PASS, 2 PARTIAL (upstream-side, documented) → Implemented. **Not archived**: awaiting upstream review/merge (R-23); archive when all three PRs land.
 
 ## Overview
 
