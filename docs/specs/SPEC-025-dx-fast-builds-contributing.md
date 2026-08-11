@@ -33,7 +33,7 @@
 
 PR-4 to `ParapluOU/terminusdb-rs`: improve contributor DX by shipping the **non-imposing** parts of the fork's fast-build work (dev-profile defaults) plus a **CONTRIBUTING.md** with per-OS guidelines (Linux, macOS, Windows) for a fast build/test loop. Explicitly **out of scope**: `.cargo/config.toml`, `.mise.toml`, and any forced toolchain/linker/dependency installs — guidelines only, nothing imposed.
 
-**Repo wiring (as SPEC-008 precedent):** this spec governs **fork-side work** — implementation happens in `third_party/terminusdb-rs` (submodule → github.com/gustavorps/terminusdb-rs), specifically **`third_party/terminusdb-rs/CONTRIBUTING.md`**, its `.cargo/config.toml.example` (dev profiles + per-OS baseline) and `scripts/bench-dx.sh` — `Cargo.toml` itself is NOT touched (byte-identical to upstream). The spec document lives in the platform's `docs/specs/` as the governing artifact; the PR targets upstream `ParapluOU/terminusdb-rs` from the fork.
+**Repo wiring (as SPEC-008 precedent):** this spec governs **fork-side work** — implementation happens in `third_party/terminusdb-rs` (submodule → github.com/gustavorps/terminusdb-client-rs), specifically **`third_party/terminusdb-rs/CONTRIBUTING.md`**, its `.cargo/config.toml.example` (dev profiles + per-OS baseline) and `scripts/bench-dx.sh` — `Cargo.toml` itself is NOT touched (byte-identical to upstream). The spec document lives in the platform's `docs/specs/` as the governing artifact; the PR targets upstream `ParapluOU/terminusdb-rs` from the fork.
 
 ## Motivation
 

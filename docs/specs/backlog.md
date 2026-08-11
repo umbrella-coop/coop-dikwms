@@ -244,7 +244,7 @@ Planned specs not yet created. Add requirements captured during development here
 
 ## SPEC-008 (planned): terminusdb-rs Fork — JS-Client Feature Parity
 
-**Requirement (captured 2026-08-06):** Implement the missing TerminusDB Rust-client features that the TypeScript/JavaScript client already has, in a **fork at https://github.com/gustavorps/terminusdb-rs** (fork of ParapluOU/terminusdb-rs), added as a **git submodule**.
+**Requirement (captured 2026-08-06):** Implement the missing TerminusDB Rust-client features that the TypeScript/JavaScript client already has, in a **fork at https://github.com/gustavorps/terminusdb-client-rs** (fork of ParapluOU/terminusdb-rs), added as a **git submodule**.
 
 **Features to port from the JS client (per ParapluOU repo README "Future Development"):**
 - Branch management operations

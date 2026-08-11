@@ -21,7 +21,7 @@ Contribute the fork's verified TerminusDB v12/auth work back to upstream `Parapl
 
 ## Motivation
 
-The fork (`github.com/gustavorps/terminusdb-rs`) holds verified, valuable work that upstream users need (RISK-004 fork drift; SPEC-008 verification evidence). Upstream cannot accept the fork wholesale (367+ commits of WIP, nightly-only tooling, fork-specific semantics), so the landable surface is a reviewable subset. Uncontributed, the value stays trapped in a private fork: upstream v12 users keep broken push/pull and no API-key auth, and the platform keeps paying fork-pin maintenance. Source: user request + brainstorm 2026-08-10 (backlog SPEC-023).
+The fork (`github.com/gustavorps/terminusdb-client-rs`) holds verified, valuable work that upstream users need (RISK-004 fork drift; SPEC-008 verification evidence). Upstream cannot accept the fork wholesale (367+ commits of WIP, nightly-only tooling, fork-specific semantics), so the landable surface is a reviewable subset. Uncontributed, the value stays trapped in a private fork: upstream v12 users keep broken push/pull and no API-key auth, and the platform keeps paying fork-pin maintenance. Source: user request + brainstorm 2026-08-10 (backlog SPEC-023).
 
 ## Requirements
 

@@ -4,7 +4,7 @@
 
 ## Overview
 
-Make the **forked Rust TerminusDB client** (`third_party/terminusdb-rs` → https://github.com/gustavorps/terminusdb-rs, git submodule) the production dependency of the knowledge platform backend: verify the already-implemented parity features against a real server, and implement the one remaining JS-client feature gap — **advanced authentication** (API-key / token / OAuth).
+Make the **forked Rust TerminusDB client** (`third_party/terminusdb-rs` → https://github.com/gustavorps/terminusdb-client-rs, git submodule) the production dependency of the knowledge platform backend: verify the already-implemented parity features against a real server, and implement the one remaining JS-client feature gap — **advanced authentication** (API-key / token / OAuth).
 
 ## Motivation
 
