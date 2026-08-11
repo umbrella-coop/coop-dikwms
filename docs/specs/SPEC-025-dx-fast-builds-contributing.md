@@ -1,6 +1,6 @@
 # SPEC-025 Feature: Developer Experience — Fast Local Builds/Tests + CONTRIBUTING.md
 
-<!-- status: Review -->
+<!-- status: Approved -->
 <!-- progress: fork PR-12 = 8 commits, 6 files, opened 2026-08-10; backend adoption committed (5c4d35a/f395461/415410d); awaiting upstream merge -->
 <!-- approved: 2026-08-10 by orchestrator (retrospective — implementation preceded approval; see Delta Record) -->
 
