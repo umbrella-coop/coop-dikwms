@@ -389,6 +389,28 @@ importers:
         specifier: ^16.0.0
         version: 16.3.2(@testing-library/dom@10.4.1)(@types/react-dom@19.2.3(@types/react@19.2.14))(@types/react@19.2.14)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
 
+  dikwms/ui/project/git-explorer:
+    dependencies:
+      antd:
+        specifier: ^6.5.4
+        version: 6.5.4(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
+      react:
+        specifier: 19.2.4
+        version: 19.2.4
+      react-dom:
+        specifier: 19.2.4
+        version: 19.2.4(react@19.2.4)
+      vitest:
+        specifier: ^4.1.0
+        version: 4.1.10(@types/node@25.5.0)(@vitest/coverage-istanbul@4.1.10)(jsdom@29.1.1)(vite@8.2.1(@types/node@25.5.0)(esbuild@0.27.7)(sass-embedded@1.100.0)(sass@1.100.0)(terser@5.49.2)(yaml@2.9.0))
+    devDependencies:
+      '@bitdev/react.react-env':
+        specifier: ^6.0.27
+        version: 6.0.28(@emnapi/core@1.11.3)(@emnapi/runtime@1.11.3)(esbuild@0.27.7)(eslint@8.57.1)(react-refresh@0.18.0)(rollup@4.62.4)(rxjs@7.8.2)(sass-embedded@1.100.0)(terser@5.49.2)(webpack@5.109.2(esbuild@0.27.7))(yaml@2.9.0)
+      '@testing-library/react':
+        specifier: ^16.0.0
+        version: 16.3.2(@testing-library/dom@10.4.1)(@types/react-dom@19.2.3(@types/react@19.2.14))(@types/react@19.2.14)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
+
   dikwms/ui/project/interactive-canvas-wrapper:
     dependencies:
       antd:
@@ -486,6 +508,9 @@ importers:
       '@coop-codes/dikwms.ui.project.console-page-index-container':
         specifier: workspace:*
         version: file:dikwms/ui/project/console-page-index-container(react@19.2.4)
+      '@coop-codes/dikwms.ui.project.git-explorer':
+        specifier: workspace:*
+        version: file:dikwms/ui/project/git-explorer(react@19.2.4)(vitest@4.1.10)
       '@coop-codes/dikwms.ui.project.interactive-canvas-wrapper':
         specifier: workspace:*
         version: file:dikwms/ui/project/interactive-canvas-wrapper(react@19.2.4)
@@ -633,6 +658,9 @@ importers:
       '@coop-codes/dikwms.ui.project.console-page-index-container':
         specifier: workspace:*
         version: file:dikwms/ui/project/console-page-index-container(react@19.2.4)
+      '@coop-codes/dikwms.ui.project.git-explorer':
+        specifier: workspace:*
+        version: file:dikwms/ui/project/git-explorer(react@19.2.4)(vitest@4.1.10)
       '@coop-codes/dikwms.ui.project.interactive-canvas-wrapper':
         specifier: workspace:*
         version: file:dikwms/ui/project/interactive-canvas-wrapper(react@19.2.4)
@@ -1786,6 +1814,12 @@ packages:
     resolution: {directory: dikwms/ui/project/console-page-index-container, type: directory}
     peerDependencies:
       react: ^17.0.0 || ^18.0.0 || ^19.0.0
+
+  '@coop-codes/dikwms.ui.project.git-explorer@file:dikwms/ui/project/git-explorer':
+    resolution: {directory: dikwms/ui/project/git-explorer, type: directory}
+    peerDependencies:
+      react: ^17.0.0 || ^18.0.0 || ^19.0.0
+      vitest: ^4.1.0
 
   '@coop-codes/dikwms.ui.project.interactive-canvas-wrapper@file:dikwms/ui/project/interactive-canvas-wrapper':
     resolution: {directory: dikwms/ui/project/interactive-canvas-wrapper, type: directory}
@@ -10597,6 +10631,12 @@ snapshots:
       '@coop-codes/dikwms.hook.use-data-graph-sse': file:dikwms/hook/use-data-graph-sse(react@19.2.4)(vitest@4.1.10)
       '@coop-codes/dikwms.ui.data-graph-antv-g6.canvas': file:dikwms/ui/data-graph-antv-g6/canvas(react@19.2.4)(vitest@4.1.10)
       '@coop-codes/dikwms.ui.data-graph.node-drawer': file:dikwms/ui/data-graph/node-drawer(react@19.2.4)(vitest@4.1.10)
+      '@coop-codes/dikwms.ui.layout.frame': file:dikwms/ui/layout/frame(react@19.2.4)
+      '@coop-codes/dikwms.ui.layout.header-actions': file:dikwms/ui/layout/header-actions(react@19.2.4)
+      '@coop-codes/dikwms.ui.layout.header-title': file:dikwms/ui/layout/header-title(react@19.2.4)
+      '@coop-codes/dikwms.ui.layout.menu-footer': file:dikwms/ui/layout/menu-footer(react@19.2.4)
+      '@coop-codes/dikwms.ui.layout.search': file:dikwms/ui/layout/search(react@19.2.4)
+      '@coop-codes/dikwms.ui.layout.user-menu': file:dikwms/ui/layout/user-menu(react@19.2.4)
       '@vitejs/plugin-react': 5.2.0(vite@8.2.1(@types/node@22.13.14)(esbuild@0.27.7)(sass-embedded@1.100.0)(sass@1.98.0)(terser@5.49.2)(yaml@2.9.0))
       react: 19.2.4
       react-dom: 19.2.4(react@19.2.4)
@@ -10741,6 +10781,19 @@ snapshots:
       antd: 6.5.4(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
       react: 19.2.4
       react-dom: 19.2.4(react@19.2.4)
+    transitivePeerDependencies:
+      - date-fns
+      - luxon
+      - moment
+
+  '@coop-codes/dikwms.ui.project.git-explorer@file:dikwms/ui/project/git-explorer(react@19.2.4)(vitest@4.1.10)':
+    dependencies:
+      '@coop-codes/dikwms.type.core-v1': file:dikwms/type/core-v1
+      '@coop-codes/dikwms.ui.data-graph-antv-g6.canvas': file:dikwms/ui/data-graph-antv-g6/canvas(react@19.2.4)(vitest@4.1.10)
+      antd: 6.5.4(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
+      react: 19.2.4
+      react-dom: 19.2.4(react@19.2.4)
+      vitest: 4.1.10(@types/node@22.13.14)(@vitest/coverage-istanbul@4.1.10)(jsdom@29.1.1)(vite@8.2.1(@types/node@22.13.14)(esbuild@0.27.7)(sass-embedded@1.100.0)(sass@1.98.0)(terser@5.49.2)(yaml@2.9.0))
     transitivePeerDependencies:
       - date-fns
       - luxon

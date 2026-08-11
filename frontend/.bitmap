@@ -233,6 +233,20 @@
             }
         }
     },
+    "ui/project/git-explorer": {
+        "name": "ui/project/git-explorer",
+        "scope": "",
+        "version": "",
+        "defaultScope": "coop-codes.dikwms",
+        "mainFile": "index.ts",
+        "rootDir": "dikwms/ui/project/git-explorer",
+        "config": {
+            "bitdev.react/react-env@6.0.28": {},
+            "teambit.envs/envs": {
+                "env": "bitdev.react/react-env"
+            }
+        }
+    },
     "ui/project/interactive-canvas-wrapper": {
         "name": "ui/project/interactive-canvas-wrapper",
         "scope": "",

@@ -3,7 +3,7 @@ import { Graph as G6Graph } from '@antv/g6';
 import { Spin, Tag } from 'antd';
 import { LayoutSelect } from '@coop-codes/dikwms.ui.data-graph-antv-g6.layout-select';
 import type { EventStreamState } from '@coop-codes/dikwms.hook.use-data-graph-sse';
-import type { DataGraphNode } from '@coop-codes/dikwms.type.core-v1';
+import type { DataGraphEdge, DataGraphNode } from '@coop-codes/dikwms.type.core-v1';
 import styles from './canvas.module.css';
 
 export type CanvasLayout = { type: string; [key: string]: unknown };
@@ -26,9 +26,19 @@ export type CanvasProps = {
   loading: boolean;
   onSelect: (id: string) => void;
   layout?: CanvasLayout;
+  /** Optional graph edges (SPEC-027: git parent links built client-side from
+   * adjacency properties, ADR-004). */
+  edges?: DataGraphEdge[];
 };
 
-export function Canvas({ entities, streamState, loading, onSelect, layout = DEFAULT_LAYOUT }: CanvasProps) {
+export function Canvas({
+  entities,
+  streamState,
+  loading,
+  onSelect,
+  layout = DEFAULT_LAYOUT,
+  edges = [],
+}: CanvasProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const canvasRef = useRef<G6Graph | null>(null);
   const onSelectRef = useRef(onSelect);
@@ -68,9 +78,9 @@ export function Canvas({ entities, streamState, loading, onSelect, layout = DEFA
     const canvas = canvasRef.current;
     if (!canvas) return;
     const nodes = Object.values(entities).map((e) => ({ id: e.id, data: e }));
-    canvas.setData({ nodes, edges: [] });
+    canvas.setData({ nodes, edges });
     canvas.render();
-  }, [entities]);
+  }, [entities, edges]);
 
   // layout switch: re-run the layout algorithm on the current data.
   // Skips the initial mount — render() already lays out from construction

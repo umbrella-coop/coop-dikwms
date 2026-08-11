@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useDataGraphSse } from '@coop-codes/dikwms.hook.use-data-graph-sse';
 import { Canvas } from '@coop-codes/dikwms.ui.data-graph-antv-g6.canvas';
 import { NodeDrawer } from '@coop-codes/dikwms.ui.data-graph.node-drawer';
+import { GitExplorer } from '@coop-codes/dikwms.ui.project.git-explorer';
 import { LayoutFrame } from '@coop-codes/dikwms.ui.layout.frame';
 import { LayoutHeaderTitle } from '@coop-codes/dikwms.ui.layout.header-title';
 import { LayoutSearch } from '@coop-codes/dikwms.ui.layout.search';
@@ -19,6 +20,7 @@ const MENU = [
     children: [
       { key: 'graph', label: 'Live graph' },
       { key: 'entities', label: 'Entities' },
+      { key: 'git', label: 'Git explorer' },
     ],
   },
 ];
@@ -55,13 +57,23 @@ export function App() {
       siderFooter={<LayoutMenuFooter lines={['© 2026 dikwms', 'DIKW Management System']} />}
     >
       <main className={styles.app} aria-label="Knowledge graph explorer" data-ready={ready}>
-        <Canvas
-          entities={entities}
-          streamState={streamState}
-          loading={!ready}
-          onSelect={setSelected}
-        />
-        <NodeDrawer entity={selectedEntity} apiBase={API_BASE} onClose={() => setSelected(null)} />
+        {selectedKey === 'git' ? (
+          <GitExplorer apiBase={API_BASE} />
+        ) : (
+          <>
+            <Canvas
+              entities={entities}
+              streamState={streamState}
+              loading={!ready}
+              onSelect={setSelected}
+            />
+            <NodeDrawer
+              entity={selectedEntity}
+              apiBase={API_BASE}
+              onClose={() => setSelected(null)}
+            />
+          </>
+        )}
       </main>
     </LayoutFrame>
   );
