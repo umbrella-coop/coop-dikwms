@@ -139,9 +139,10 @@ describe('SPEC-027 ui/project/git-explorer', () => {
     // Default window = latest ~20% of the span → commits 2+3 visible.
     expect(screen.getByTestId('git-explorer-count').textContent).toMatch(/^2 \/ 3 commits/);
     // antd Slider/Select expose ARIA roles, not data-testid (SPEC-018 targets
-    // our own components; antd wrappers assert via roles)
+    // our own components; antd wrappers assert via roles). Author filter +
+    // layout select + timeline = 2 comboboxes, 2 slider thumbs.
+    expect(screen.getAllByRole('combobox').length).toBeGreaterThanOrEqual(2);
     expect(screen.getAllByRole('slider').length).toBeGreaterThan(0);
-    expect(screen.getByRole('combobox')).toBeTruthy();
   });
 
   it('passes parent + author edges to the canvas (ADR-004 client-side resolution)', async () => {

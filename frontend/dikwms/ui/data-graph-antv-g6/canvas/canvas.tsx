@@ -29,6 +29,9 @@ export type CanvasProps = {
   /** Optional graph edges (SPEC-027: git parent links built client-side from
    * adjacency properties, ADR-004). */
   edges?: DataGraphEdge[];
+  /** Hide the in-footer layout select — the parent renders its own (e.g. in
+   * a controls row next to other filters). */
+  hideLayoutSelect?: boolean;
 };
 
 export function Canvas({
@@ -38,6 +41,7 @@ export function Canvas({
   onSelect,
   layout = DEFAULT_LAYOUT,
   edges = [],
+  hideLayoutSelect = false,
 }: CanvasProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const canvasRef = useRef<G6Graph | null>(null);
@@ -46,6 +50,12 @@ export function Canvas({
   const [layoutType, setLayoutType] = useState(layout.type);
   const layoutRef = useRef<CanvasLayout>(layout);
   layoutRef.current = layout;
+
+  // External control: a parent may drive the layout type (e.g. its own select
+  // in a controls row). Re-apply whenever the prop type changes.
+  useEffect(() => {
+    setLayoutType(layout.type);
+  }, [layout.type]);
 
   useEffect(() => {
     const canvas = new G6Graph({
@@ -113,7 +123,7 @@ export function Canvas({
         {loading && <Spin data-testid="canvas-loading" />}
       </div>
       <footer className={styles.footer}>
-        <LayoutSelect value={layoutType} onChange={setLayoutType} />
+        {!hideLayoutSelect && <LayoutSelect value={layoutType} onChange={setLayoutType} />}
         <Tag color={streamState === 'open' ? 'green' : streamState === 'error' ? 'red' : 'orange'}>
           stream: {streamState}
         </Tag>

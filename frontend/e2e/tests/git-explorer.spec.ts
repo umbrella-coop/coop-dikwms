@@ -57,6 +57,12 @@ test('git explorer loads the real graph and insight cards', async ({ page }) => 
         .edges(),
   );
   expect(edgeCount).toBeGreaterThan(0);
+  // The layout select lives in the controls row (next to the author filter),
+  // not in the canvas footer.
+  const layoutSelectInControls = await page
+    .locator('[data-testid="git-explorer-controls"] [data-testid="layout-select"]')
+    .count();
+  expect(layoutSelectInControls).toBe(1);
 });
 
 test('timeline slider narrows the visible commit window', async ({ page }) => {

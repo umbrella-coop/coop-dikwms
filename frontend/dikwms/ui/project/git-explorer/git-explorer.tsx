@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { Card, Drawer, Empty, Select, Slider, Spin, Tag, Typography } from 'antd';
 import { Canvas } from '@coop-codes/dikwms.ui.data-graph-antv-g6.canvas';
+import { LayoutSelect } from '@coop-codes/dikwms.ui.data-graph-antv-g6.layout-select';
 import type { DataGraphEdge, DataGraphNode } from '@coop-codes/dikwms.type.core-v1';
 
 /**
@@ -33,6 +34,7 @@ export function GitExplorer({ apiBase }: GitExplorerProps) {
   const [history, setHistory] = useState<unknown[] | null>(null);
   const [windowRange, setWindowRange] = useState<[number, number]>([0, 0]);
   const [authorFilter, setAuthorFilter] = useState<string[]>([]);
+  const [layoutType, setLayoutType] = useState('force');
 
   const load = async () => {
     setLoading(true);
@@ -259,6 +261,7 @@ export function GitExplorer({ apiBase }: GitExplorerProps) {
           data-testid="git-explorer-author-filter"
           style={{ minWidth: 240 }}
         />
+        <LayoutSelect value={layoutType} onChange={setLayoutType} />
         <Slider
           range
           min={timestamps[0] ?? 0}
@@ -292,6 +295,14 @@ export function GitExplorer({ apiBase }: GitExplorerProps) {
               streamState="open"
               loading={false}
               onSelect={openDrawer}
+              hideLayoutSelect
+              layout={{
+                type: layoutType,
+                gravity: 10,
+                linkDistance: 120,
+                preventOverlap: true,
+                enableWorker: false,
+              }}
             />
           )}
         </div>
