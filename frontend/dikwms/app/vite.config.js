@@ -17,6 +17,6 @@ export default defineConfig({
     // CJS deps reached through the linked org scope get served raw from
     // /@fs/ without an interop wrapper → "does not provide an export named
     // ..." crashes. Force pre-bundling (ESM interop) for the offenders.
-    include: ['eventemitter3', '@antv/g6', 'react-is'],
+    include: ['eventemitter3', '@antv/g6', 'react-is', 'is-mobile'],
   },
 });

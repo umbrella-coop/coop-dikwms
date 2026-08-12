@@ -75,6 +75,9 @@ importers:
       graphql-tag:
         specifier: ^2.12.6
         version: 2.12.7(graphql@16.14.2)
+      is-mobile:
+        specifier: ^5.0.0
+        version: 5.0.0
       react:
         specifier: 19.2.4
         version: 19.2.4
@@ -10797,6 +10800,7 @@ snapshots:
     dependencies:
       '@coop-codes/dikwms.type.core-v1': file:dikwms/type/core-v1
       '@coop-codes/dikwms.ui.data-graph-antv-g6.canvas': file:dikwms/ui/data-graph-antv-g6/canvas(react@19.2.4)(vitest@4.1.10)
+      '@coop-codes/dikwms.ui.data-graph-antv-g6.layout-select': file:dikwms/ui/data-graph-antv-g6/layout-select(react@19.2.4)
       antd: 6.5.4(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
       react: 19.2.4
       react-dom: 19.2.4(react@19.2.4)

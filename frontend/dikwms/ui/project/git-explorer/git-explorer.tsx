@@ -44,6 +44,40 @@ function entityShape(e: SnapshotEntity): GraphNodeShape {
   return 'node';
 }
 
+const SHAPE_LABELS: { shape: GraphNodeShape; label: string }[] = [
+  { shape: 'commit', label: 'Commit' },
+  { shape: 'author', label: 'Author' },
+  { shape: 'node', label: 'Ghost / other' },
+];
+
+/** Color dots legend — the shapes are visually distinct on the canvas. */
+export function ShapeLegend() {
+  return (
+    <div data-testid="git-explorer-legend" style={{ display: 'flex', gap: 12 }}>
+      {SHAPE_LABELS.map(({ shape, label }) => (
+        <span key={shape} style={{ display: 'inline-flex', alignItems: 'center', gap: 4 }}>
+          <span
+            style={{
+              width: 10,
+              height: 10,
+              borderRadius: '50%',
+              background: {
+                commit: '#1971c2',
+                author: '#2f9e44',
+                node: '#868e96',
+                repository: '#e8590c',
+                organization: '#9c36b5',
+                insight: '#f08c00',
+              }[shape],
+            }}
+          />
+          {label}
+        </span>
+      ))}
+    </div>
+  );
+}
+
 const { Text } = Typography;
 
 export function GitExplorer({ apiBase }: GitExplorerProps) {
@@ -228,6 +262,13 @@ export function GitExplorer({ apiBase }: GitExplorerProps) {
     total: commits.length,
     edges: () => graph.edges.length,
     nodes: () => Object.keys(graph.nodes).length,
+    shapes: () => {
+      const counts: Record<string, number> = {};
+      for (const n of Object.values(graph.nodes)) {
+        counts[n.shape ?? 'node'] = (counts[n.shape ?? 'node'] ?? 0) + 1;
+      }
+      return counts;
+    },
   };
   useEffect(() => {
     if (import.meta.env.DEV) {
@@ -284,6 +325,7 @@ export function GitExplorer({ apiBase }: GitExplorerProps) {
         <Tag data-testid="git-explorer-count">
           {visibleCommits.length} / {commits.length} commits
         </Tag>
+        <ShapeLegend />
       </div>
 
       <div style={{ display: 'flex', gap: 16, flex: 1, minHeight: 0 }}>

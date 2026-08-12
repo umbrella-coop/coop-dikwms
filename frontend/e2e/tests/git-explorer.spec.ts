@@ -63,6 +63,16 @@ test('git explorer loads the real graph and insight cards', async ({ page }) => 
     .locator('[data-testid="git-explorer-controls"] [data-testid="layout-select"]')
     .count();
   expect(layoutSelectInControls).toBe(1);
+  // Shape discrimination reaches the canvas: commit + author + ghost nodes.
+  const shapes = await page.evaluate(
+    () =>
+      (window as unknown as { __GIT_EXPLORER__?: { shapes: () => Record<string, number> } })
+        .__GIT_EXPLORER__!
+        .shapes(),
+  );
+  expect(shapes.commit ?? 0).toBeGreaterThan(0);
+  expect(shapes.author ?? 0).toBeGreaterThan(0);
+  await expect(page.getByTestId('git-explorer-legend')).toBeVisible();
 });
 
 test('timeline slider narrows the visible commit window', async ({ page }) => {

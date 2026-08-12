@@ -3,13 +3,12 @@ import { Graph as G6Graph } from '@antv/g6';
 import { Spin, Tag } from 'antd';
 import { LayoutSelect } from '@coop-codes/dikwms.ui.data-graph-antv-g6.layout-select';
 import type { EventStreamState } from '@coop-codes/dikwms.hook.use-data-graph-sse';
-import { shapeFromWire } from '@coop-codes/dikwms.type.core-v1';
 import type { DataGraphEdge, DataGraphNode, GraphNodeShape } from '@coop-codes/dikwms.type.core-v1';
 import styles from './canvas.module.css';
 
 /** Per-shape palette (SPEC-027): git entities are visually distinguishable. */
 const SHAPE_COLORS: Record<GraphNodeShape, string> = {
-  node: '#5b8ff9',
+  node: '#868e96',
   commit: '#1971c2',
   author: '#2f9e44',
   repository: '#e8590c',
@@ -17,9 +16,10 @@ const SHAPE_COLORS: Record<GraphNodeShape, string> = {
   insight: '#f08c00',
 };
 
+/** G6 style callbacks receive the node model — custom data lives in `.data`. */
 function nodeShape(d: unknown): GraphNodeShape {
-  const e = d as DataGraphNode | undefined;
-  return e?.shape ?? shapeFromWire(undefined);
+  const model = d as { data?: DataGraphNode };
+  return model.data?.shape ?? 'node';
 }
 
 export type CanvasLayout = { type: string; [key: string]: unknown };
