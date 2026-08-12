@@ -50,6 +50,13 @@ test('git explorer loads the real graph and insight cards', async ({ page }) => 
     .getByTestId('coop-canvas-canvas')
     .evaluate((el) => el.clientHeight);
   expect(canvasHeight).toBeGreaterThan(400);
+  // Edges must actually reach the canvas (parent links + author links).
+  const edgeCount = await page.evaluate(
+    () =>
+      (window as unknown as { __GIT_EXPLORER__?: { edges: () => number } }).__GIT_EXPLORER__!
+        .edges(),
+  );
+  expect(edgeCount).toBeGreaterThan(0);
 });
 
 test('timeline slider narrows the visible commit window', async ({ page }) => {

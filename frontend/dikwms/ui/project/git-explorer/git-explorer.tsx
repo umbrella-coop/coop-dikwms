@@ -116,6 +116,21 @@ export function GitExplorer({ apiBase }: GitExplorerProps) {
     }
     const nodes: Record<string, DataGraphNode> = {};
     const edges: DataGraphEdge[] = [];
+    const pushEdge = (source: string, target: string) => {
+      const id = `${source}->${target}`;
+      if (!edges.some((e) => e.id === id)) {
+        edges.push({ id, kind: 'Edge', source, target });
+      }
+    };
+    // Authors first — visible commits reference them via edges.
+    for (const a of authors) {
+      const props = a.property_sets[0]?.properties ?? {};
+      nodes[a.id] = {
+        id: a.id,
+        kind: 'Node',
+        name: String(props.name ?? props.email ?? 'author'),
+      };
+    }
     for (const c of visibleCommits) {
       const props = c.property_sets[0]?.properties ?? {};
       const message = String(props.message ?? '').split('\n')[0].slice(0, 60);
@@ -125,25 +140,22 @@ export function GitExplorer({ apiBase }: GitExplorerProps) {
         : [];
       for (const parent of parents) {
         const target = hashIndex.get(parent);
-        // Only link when the target commit is inside the visible window —
-        // orphan edges crash G6 ("Node not found for id").
-        if (target && nodes[target]) {
-          edges.push({ id: `${c.id}->${target}`, kind: 'Edge', source: c.id, target });
+        if (target) {
+          // Out-of-window parents render as ghost nodes so the history
+          // context stays visible (ADR-004); no orphan edges ever reach G6.
+          if (!nodes[target]) {
+            nodes[target] = {
+              id: target,
+              kind: 'Ghost',
+              name: parent.slice(0, 10),
+            };
+          }
+          pushEdge(c.id, target);
         }
       }
       const authorId = String(props.author ?? '');
       if (authorId && nodes[authorId]) {
-        edges.push({ id: `${c.id}->${authorId}`, kind: 'Edge', source: c.id, target: authorId });
-      }
-    }
-    for (const a of authors) {
-      const props = a.property_sets[0]?.properties ?? {};
-      if (!nodes[a.id]) {
-        nodes[a.id] = {
-          id: a.id,
-          kind: 'Node',
-          name: String(props.name ?? props.email ?? 'author'),
-        };
+        pushEdge(c.id, authorId);
       }
     }
     return { nodes, edges };
@@ -194,12 +206,16 @@ export function GitExplorer({ apiBase }: GitExplorerProps) {
     commitIds: () => string[];
     visible: number;
     total: number;
+    edges: () => number;
+    nodes: () => number;
   } | null>(null);
   explorerStateRef.current = {
     select: openDrawer,
     commitIds: () => visibleCommits.map((c) => c.id),
     visible: visibleCommits.length,
     total: commits.length,
+    edges: () => graph.edges.length,
+    nodes: () => Object.keys(graph.nodes).length,
   };
   useEffect(() => {
     if (import.meta.env.DEV) {

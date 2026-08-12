@@ -144,12 +144,12 @@ describe('SPEC-027 ui/project/git-explorer', () => {
     expect(screen.getByRole('combobox')).toBeTruthy();
   });
 
-  it('passes parent edges to the canvas (ADR-004 client-side resolution)', async () => {
+  it('passes parent + author edges to the canvas (ADR-004 client-side resolution)', async () => {
     render(<GitExplorer apiBase="http://test" />);
     await waitFor(() => expect(screen.getByTestId('fake-canvas')).toBeTruthy());
-    // commit-3's parent (commit-2) is inside the window → 1 edge; commit-2's
-    // parent (commit-1) is outside the window → dropped (no orphan edges).
-    expect(screen.getByTestId('fake-canvas').textContent).toContain('1 edges');
+    // 4 edges: c3→c2 (visible parent), c2→c1 (ghost parent outside window),
+    // c2→author-1, c3→author-1. Ghost nodes keep history context, no orphans.
+    expect(screen.getByTestId('fake-canvas').textContent).toContain('4 edges');
   });
 
   it('renders wisdom insight cards from the git-insight entity', async () => {
