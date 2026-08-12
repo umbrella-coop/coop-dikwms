@@ -45,6 +45,11 @@ test('git explorer loads the real graph and insight cards', async ({ page }) => 
   const cards = await page.locator('[data-testid^="insight-card-"]').count();
   expect(cards).toBeGreaterThan(0);
   await expect(page.getByText('bus-factor').first()).toBeVisible();
+  // The canvas must fill the viewport height, not collapse to its 300px floor.
+  const canvasHeight = await page
+    .getByTestId('coop-canvas-canvas')
+    .evaluate((el) => el.clientHeight);
+  expect(canvasHeight).toBeGreaterThan(400);
 });
 
 test('timeline slider narrows the visible commit window', async ({ page }) => {

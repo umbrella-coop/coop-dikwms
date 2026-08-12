@@ -51,6 +51,7 @@ export function Canvas({
     const canvas = new G6Graph({
       container: containerRef.current!,
       autoFit: 'view',
+      autoResize: true,
       layout: layoutRef.current,
       node: {
         style: {

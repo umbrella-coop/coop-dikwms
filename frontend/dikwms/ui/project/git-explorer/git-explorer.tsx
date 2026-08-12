@@ -230,6 +230,7 @@ export function GitExplorer({ apiBase }: GitExplorerProps) {
       data-testid="git-explorer"
       data-loading={loading}
       data-error={error !== null}
+      style={{ display: 'flex', flexDirection: 'column', height: '100%', minHeight: 0, overflow: 'hidden' }}
     >
       <div data-testid="git-explorer-controls" className="git-explorer-controls">
         <Select
@@ -256,8 +257,16 @@ export function GitExplorer({ apiBase }: GitExplorerProps) {
         </Tag>
       </div>
 
-      <div style={{ display: 'flex', gap: 16 }}>
-        <div style={{ flex: 1, minHeight: 480, position: 'relative' }}>
+      <div style={{ display: 'flex', gap: 16, flex: 1, minHeight: 0 }}>
+        <div
+          style={{
+            flex: 1,
+            minHeight: 0,
+            position: 'relative',
+            display: 'flex',
+            flexDirection: 'column',
+          }}
+        >
           {loading ? (
             <Spin data-testid="git-explorer-spinner" />
           ) : (
