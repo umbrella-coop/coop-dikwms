@@ -93,9 +93,12 @@ pub fn compute_dir_insights(
                 *counts.entry(a).or_insert(0) += 1;
             }
             let total = commits.len() as f64;
+            // Deterministic tie-break: equal counts resolve to the
+            // lexicographically smallest email — HashMap iteration order must
+            // never leak into stored insights (deterministic imports).
             let (dominant_author, dominant_share) = counts
                 .iter()
-                .max_by(|a, b| a.1.cmp(b.1))
+                .max_by(|a, b| a.1.cmp(b.1).then_with(|| b.0.cmp(a.0)))
                 .map(|(a, c)| (Some(a.to_string()), *c as f64 / total))
                 .unwrap_or((None, 0.0));
             let last_active = commits.iter().map(|c| c.authored_at).max();

@@ -367,7 +367,7 @@ async fn insight_post_pass_matches_recomputation() -> anyhow::Result<()> {
     );
     assert!(
         json_eq(&stored, &expected),
-        "stored insights == recomputed insights"
+        "stored insights == recomputed insights\nstored: {stored}\nexpected: {expected}"
     );
 
     let _ = std::fs::remove_dir_all(&dir);
@@ -414,13 +414,22 @@ async fn graph_snapshot_lists_imported_entities() -> anyhow::Result<()> {
     assert_eq!(entities.len(), 8, "full projection incl. insight entity");
     let commit_entities = entities
         .iter()
-        .filter(|e| {
-            e["property_sets"][0]["properties"]["hash"]
-                .as_str()
-                .is_some_and(|h| !h.starts_with("git-insight-"))
-        })
+        .filter(|e| e["shape"] == "git.v1/Commit")
         .count();
-    assert_eq!(commit_entities, 5);
+    assert_eq!(commit_entities, 5, "shapes distinguish git entities");
+    let author_shapes = entities
+        .iter()
+        .filter(|e| e["shape"] == "git.v1/Author")
+        .count();
+    assert_eq!(author_shapes, 2, "authors carry the Author shape");
+    let insight_shapes = entities
+        .iter()
+        .filter(|e| e["shape"] == "git.v1/Insight")
+        .count();
+    assert_eq!(
+        insight_shapes, 1,
+        "insight entity carries the Insight shape"
+    );
 
     let _ = std::fs::remove_dir_all(&dir);
     let _ = std::fs::remove_file(&state_path);

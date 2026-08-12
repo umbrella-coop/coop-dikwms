@@ -3,8 +3,24 @@ import { Graph as G6Graph } from '@antv/g6';
 import { Spin, Tag } from 'antd';
 import { LayoutSelect } from '@coop-codes/dikwms.ui.data-graph-antv-g6.layout-select';
 import type { EventStreamState } from '@coop-codes/dikwms.hook.use-data-graph-sse';
-import type { DataGraphEdge, DataGraphNode } from '@coop-codes/dikwms.type.core-v1';
+import { shapeFromWire } from '@coop-codes/dikwms.type.core-v1';
+import type { DataGraphEdge, DataGraphNode, GraphNodeShape } from '@coop-codes/dikwms.type.core-v1';
 import styles from './canvas.module.css';
+
+/** Per-shape palette (SPEC-027): git entities are visually distinguishable. */
+const SHAPE_COLORS: Record<GraphNodeShape, string> = {
+  node: '#5b8ff9',
+  commit: '#1971c2',
+  author: '#2f9e44',
+  repository: '#e8590c',
+  organization: '#9c36b5',
+  insight: '#f08c00',
+};
+
+function nodeShape(d: unknown): GraphNodeShape {
+  const e = d as DataGraphNode | undefined;
+  return e?.shape ?? shapeFromWire(undefined);
+}
 
 export type CanvasLayout = { type: string; [key: string]: unknown };
 
@@ -65,11 +81,13 @@ export function Canvas({
       layout: layoutRef.current,
       node: {
         style: {
+          fill: (d: unknown) => SHAPE_COLORS[nodeShape(d)],
           labelText: (d) => {
             const e = d.data as unknown as DataGraphNode;
             return e.name ?? e.id.slice(0, 8);
           },
           labelPlacement: 'bottom',
+          labelFill: '#333',
         },
       },
       behaviors: ['drag-canvas', 'zoom-canvas', 'click-select'],

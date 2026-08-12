@@ -2,7 +2,12 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 import { Card, Drawer, Empty, Select, Slider, Spin, Tag, Typography } from 'antd';
 import { Canvas } from '@coop-codes/dikwms.ui.data-graph-antv-g6.canvas';
 import { LayoutSelect } from '@coop-codes/dikwms.ui.data-graph-antv-g6.layout-select';
-import type { DataGraphEdge, DataGraphNode } from '@coop-codes/dikwms.type.core-v1';
+import { shapeFromWire } from '@coop-codes/dikwms.type.core-v1';
+import type {
+  DataGraphEdge,
+  DataGraphNode,
+  GraphNodeShape,
+} from '@coop-codes/dikwms.type.core-v1';
 
 /**
  * Git-domain explorer (SPEC-027 REQ-008/REQ-010): commit/author graph from
@@ -19,10 +24,25 @@ export type GitExplorerProps = {
 type SnapshotEntity = {
   id: string;
   kind: string;
+  /** Registry-resolved wire shape (SPEC-027), e.g. "git.v1/Commit". */
+  shape?: string;
   property_sets: { properties: Record<string, unknown> }[];
 };
 
 type DirInsight = { dir: string } & Record<string, unknown>;
+
+/** Shape of an entity: prefer the registry-resolved wire shape; fall back to
+ * property sniffing for API responses that predate the shape field. */
+function entityShape(e: SnapshotEntity): GraphNodeShape {
+  const wire = shapeFromWire(e.shape);
+  if (wire !== 'node') return wire;
+  const props = e.property_sets[0]?.properties ?? {};
+  const hash = String(props.hash ?? '');
+  if (hash.startsWith('git-insight-')) return 'insight';
+  if (hash) return 'commit';
+  if (props.email) return 'author';
+  return 'node';
+}
 
 const { Text } = Typography;
 
@@ -57,26 +77,15 @@ export function GitExplorer({ apiBase }: GitExplorerProps) {
   }, [apiBase]);
 
   const commits = useMemo(
-    () =>
-      entities.filter((e) => {
-        const hash = e.property_sets[0]?.properties?.hash;
-        return typeof hash === 'string' && !hash.startsWith('git-insight-');
-      }),
+    () => entities.filter((e) => entityShape(e) === 'commit'),
     [entities],
   );
   const authors = useMemo(
-    () =>
-      entities.filter((e) => {
-        const email = e.property_sets[0]?.properties?.email;
-        return typeof email === 'string';
-      }),
+    () => entities.filter((e) => entityShape(e) === 'author'),
     [entities],
   );
   const insightEntity = useMemo(
-    () =>
-      entities.find((e) =>
-        String(e.property_sets[0]?.properties?.hash ?? '').startsWith('git-insight-'),
-      ),
+    () => entities.find((e) => entityShape(e) === 'insight'),
     [entities],
   );
 
@@ -130,13 +139,14 @@ export function GitExplorer({ apiBase }: GitExplorerProps) {
       nodes[a.id] = {
         id: a.id,
         kind: 'Node',
+        shape: 'author',
         name: String(props.name ?? props.email ?? 'author'),
       };
     }
     for (const c of visibleCommits) {
       const props = c.property_sets[0]?.properties ?? {};
       const message = String(props.message ?? '').split('\n')[0].slice(0, 60);
-      nodes[c.id] = { id: c.id, kind: 'Node', name: message || 'commit' };
+      nodes[c.id] = { id: c.id, kind: 'Node', shape: 'commit', name: message || 'commit' };
       const parents = Array.isArray(props.parent_hexshas)
         ? (props.parent_hexshas as string[])
         : [];

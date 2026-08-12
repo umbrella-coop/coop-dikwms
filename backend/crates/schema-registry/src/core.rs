@@ -134,7 +134,8 @@ pub fn org_schema_v1() -> FileDescriptorSet {
 
 /// `git.v1`: git-domain kinds (SPEC-027 REQ-007). Field names mirror the
 /// importer's property keys exactly — the bulk-endpoint lint compares
-/// entity properties against these message fields (warn-not-fail).
+/// entity properties against these message fields (warn-not-fail), and the
+/// API shape resolver uses them to distinguish git entities on the wire.
 pub fn git_v1() -> FileDescriptorSet {
     let author = msg(
         "Author",
@@ -154,11 +155,27 @@ pub fn git_v1() -> FileDescriptorSet {
             f("paths", 9, Type::String).label_repeated(),
         ],
     );
+    let repository = msg(
+        "Repository",
+        vec![
+            f("name", 1, Type::String),
+            f("url", 2, Type::String),
+            f("default_branch", 3, Type::String),
+        ],
+    );
+    let organization = msg(
+        "Organization",
+        vec![f("name", 1, Type::String), f("url", 2, Type::String)],
+    );
+    let insight = msg(
+        "Insight",
+        vec![f("kind", 1, Type::String), f("created_at", 2, Type::String)],
+    );
     FileDescriptorSet {
         file: vec![FileDescriptorProto {
             name: Some("git/v1/git.proto".into()),
             package: Some("git.v1".into()),
-            message_type: vec![author, commit],
+            message_type: vec![author, commit, repository, organization, insight],
             ..Default::default()
         }],
     }
@@ -255,6 +272,11 @@ mod tests {
         let mut seen = HashSet::new();
         for (_, tag) in descriptor::field_tags(commit) {
             assert!(seen.insert(tag), "tag {tag} reused in Commit");
+        }
+        // Forward types the frontend GraphNodeShape union references.
+        let names: HashSet<String> = descriptor::type_names(&git).into_iter().collect();
+        for t in ["Repository", "Organization", "Insight"] {
+            assert!(names.contains(t), "missing {t}");
         }
     }
 }

@@ -111,13 +111,45 @@ pub async fn graph_snapshot(State(state): State<AppState>) -> Result<Json<Value>
     Ok(Json(json!({
         "@type": "api:Graph",
         "entities": snapshot.entities.iter().map(|e| {
+            let props: std::collections::HashMap<String, Value> = e.property_sets.first()
+                .and_then(|ps| ps.get("properties"))
+                .and_then(|p| p.as_object())
+                .map(|m| m.clone().into_iter().collect())
+                .unwrap_or_default();
             json!({
                 "id": e.id,
                 "kind": e.kind,
+                "shape": wire_shape(&props),
                 "property_sets": e.property_sets,
             })
         }).collect::<Vec<_>>(),
     })))
+}
+
+/// Wire shape of an entity's property set, resolved from the git.v1 message
+/// set (SPEC-027): namespace-qualified message name or the generic "node".
+/// Single source of truth — the bulk lint uses it to pick the linted message.
+pub fn wire_shape(properties: &std::collections::HashMap<String, Value>) -> &'static str {
+    let hash = properties
+        .get("hash")
+        .and_then(|v| v.as_str())
+        .unwrap_or("");
+    if hash.starts_with("git-insight-") {
+        return "git.v1/Insight";
+    }
+    if !hash.is_empty() {
+        return "git.v1/Commit";
+    }
+    if properties.contains_key("email") {
+        return "git.v1/Author";
+    }
+    if properties.contains_key("default_branch") {
+        return "git.v1/Repository";
+    }
+    if properties.contains_key("url") {
+        return "git.v1/Organization";
+    }
+    "node"
 }
 
 // ------------------------------------------------------------------
@@ -229,12 +261,10 @@ async fn git_v1_warnings(state: &AppState, set: &data_graph::PropertySet) -> Vec
     let Ok(fds) = doc.descriptor() else {
         return Vec::new();
     };
-    let message_name = if set.properties.contains_key("hash") {
-        "Commit"
-    } else if set.properties.contains_key("email") {
-        "Author"
-    } else {
-        return Vec::new();
+    let message_name = match wire_shape(&set.properties) {
+        "git.v1/Commit" => "Commit",
+        "git.v1/Author" => "Author",
+        _ => return Vec::new(),
     };
     let Some(message) = schema_registry::descriptor::message(&fds, message_name) else {
         return Vec::new();
