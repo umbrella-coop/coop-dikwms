@@ -33,7 +33,9 @@ Planned specs not yet created. Add requirements captured during development here
 
 **Dependencies:** SPEC-007 (drift checks in CI), existing BDD derivations (features/SPEC-*.feature), crate layout
 
-## SPEC-021 (planned): Frontend E2E Suite (Playwright) — held
+## SPEC-021 (planned): Frontend E2E Suite (Playwright) — partially un-held
+
+> **PARTIALLY UN-HELD (2026-08-11):** the git-domain speed run shipped a working Playwright E2E suite for the git explorer (`frontend/e2e/`, `@playwright/test` + **chrome-headless-shell** channel, 5 scenarios against the live stack). Held items below remain open for the rest of the app (live graph, drawer forms, reconnect).
 
 **Requirement (captured 2026-08-07, source: orchestrator):** hold SPEC-018's deferred E2E features; until then, frontend testing is **manual, orchestrator-driven via the UI** (`bit run app -p <port>` + browser).
 

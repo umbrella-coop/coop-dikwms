@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { Card, Drawer, Empty, Select, Slider, Spin, Tag, Typography } from 'antd';
 import { Canvas } from '@coop-codes/dikwms.ui.data-graph-antv-g6.canvas';
 import type { DataGraphEdge, DataGraphNode } from '@coop-codes/dikwms.type.core-v1';
@@ -125,7 +125,9 @@ export function GitExplorer({ apiBase }: GitExplorerProps) {
         : [];
       for (const parent of parents) {
         const target = hashIndex.get(parent);
-        if (target) {
+        // Only link when the target commit is inside the visible window —
+        // orphan edges crash G6 ("Node not found for id").
+        if (target && nodes[target]) {
           edges.push({ id: `${c.id}->${target}`, kind: 'Edge', source: c.id, target });
         }
       }
@@ -176,10 +178,35 @@ export function GitExplorer({ apiBase }: GitExplorerProps) {
     if (entity) {
       fetch(`${apiBase}/entities/${id}/property-sets`)
         .then((r) => (r.ok ? r.json() : Promise.reject(new Error(`HTTP ${r.status}`))))
-        .then((d) => setHistory(Array.isArray(d) ? d : []))
+        .then((d) => {
+          const items = (d as { items?: unknown[] }).items ?? [];
+          setHistory(Array.isArray(items) ? items : []);
+        })
         .catch(() => setHistory([]));
     }
   };
+
+  // SPEC-018 machine-readable dev hook: E2E drives real usage (node select,
+  // visible commit ids) — dev builds only. Published via a render-fresh ref so
+  // E2E always sees the current state.
+  const explorerStateRef = useRef<{
+    select: (id: string) => void;
+    commitIds: () => string[];
+    visible: number;
+    total: number;
+  } | null>(null);
+  explorerStateRef.current = {
+    select: openDrawer,
+    commitIds: () => visibleCommits.map((c) => c.id),
+    visible: visibleCommits.length,
+    total: commits.length,
+  };
+  useEffect(() => {
+    if (import.meta.env.DEV) {
+      (window as unknown as { __GIT_EXPLORER__?: unknown }).__GIT_EXPLORER__ =
+        explorerStateRef.current;
+    }
+  });
 
   const riskyInsights = insights.filter((i) => i.bus_factor_risk);
   const staleInsights = insights.filter((i) => i.stale && !i.bus_factor_risk);

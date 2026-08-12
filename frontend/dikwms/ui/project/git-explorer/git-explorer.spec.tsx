@@ -56,11 +56,28 @@ const SNAPSHOT = {
           properties: {
             hash: 'bbb222',
             message: 'feat: more',
-            authored_at: '2026-01-06T00:00:00+00:00',
+            authored_at: '2026-06-01T00:00:00+00:00',
             author: 'author-1',
             author_email: 'alice@example.com',
             parent_hexshas: ['aaa111'],
             paths: ['src/y.rs'],
+          },
+        },
+      ],
+    },
+    {
+      id: 'commit-3',
+      kind: 'Node',
+      property_sets: [
+        {
+          properties: {
+            hash: 'ccc333',
+            message: 'feat: newest',
+            authored_at: '2026-06-02T00:00:00+00:00',
+            author: 'author-1',
+            author_email: 'alice@example.com',
+            parent_hexshas: ['bbb222'],
+            paths: ['src/z.rs'],
           },
         },
       ],
@@ -101,7 +118,10 @@ function mockFetch() {
       return { ok: true, json: async () => SNAPSHOT } as Response;
     }
     if (path.includes('/entities/commit-1/property-sets')) {
-      return { ok: true, json: async () => [{ version: 1, status: 'Current' }] } as Response;
+      return {
+        ok: true,
+        json: async () => ({ items: [{ version: 1, status: 'Current' }] }),
+      } as Response;
     }
     throw new Error(`unexpected fetch ${path}`);
   }) as unknown as typeof fetch;
@@ -116,7 +136,8 @@ describe('SPEC-027 ui/project/git-explorer', () => {
   it('renders the explorer with commit count, timeline and author filter', async () => {
     render(<GitExplorer apiBase="http://test" />);
     await waitFor(() => expect(screen.getByTestId('git-explorer-count')).toBeTruthy());
-    expect(screen.getByTestId('git-explorer-count').textContent).toMatch(/\/ 2 commits/);
+    // Default window = latest ~20% of the span → commits 2+3 visible.
+    expect(screen.getByTestId('git-explorer-count').textContent).toMatch(/^2 \/ 3 commits/);
     // antd Slider/Select expose ARIA roles, not data-testid (SPEC-018 targets
     // our own components; antd wrappers assert via roles)
     expect(screen.getAllByRole('slider').length).toBeGreaterThan(0);
@@ -126,6 +147,8 @@ describe('SPEC-027 ui/project/git-explorer', () => {
   it('passes parent edges to the canvas (ADR-004 client-side resolution)', async () => {
     render(<GitExplorer apiBase="http://test" />);
     await waitFor(() => expect(screen.getByTestId('fake-canvas')).toBeTruthy());
+    // commit-3's parent (commit-2) is inside the window → 1 edge; commit-2's
+    // parent (commit-1) is outside the window → dropped (no orphan edges).
     expect(screen.getByTestId('fake-canvas').textContent).toContain('1 edges');
   });
 

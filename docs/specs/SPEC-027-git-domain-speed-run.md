@@ -149,7 +149,7 @@ extension (AC-8 partial). Verified end-to-end against the real
 | AC-6 | ✅ PASS | IT `bulk_endpoint_warns_on_git_v1_violations` + real 898-commit import via `POST /bulk-entities` |
 | AC-7 | ✅ PASS | git.v1 seeded; IT warnings fire on crafted violations; real data organically clean (0/898 empty messages, verified) |
 | AC-8 | ◐ PARTIAL | explorer bootstraps from `/graph/snapshot`; SSE live-import rendering needs stream events to carry properties (hook stores id/kind only) |
-| AC-9 | ✅ PASS | `git-explorer.spec.tsx` (5 specs): slider/filter/drawer/history; `bit build app` + dev server 200 |
+| AC-9 | ✅ PASS | `git-explorer.spec.tsx` (5 specs): slider/filter/drawer/history; **E2E (Playwright + chrome-headless-shell, `frontend/e2e/`): 5/5 scenarios pass against the live stack** — boots with zero console errors, real graph + insight cards, slider narrows window, drawer + history, author filter; `bit build app` + dev server 200 |
 | AC-10 | ✅ PASS | IT `insight_post_pass_matches_recomputation`; real run: **22 dirs** analyzed, insight entity persisted |
 | AC-11 | ✅ PASS | runbook scripts run end-to-end; verify script passes; `cargo check` + `npm run check` green |
 
