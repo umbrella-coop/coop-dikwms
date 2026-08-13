@@ -1,6 +1,7 @@
 # Feature: SPEC-027-git-domain-speed-run — Git-Domain Speed Run (end-to-end proof)
 
-<!-- status: Implemented -->
+<!-- status: Archived -->
+<!-- archived: 2026-08-13 by orchestrator -->
 <!-- implemented-date: 2026-08-11 -->
 <!-- approved-date: 2026-08-11 -->
 <!-- approved-by: orchestrator -->
@@ -161,3 +162,23 @@ serde derives (wire contract); embedded TerminusDB default switched to
 official `v12.0.7` (docker for integration tests — user directive); insight
 entity idempotency key `git-insight-<repo>-<since>`; `GET /graph/snapshot`
 added for UI bootstrap.
+
+---
+
+## ARCHIVED (2026-08-13)
+
+**Verdict**: Delivered — the speed run proved the platform end-to-end across all
+four DIKW layers against the real `terminusdb/terminusdb` repo (12-month window,
+fixed cutoff 2025-08-11): 898/898 commits imported, git.v1 registry namespace
+warning on violations, G6 explorer + real-browser E2E (5/5 scenarios), 22-dir
+insight analysis. **8/11 AC PASS, 3 partial** (see Implementation Record above).
+
+- **Status change:** Implemented → Archived (orchestrator decision, 2026-08-13).
+- **Deferred follow-up (not part of completion, tracked in backlog):**
+  - AC-4: integration-level server-down test for the breaker/backoff path
+    (unit-tested only, `pipeline.rs` retry module).
+  - AC-5: poison-commit dead-letter integration test (unit-level path only).
+  - AC-8: SSE live-import rendering needs stream events to carry properties
+    (hook currently stores id/kind only) — stream-property extension pending.
+- Re-check (spec-vs-code convergence) if the git domain is touched again by
+  future work.

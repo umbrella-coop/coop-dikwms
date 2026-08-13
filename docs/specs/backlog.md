@@ -399,3 +399,5 @@ Planned specs not yet created. Add requirements captured during development here
 **Delivery constraints (user, 2026-08-11):** coop-dikwms branches `speed-run-1/*` based on `main`; fork branches based on `dev`; small reviewable commits; single `speed-run-1` branch carries the functional version; all reproduction material under `examples/git-codebase-1/**`.
 
 **Dependencies:** SPEC-004 (stream/live materialization), SPEC-006 (persistence, resolve_at, revert), SPEC-009 (git.v1 namespace), SPEC-013 (API/edges gap: no edge CRUD, no bulk route), SPEC-016 (docs), SPEC-020 (frontend layout — views land in existing project/data-graph contexts), SPEC-011 (planned — batch ingestion overlap: this run proves the batch/importer pattern)
+
+> **ARCHIVED (2026-08-13):** spec archived as Delivered (orchestrator) on `speed-run-1/git-domain` — platform proven end-to-end (898 commits, G6 explorer E2E 5/5, 22-dir insights); 8/11 AC PASS. AC-4 (server-down breaker IT), AC-5 (poison-commit IT), AC-8 (stream events carry properties for SSE live rendering) deferred — entry kept for provenance.
